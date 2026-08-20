@@ -1,0 +1,1101 @@
+{
+  "testHierarchy": {
+    "RF_Emission": {
+      "displayName": "RF Emission tests",
+      "color": "green",
+      "level2": {
+        "EMC_01_CE_LISN": {
+          "displayName": "EMC_01_CE_LISN",
+          "color": "green",
+          "level3": ["CE_LISN"]
+        },
+        "EMC_02_CE_CP": {
+          "displayName": "EMC_02_CE_CP",
+          "color": "green",
+		  "level3": [
+            "CE_CP",
+            "CE_CP_SL",
+            "CE_CP_CE440",
+			      "CE_CP_CE430_FMC",
+            "CE_CP_CE1",
+            "CE_CP_CMFE-I"
+          ]
+        },
+        "EMC_03_RE_ALSE": {
+          "displayName": "EMC_03_RE_ALSE",
+          "color": "green",
+          "level3": [
+            "RE_ALSE"
+          ]
+        },
+        "EMC_04_RE_NFA": {
+          "displayName": "EMC_04_RE_NFA",
+          "color": "green",
+          "level3": ["RE_NFA_MB","RE_NFA_TSL"]
+        },
+        "EMC_05_RE_SL": {
+          "displayName": "EMC_05_RE_SL",
+          "color": "green",
+          "level3": ["RE_SL"]
+        },
+        "EMC_06_RE_CCC": {
+          "displayName": "EMC_06_RE_CCC",
+          "color": "green",
+          "level3": ["RE_CCC_MB","RE_CCC_BMW"]
+        },
+        "EMC_07_RE_MAG": {
+          "displayName": "EMC_07_RE_MAG",
+          "color": "green",
+          "level3": ["RE_MAG_60-cm loop",
+                     "RE_MAG_40-mm loop",
+                     "RE_MAG_12-cm loop",
+                     "RE_MAG_6-cm loop"
+                    ]
+        },
+        "EMC_08_CE_VP": {
+          "displayName": "EMC_08_CE_VP",
+          "color": "green",
+          "level3": ["CE_VP"]
+        }
+      },
+	"requiredFields": {
+        "specification_section": true,
+        "customer": true,
+        "specification": true,
+        "specification_version": true,
+        "specification_date": true,
+        "specification_id": true,
+        "comment": true,
+        "general_section": true,
+        "temperature": true,
+        "measurement_setup": true,
+        "table_setup": false,
+        "scan_method": true,
+        "ambient_noise_margin": true,
+        "harness_length": true,
+        "power_voltage": true,
+        "special_mode": true,
+        "limit_level": true,
+		"product_cat": false,
+        "ab_ecu_applicable": true,
+        "comment_general_information": true
+      }	 
+    },
+    "RF_Immunity": {
+      "displayName": "RF immunity tests",
+      "color": "green",
+      "level2": {
+        "EMC_10_RI_ALSE": {
+          "displayName": "EMC_10_RI_ALSE",
+          "color": "green",
+          "level3": ["RI_ALSE","RI_ALSE_w/o_GND_plane"]
+        },
+        "EMC_11_RI_TEM": {
+          "displayName": "EMC_11_RI_TEM",
+          "color": "green",
+          "level3": ["RI_TEM"]
+        },
+        "EMC_12_RI_BCI": {
+          "displayName": "EMC_12_RI_BCI",
+          "color": "green",
+          "level3": [
+            "RI_BCI_OL",
+            "RI_BCI_OL_SL",
+            "RI_BCI_CL",
+            "RI_DBCI_RI112"
+          ]
+        },
+        "EMC_13_RI_SL": {
+          "displayName": "EMC_13_RI_SL",
+          "color": "green",
+          "level3": ["RI_SL"]
+        },
+        "EMC_14_RI_Triplate": {
+          "displayName": "EMC_14_RI_Triplate",
+          "color": "green",
+          "level3": ["RI_Triplate"]
+        },
+        "EMC_16_RI_MAG": {
+          "displayName": "EMC_16_RI_MAG",
+          "color": "green",
+          "level3": ["RI_MAG"]
+        },
+        "EMC_17_RI_PT": {
+          "displayName": "EMC_17_RI_PT",
+          "color": "green",
+          "level3": ["RI_PT","RI_PT_TMC"]
+        },
+        "EMC_19_RI_REVERB": {
+          "displayName": "EMC_19_RI_REVERB",
+          "color": "green",
+          "level3": ["RI_REVERB"]
+        }
+      },
+	  "requiredFields": {
+        "specification_section": true,
+        "customer": true,
+        "specification": true,
+        "specification_version": true,
+        "specification_date": true,
+        "specification_id": true,
+        "comment": true,
+        "general_section": true,
+        "temperature": true,
+        "measurement_setup": true,
+        "table_setup": true,
+        "scan_method": false,
+        "ambient_noise_margin": false,
+        "harness_length": true,
+        "power_voltage": true,
+        "special_mode": true,
+        "limit_level": false,
+		"product_cat": true,
+        "ab_ecu_applicable": true,
+        "comment_general_information": true
+      }
+    },
+    "Transient_Coupled_Emission": {
+      "displayName": "Transient coupled emission tests",
+      "color": "gray",
+      "level2": {
+
+        "EMC_30_CTE_TSUP": {
+        "displayName": "EMC_30_CTE_TSUP",
+        "color": "gray",
+        "level3": ["CTE_TSUP_slow","CTE_TSUP_fast"]
+        },
+         "EMC_31_CTE_TSUP_Ni": {
+        "displayName": "EMC_31_CTE_TSUP_Ni",
+        "color": "gray",
+        "level3": ["CTE_TSUP_EQ/EM01"]
+        }
+      }
+    },
+    "Transient_Coupled_Immunity": {
+      "displayName": "Transient coupled immunity tests",
+      "color": "gray",
+      "level2": {
+        "EMC_40_CTI_TSUP": {
+          "displayName": "EMC_40_CTI_TSUP",
+          "color": "gray",
+          "level3": {
+	    "CTI_TSUP": {
+            "displayName": "CTI_TSUP",
+            "color": "gray",
+            "level4": [
+			"CTI_TSUP_Pulse_1_12V",
+			"CTI_TSUP_Pulse_1_16V",
+			"CTI_TSUP_Pulse_1_24V",
+			"CTI_TSUP_Pulse_1_48V",
+			"CTI_TSUP_Pulse_1_12V_Truck",
+			"CTI_TSUP_Pulse_1_24V_Truck",
+			"CTI_TSUP_Pulse_1_bis_12V_Ni",
+			"CTI_TSUP_Pulse_1b_12V_MB_TSL",
+			"CTI_TSUP_Pulse_1b_16V_MB_TSL",
+			"CTI_TSUP_Pulse_1b_24V_MB_TSL",
+			"CTI_TSUP_Pulse_1b_48V_MB_TSL",
+			"CTI_TSUP_Pulse_2a_12V",
+			"CTI_TSUP_Pulse_2a_16V",
+			"CTI_TSUP_Pulse_2a_24V",
+			"CTI_TSUP_Pulse_2a_48V",
+			"CTI_TSUP_Pulse_2b_12V",
+			"CTI_TSUP_Pulse_2b_16V",
+      		"CTI_TSUP_Pulse_2b_24V",
+      		"CTI_TSUP_Pulse_2b_48V",
+			"CTI_TSUP_Pulse_2c_IGN_VLV",
+			"CTI_TSUP_Pulse_3a_12V",
+			"CTI_TSUP_Pulse_3a_16V",
+			"CTI_TSUP_Pulse_3a_24V",
+			"CTI_TSUP_Pulse_3a_48V",
+			"CTI_TSUP_Pulse_3a_12V_Ni",
+			"CTI_TSUP_Pulse_3b_12V",
+			"CTI_TSUP_Pulse_3b_16V",
+			"CTI_TSUP_Pulse_3b_24V",
+			"CTI_TSUP_Pulse_3b_48V",
+			"CTI_TSUP_Pulse_3b_12V_Ni",
+      		"CTI_TSUP_Pulse_6_12V_VW",
+			"CTI_TSUP_Pulse_6_24V_VW",
+			"CTI_TSUP_Pulse_6_48V_VW",
+      		"CTI_TSUP_Pulse_7_12V_GM",
+      		"CTI_TSUP_Negative_surge_test_spark_surge_square_TMC",
+			"CTI_TSUP_Negative_surge_test_spark_surge_burst_TMC",
+      		"CTI_TSUP_Negative_surge_test_spark_surge_square_TMC",
+			"CTI_TSUP_Negative_surge_test_spark_surge_burst_TMC",
+      		"CTI_TSUP_Horn_operation_HON"
+            ]
+	 }
+	   
+        }
+	},
+        "EMC_41_CTI_CI220": {
+          "displayName": "EMC_41_CTI_CI220",
+          "color": "gray",
+          "level3": {
+		    "CTI_CI220": {
+	            "displayName": "CTI_CI220",
+	            "color": "gray",
+	            "level4": [
+				"CTI_CI220_Pulse_A1_Mode_1",
+				"CTI_CI220_Pulse_A1_Mode_2",
+				"CTI_CI220_Pulse_A2-1_Mode1",
+				"CTI_CI220_Pulse_A2-1_Mode2",
+				"CTI_CI220_Pulse_A2-1_Mode3",
+				"CTI_CI220_Pulse_A2-2_Mode1",
+				"CTI_CI220_Pulse_A2-2_Mode2",
+				"CTI_CI220_Pulse_A2-2_Mode3",
+				"CTI_CI220_Pulse_C-1_Mode2",
+				"CTI_CI220_Pulse_C-1_Mode3",
+				"CTI_CI220_Pulse_C-2_Mode2",
+				"CTI_CI220_Pulse_C-2_Mode3"
+	            ]
+		  }
+	  }
+        },
+        "EMC_42_CTI_DCC": {
+          "displayName": "EMC_42_CTI_DCC",
+          "color": "gray",
+          "level3": {
+		    "CTI_DCC": {
+	            "displayName": "CTI_DCC",
+	            "color": "gray",
+	            "level4": [
+				"CTI_DCC_slow_transient_pulse_2a_positive_12V",
+				"CTI_DCC_slow_transient_pulse_2a_positive_24V",
+				"CTI_DCC_slow_transient_pulse_2a_positive_48V",
+				"CTI_DCC_slow_transient_pulse_2a_negative_12V",
+				"CTI_DCC_slow_transient_pulse_2a_negative_24V",
+				"CTI_DCC_slow_transient_pulse_2a_negative_48V",
+        "CTI_DCC_fast_transient_pulse_3a_12V",
+				"CTI_DCC_fast_transient_pulse_3a_24V",
+				"CTI_DCC_fast_transient_pulse_3a_48V",
+				"CTI_DCC_fast_transient_pulse_3b_12V",
+				"CTI_DCC_fast_transient_pulse_3b_24V",
+				"CTI_DCC_fast_transient_pulse_3b_48V",
+        "CTI_DCC_sensor_lines_sensor_lines_pulse_2a_positive_12V_NEV",
+				"CTI_DCC_sensor_lines_sensor_lines_pulse_2a_negative_12V_NEV"
+	            ]
+		  }
+
+	  }
+        },
+        "EMC_43_CTI_CCC": {
+          "displayName": "EMC_43_CTI_CCC",
+          "color": "gray",
+          "level3": {
+ 		    "CTI_CCC": {
+	            "displayName": "CTI_CCC",
+	            "color": "gray",
+	            "level4": [
+				"CTI_CCC_Pulse_3a_12V",
+				"CTI_CCC_Pulse_3a_16V",
+				"CTI_CCC_Pulse_3a_24V",
+				"CTI_CCC_Pulse_3a_48V",
+				"CTI_CCC_Pulse_3b_12V",
+				"CTI_CCC_Pulse_3b_16V",
+				"CTI_CCC_Pulse_3b_24V",
+				"CTI_CCC_Pulse_3b_48V"
+	            ]
+		  }
+	  }
+        },
+        "EMC_44_CTI_ICC": {
+          "displayName": "EMC_44_CTI_ICC",
+          "color": "gray",
+          "level3": {
+ 		    "CTI_ICC": {
+	            "displayName": "CTI_ICC",
+	            "color": "gray",
+	            "level4": [
+				"CTI_ICC_slow_transient_pulse_2b_positive_12V",
+				"CTI_ICC_slow_transient_pulse_2b_positive_24V",
+				"CTI_ICC_slow_transient_pulse_2b_positive_48V",
+				"CTI_ICC_slow_transient_pulse_2b_negative_12V",
+				"CTI_ICC_slow_transient_pulse_2b_negative_24V",
+				"CTI_ICC_slow_transient_pulse_2b_negative_48V",
+        "CTI_ICC_Noise_induction_test_type_A_HON",
+				"CTI_ICC_Noise_induction_test_type_B_HON",
+        "CTI_ICC_Impulse_Noise_MMC",
+        "CTI_ICC_Fast_Transient_Noise_MMC",
+        "CTI_ICC_High-voltage_noise_test_TMC_test_cond_1_A_to_E",
+				"CTI_ICC_High-voltage_noise_test_TMC_test_cond_2"	
+	            ]
+		  }
+		    
+	  }
+        },
+        "EMC_45_CTI_BTI": {
+          "displayName": "EMC_45_CTI_BTI",
+          "color": "gray",
+          "level3": {
+		    "CTI_BTI": {
+	            "displayName": "CTI_BTI",
+	            "color": "gray",
+	            "level4": [
+				"CTI_BTI_Pulse_A_TSL",
+				"CTI_BTI_Pulse_B_TSL"		
+	            ]
+		  }
+	  }
+        },
+        "EMC_46_CTI_RI130": {
+          "displayName": "EMC_46_CTI_RI130",
+          "color": "gray",
+          "level3": {
+		    "CTI_RI130": {
+	            "displayName": "CTI_RI130",
+	            "color": "gray",
+	            "level4": [
+              "CTI_RI130_Pulse_A2-1_Mode_2",
+              "CTI_RI130_Pulse_A2-1_Mode_3",
+              "CTI_RI130_Pulse_A2-2_Mode_2",
+              "CTI_RI130_Pulse_A2-2_Mode_3",
+			        "CTI_RI130_fast_transient_pulse_3a_VLV",
+				      "CTI_RI130_fast_transient_pulse_3b_VLV"
+	            ]
+		  }
+	  }
+        },
+        "EMC_47_CTI_RI150": {
+          "displayName": "EMC_47_CTI_RI150",
+          "color": "gray",
+          "level3": {
+		    "CTI_RI150": {
+	            "displayName": "CTI_RI150",
+	            "color": "gray",
+	            "level4": [
+				"CTI_RI150_Limit_A",
+				"CTI_RI150_Limit_B"	
+	            ]
+		  }
+	  }
+        },
+        "EMC_48_CTI_A02-30": {
+          "displayName": "EMC_48_CTI_A02-30",
+          "color": "gray",
+          "level3": {
+		    "CTI_A02-30": {
+	            "displayName": "CTI_A02-30",
+	            "color": "gray",
+	            "level4": [
+				"CTI_A02-30_Test1_Ni",
+				"CTI_A02-30_Test2_Ni"
+	            ]
+		  }
+	  }
+        },
+        "EMC_49_CTI_INRT": {
+          "displayName": "EMC_49_CTI_INRT",
+          "color": "gray",
+          "level3": {
+		    "CTI_INRT": {
+	            "displayName": "CTI_INRT",
+	            "color": "gray",
+	            "level4": [
+				"CTI_INRT_Induction_noise_resistance_test_condition_A_TMC",
+				"CTI_INRT_Induction_noise_resistance_test_condition_B_TMC",
+				"CTI_INRT_Induction_noise_resistance_test_condition_C_TMC",
+				"CTI_INRT_Induction_noise_resistance_test_condition_D_TMC",
+				"CTI_INRT_Induction_noise_resistance_test_condition_E_TMC",
+				"CTI_INRT_Induction_noise_resistance_test_condition_F_TMC",
+				"CTI_INRT_Induction_noise_resistance_test_condition_G_TMC"	
+	            ]
+		  }
+	  }
+        }
+    },
+      	"requiredFields": {
+        "specification_section": true,
+        "customer": true,
+        "specification": true,
+        "specification_version": true,
+        "specification_date": true,
+        "specification_id": true,
+        "comment": true,
+        "general_section": true,
+        "temperature": true,
+        "measurement_setup": true,
+        "table_setup": true,
+        "scan_method": false,
+        "ambient_noise_margin": false,
+        "harness_length": true,
+        "power_voltage": true,
+        "special_mode": true,
+        "limit_level": false,
+		"product_cat": true,
+        "ab_ecu_applicable": true,
+        "comment_general_information": true
+      }
+    },
+    "ESD_tests": {
+      "displayName": "ESD tests",
+      "color": "gray",
+      "level2": {
+        "EMC_60_ESDH": {
+          "displayName": "EMC_60_ESDH",
+          "color": "gray",
+          "level3": {
+		          "ESDH": {
+	            "displayName": "ESDH",
+	            "color": "green",
+	            "level4": [
+                "ESDH_pin_150pF_330R_CD",
+                "ESDH_pin_150pF_2kR_CD",
+                "ESDH_pin_150pF_330R_CD_small_gap_TMC",
+                "ESDH_pin_150pF_330R_AD",
+                "ESDH_pin_150pF_2kR_AD",
+                "ESDH_pin_330pF_2kR_AD",
+                "ESDH_housing_150pF_330R_CD",
+                "ESDH_housing_150pF_2kR_CD",
+                "ESDH_housing_150pF_330R_AD",
+                "ESDH_housing_150pF_2kR_AD",
+                "ESDH_housing_330pF_330R_AD",
+                "ESDH_housing_330pF_2kR_AD"
+
+	            ]
+		  }
+	  }
+        },
+          "EMC_61_ESDD": {
+          "displayName": "EMC_61_ESDD",
+          "color": "gray",
+          "level3": {
+		          "ESDD": {
+	            "displayName": "ESDD",
+	            "color": "green",
+	            "level4": [
+                "ESDD_150pF_330R_CD",
+                "ESDD_150pF_2kR_CD",
+                "ESDD_330pF_330R_CD",
+                "ESDD_330F_2kR_CD",
+                "ESDD_150pF_330R_AD",
+                "ESDD_150pF_2kR_AD",
+                "ESDD_330pF_330R_AD",
+                "ESDD_330pF_2kR_AD",
+                "ESDD_comm_150pF_330R_CD",
+                "ESDD_comm_150pF_2kR_CD",
+                "ESDD_comm_330pF_330R_CD",
+                "ESDD_comm_330F_2kR_CD",
+                "ESDD_comm_150pF_330R_AD",
+                "ESDD_comm_150pF_2kR_AD",
+                "ESDD_comm_330pF_330R_AD",
+                "ESDD_comm_330pF_2kR_AD",
+                "ESDD_harness_330F_2kR_CD",
+                "ESDD_harness_330pF_2kR_AD",
+                "ESDD_StaticElec_330F_2kR_CD_TMC"
+
+	            ]
+		  }
+	  }
+        },
+          "EMC_62_ESDI": {
+          "displayName": "EMC_62_ESDI",
+          "color": "gray",
+          "level3": {
+		          "ESDI": {
+	            "displayName": "ESDI",
+	            "color": "green",
+	            "level4": [
+                "ESDI_330pF_330R_CD_Power_off_Ni",
+                "ESDI_150pF_330R_CD",
+                "ESDI_150pF_2kR_CD",
+                "ESDI_330pF_330R_CD",
+                "ESDI_330F_2kR_CD",
+                "ESDI_150pF_330R_AD",
+                "ESDI_150pF_2kR_AD",
+                "ESDI_330pF_330R_AD",
+                "ESDI_330pF_2kR_AD"
+
+	            ]
+		  }
+	  }
+        }
+      },
+	  "requiredFields": {
+        "specification_section": true,
+        "customer": true,
+        "specification": true,
+        "specification_version": true,
+        "specification_date": true,
+        "specification_id": true,
+        "comment": true,
+        "general_section": true,
+        "temperature": true,
+        "measurement_setup": true,
+        "table_setup": true,
+        "scan_method": false,
+        "ambient_noise_margin": false,
+        "harness_length": true,
+        "power_voltage": true,
+        "special_mode": true,
+        "limit_level": false,
+		"product_cat": true,
+        "ab_ecu_applicable": true,
+        "comment_general_information": true
+      }
+    },
+    "Electrical_tests": {
+      "displayName": "Electrical tests",
+      "color": "gray",
+      "level2": {},
+	  "requiredFields": {
+        "specification_section": true,
+        "customer": true,
+        "specification": true,
+        "specification_version": true,
+        "specification_date": true,
+        "specification_id": true,
+        "comment": true,
+        "general_section": true,
+        "temperature": true,
+        "measurement_setup": true,
+        "table_setup": true,
+        "scan_method": false,
+        "ambient_noise_margin": false,
+        "harness_length": true,
+        "power_voltage": true,
+        "special_mode": true,
+        "limit_level": false,
+		"product_cat": true,
+        "ab_ecu_applicable": true,
+        "comment_general_information": true
+      }
+    },
+    "Human_exposure_measurement": {
+      "displayName": "Human exposure measurement",
+      "color": "gray",
+      "level2": {},
+	    "requiredFields": {
+        "specification_section": true,
+        "customer": true,
+        "specification": true,
+        "specification_version": true,
+        "specification_date": true,
+        "specification_id": true,
+        "comment": true,
+        "general_section": true,
+        "temperature": true,
+        "measurement_setup": true,
+        "table_setup": false,
+        "scan_method": true,
+        "ambient_noise_margin": true,
+        "harness_length": true,
+        "power_voltage": true,
+        "special_mode": true,
+        "limit_level": true,
+		"product_cat": false,
+        "ab_ecu_applicable": true,
+        "comment_general_information": true
+      }
+    }
+  },
+  "parameterConfig": {
+    "RF_Emission": {
+      "general": {
+        "base": [
+          {"key": "startFreq", "label": "Start Frequency (MHz)", "placeholder": "0.15"},
+          {"key": "stopFreq", "label": "Stop Frequency (MHz)", "placeholder": "30"},
+          {"key": "rbw", "label": "RBW(kHz)", "placeholder": "9"},
+          {"key": "sweepPK", "label": "SweepTime_PK(ms)", "placeholder": "10"},
+          {"key": "sweepQP", "label": "SweepTime_QP(ms)", "placeholder": "100"},
+          {"key": "sweepAV", "label": "SweepTime_AV(ms)", "placeholder": "100"},
+          {"key": "stepSize", "label": "Max_Step_size(kHz)", "placeholder": "50"}
+        ],
+        "re_alse": [
+          {"key": "ecuOrientation", "label": "ECU_Orientation", "placeholder": "X,Y,Z"},
+          {"key": "antennaDistance", "label": "Antenna_Distance", "placeholder": "1m"},
+          {"key": "antennaPolarity", "label": "Antenna_Polarity", "placeholder": "V/H"},
+          {"key": "antennaPosition", "label": "Antenna_Position", "placeholder": "ECU,Harness centor"}
+        ],
+        "re_nfa": [
+          {"key": "antennaDistance", "label": "Antenna_Distance", "placeholder": "1m"},
+          {"key": "antennaPosition", "label": "Antenna_Position", "placeholder": "ECU,Harness centor"},
+          {"key": "ecu_injectposition","label": "ECU_Injection_Position","placeholder": "","type": "text"}
+        ],
+        "re_sl": [
+          {"key": "impedance","label": "Impedance","placeholder": "50Ω","type": "text"}
+        ],
+        "re_ccc": [
+          {"key": "couplingclampposition","label": "CouplingClamp_position","placeholder": "DUT side and load side","type": "text"}
+        ],
+        "re_mag1": [
+          {"key": "ecuOrientation", "label": "ECU_Orientation", "placeholder": "X,Y,Z"}
+        ],
+        "re_mag2": [
+          {"key": "antennaDistance", "label": "Antenna_Distance", "placeholder": "1m"},
+          {"key": "antennaPolarity", "label": "Antenna_Polarity", "placeholder": "Transverse/Radial / (Parallel) [X,Y,Z]."},
+          {"key": "antennaPosition", "label": "Antenna_Position", "placeholder": "ECU,Harness centor"},
+          {"key": "ecu_injectposition","label": "ECU_Injection_Position","placeholder": "","type": "text"}
+        ],
+        "ce_cp": [
+          {"key": "currentProbePos", "label": "CurrentProbe_Position", "placeholder": "50mm,750mm"}
+        ],
+        "ce_lisn": [
+          {"key": "lineLength", "label": "Measured_Line_Length", "placeholder": "200mm"}
+        ],
+        "ce_shared": [
+          {"key": "measurementLine", "label": "Measurement_Line", "placeholder": "power line"}
+        ]
+      },
+      "limit": {
+	    "base": [
+	      {"key": "startFreq", "label": "Start Frequency (MHz)", "placeholder": "0.15"},
+	      {"key": "stopFreq", "label": "Stop Frequency (MHz)", "placeholder": "30"},
+	      {"key": "rbw", "label": "RBW(kHz)", "placeholder": "9"},
+	      {
+	        "key": "limitUnit", 
+	        "label": "Limit Unit", 
+	        "placeholder": "", 
+	        "type": "select",
+	        "options": ["dBμV", "dBμA", "dBμV/m", "dBpT", "V", "mV", "μV", "A", "mA", "μA", "V/m", "mV/m", "μV/m", "dBpA/m", "T", "μT", "mT", "pT", "A/m", "mA/m", "μA/m","dBμA/m"]
+	      },
+	      {"key": "noiseClass", "label": "Noise Classification", "placeholder": "Class 3"},
+	      {
+	        "key": "pkLimitType", 
+	        "label": "PK_LimitType", 
+	        "placeholder": "",
+	        "type": "select",
+	        "options": ["Const", "Linear", "Log", "Single", "Poly"]
+	      },
+	      {"key": "pk", "label": "PK", "placeholder": "76"},
+	      {
+	        "key": "qpLimitType", 
+	        "label": "QP_LimitType", 
+	        "placeholder": "",
+	        "type": "select",
+	        "options": ["Const", "Linear", "Log", "Single", "Poly"]
+	      },
+	      {"key": "qp", "label": "QP", "placeholder": "66"},
+	      {
+	        "key": "avLimitType", 
+	        "label": "AV_LimitType", 
+	        "placeholder": "",
+	        "type": "select",
+	        "options": ["Const", "Linear", "Log", "Single", "Poly"]
+	      },
+	      {"key": "av", "label": "AV", "placeholder": "56"}
+	    ]
+	  }
+    }, 
+	"RF_Immunity": {
+		  "general": {
+		    "base": [
+		      {"key": "startFreq", "label": "Start Frequency (MHz)", "placeholder": "10", "type": "text"},
+		      {"key": "stopFreq", "label": "Stop Frequency (MHz)", "placeholder": "1000", "type": "text"},
+		      {"key": "freqStep", "label": "Frequency_Step(MHz/x%)", "placeholder": "1%", "type": "text"},
+		      {
+		        "key": "freqStepType",
+		        "label": "Frequency_Step_Type",
+		        "placeholder": "",
+		        "type": "select",
+		        "options": ["Linear", "Log"]
+		      },
+		      {"key": "dwellTime", "label": "Dwell_Time(S)", "placeholder": "1", "type": "text"}
+		    ],
+		    "ri_alse": [
+		      {
+		        "key": "ecuOrientation",
+		        "label": "ECU_Orientation",
+		        "placeholder": "",
+		        "type": "select",
+		        "options": ["X","X,Y,Z,"]
+		      },
+		      {
+		        "key": "antennaPolarity",
+		        "label": "Antenna_Polarity",
+		        "placeholder": "",
+		        "type": "select",
+		        "options": ["V", "H","V,H"]
+		      }
+		    ],
+		    "ri_alse_ri_pt": [
+		      {"key": "antennaDistance", "label": "Antenna_Distance", "placeholder": "1m", "type": "text"},
+		      {
+		        "key": "antennaType",
+		        "label": "Antenna_Type",
+		        "placeholder": "LPDA, Bilog",
+		        "type": "text"
+		      },
+		      {"key": "ecu_injectposition","label": "ECU_Injection_Position","placeholder": "","type": "text"},   
+		      {"key": "antennaposition","label": "AntennaLocation","placeholder": "ECU center,Harness","type": "text"}
+			  
+		    ],
+		    "ri_pt": [
+ 		      {
+		        "key": "antennaposition",
+		        "label": "Antenna_Position_Quantity",
+		        "placeholder": "CV,CH,EV,EH",
+		        "type": "text"
+		      }		  
+		    ],
+		    "ri_sl": [
+		      {"key": "ecu_injectposition","label": "ECU_Injection_Position","placeholder": "","type": "text"}, 
+		      {"key": "impedance","label": "Impedance","placeholder": "50Ω","type": "text"},   
+		      {"key": "immunityposition","label": "ImmunityPosition","placeholder": "DUT,1m harness","type": "text"},  
+		      {"key": "dutHeight", "label": "DUTHeight", "placeholder": "50mm", "type": "text"}
+		    ],
+
+		    "ri_mag": [
+		      {"key": "ecu_injectposition","label": "ECU_Injection_Position","placeholder": "","type": "text"}, 
+		      {"key": "Coildistance","label": "CoilDistance","placeholder": "50mm","type": "text"},   
+		      {"key": "coiltype","label": "CoilType","placeholder": "radiatingloop/helmholz Coils","type": "text"},  
+		      {"key": "coilposition", "label": "CoilPositionQuantity", "placeholder": "1", "type": "text"},
+		      {"key": "coillocation", "label": "CoilLocation", "placeholder": "DUT", "type": "text"}
+		    ],
+			  
+		    "ri_triplate": [
+		      {"key": "ecu_injectposition","label": "ECU_Injection_Position","placeholder": "","type": "text"}, 
+		      {"key": "immunityposition","label": "ImmunityPosition","placeholder": "DUT,1m harness","type": "text"},  
+		      {"key": "dutHeight", "label": "DUTHeight", "placeholder": "50mm", "type": "text"}
+		    ],
+		    "ri_reverberation": [
+		      {"key": "modeSteerStep", "label": "ModeSteerStep", "placeholder": "Not specified", "type": "text"}
+		    ],
+		    "ri_tem": [
+		      {"key": "dutheight", "label": "DUTHeight", "placeholder": "1/2 height of TEM cell", "type": "text"}
+		    ],
+		    "ri_bci": [
+		      {"key": "injectionmode", "label": "Injection_Mode", "placeholder": "", "type": "select","options": ["DBCI","CBCI","DBCI&CBCI"]},
+		      {"key": "injectline", "label": "Injection_Line", "placeholder": "", "type": "text"},
+		      {"key": "injectprobeposition", "label": "Injection_Probe_Distance", "placeholder": "150mm", "type": "text"},
+		      {"key": "probetype", "label": "Injection_Probe_Type", "placeholder": "NA", "type": "text"},
+		      {"key": "monitorprobe", "label": "Monitor_Probe", "placeholder": "", "type": "select","options": ["Yes","No"]},
+		      {"key": "monitorprobeposition", "label": "Monitor_Probe_Distance", "placeholder": "50mm", "type": "text"}
+		    ]
+		  },
+		  "limit": {
+		    "base": [
+		      {"key": "startFreq", "label": "Start Frequency (MHz)", "placeholder": "10", "type": "text"},
+		      {"key": "stopFreq", "label": "Stop Frequency (MHz)", "placeholder": "1000", "type": "text"},
+		      {
+		        "key": "modulation1",
+		        "label": "Modulation1",
+		        "placeholder": "",
+		        "type": "select",
+		        "options": [
+		          "CW", "AM_1k_80p", "AM_60_80p", "PM_50_10000u", "PM_100_5m",
+		          "PM_217_577u", "PM_300_3u", "PM_18_27800u", "PM_1k6_312u5",
+		          "PM_217_2304u", "PM_1k_100u", "PM_1k_200u", "PM_1k_500u",
+		          "PM_8k197_16u", "PM_1_50000u", "PM_300_30u", "PM_300_150u",
+		          "RPPM_319_G", "FM_10_100k", "FM_1k_4k", "BLN20", "BLN5",
+		          "BLN10", "BLN50", "BLN80", "BLN100", "BLN160"
+		        ]
+		      },
+		      {
+		        "key": "modulation2",
+		        "label": "Modulation2",
+		        "placeholder": "",
+		        "type": "select",
+		        "options": [
+		          "CW", "AM_1k_80p", "AM_60_80p", "PM_50_10000u", "PM_100_5m",
+		          "PM_217_577u", "PM_300_3u", "PM_18_27800u", "PM_1k6_312u5",
+		          "PM_217_2304u", "PM_1k_100u", "PM_1k_200u", "PM_1k_500u",
+		          "PM_8k197_16u", "PM_1_50000u", "PM_300_30u", "PM_300_150u",
+		          "RPPM_319_G", "FM_10_100k", "FM_1k_4k", "BLN20", "BLN5",
+		          "BLN10", "BLN50", "BLN80", "BLN100", "BLN160"
+		        ]
+		      },
+		      {
+		        "key": "modulation3",
+		        "label": "Modulation3",
+		        "placeholder": "",
+		        "type": "select",
+		        "options": [
+		          "CW", "AM_1k_80p", "AM_60_80p", "PM_50_10000u", "PM_100_5m",
+		          "PM_217_577u", "PM_300_3u", "PM_18_27800u", "PM_1k6_312u5",
+		          "PM_217_2304u", "PM_1k_100u", "PM_1k_200u", "PM_1k_500u",
+		          "PM_8k197_16u", "PM_1_50000u", "PM_300_30u", "PM_300_150u",
+		          "RPPM_319_G", "FM_10_100k", "FM_1k_4k", "BLN20", "BLN5",
+		          "BLN10", "BLN50", "BLN80", "BLN100", "BLN160"
+		        ]
+		      },
+		      {
+		        "key": "unit", 
+		        "label": "Level_Unit", 
+		        "placeholder": "", 
+		        "type": "select",
+		        "options": ["V/m", "dBμV/m", "V/m", "mV/m", "μV/m", "dBμV", "V", "mV", "μV", "dBpT", "dBμT", "dBpT", "dBμA/m", "T", "μT", "mT", "pT" , "mA" , "dBμA", "mA/m", "μA/m", "W", "mW", "μW"]
+		      }
+		    ],
+
+		    "groupTemplate": {
+		      "limitCalculationType": {
+		        "key": "limitCalculationType",
+		        "label": "Limit_CalculationType",
+		        "type": "select",
+		        "options": ["Const", "Linear", "Log", "Single", "Poly"]
+		      },
+		    "levelTemplate": [
+		        {"key": "limitValue", "label": "Level Value", "placeholder": "33", "type": "text"},
+		        {"key": "acceptanceCriteria", "label": "Acceptance_Criteria", "type": "select", "options": ["Status I", "Status II.a", "Status II.b", "Status III", "Status IV", "Status V"]}
+		    ]
+		  }
+		  }
+		},
+	  "Transient_Coupled_Immunity": {
+	      "general": {
+	        "testVoltage": {
+	          "name": "Test Voltage (V)",
+	          "type": "number",
+	          "unit": "V"
+	        },
+	        "pulseType": {
+	          "name": "Pulse Type",
+	          "type": "text",
+	          "unit": ""
+	        },
+	        "pulseNumber": {
+	          "name": "Pulse Number",
+	          "type": "number",
+	          "unit": ""
+	        }
+	      },
+	      "limit": {
+	        "limitLevel": {
+	          "name": "Limit Level",
+	          "type": "text",
+	          "unit": ""
+	        },
+	        "acceptanceCriteria": {
+	          "name": "Acceptance Criteria",
+	          "type": "select",
+	          "options": ["Status I", "Status II.a", "Status II.b", "Status III", "Status IV", "Status V"]
+	        }
+	      }
+	    }
+	    },
+	  "level2ColumnMapping": {
+	    "RF_Emission": {
+	      "CE_LISN": {
+	        "general": ["base", "ce_lisn", "ce_shared"],
+	        "limit": ["base"]
+	      },
+	      "CE_CP": {
+	        "general": ["base", "ce_cp","ce_shared"],
+	        "limit": ["base"]
+	      },
+        "CE_CP_SL": {
+	        "general": ["base", "ce_cp","ce_shared"],
+	        "limit": ["base"]
+	      },
+        "CE_CP_CE440": {
+	        "general": ["base", "ce_cp","ce_shared","ce_lisn"],
+	        "limit": ["base"]
+	      },
+        "CE_CP_CE430_FMC": {
+	        "general": ["base", "ce_cp","ce_shared","re_sl"],
+	        "limit": ["base"]
+	      },
+        "CE_CP_CE1": {
+	        "general": ["ce_cp","ce_shared","re_sl"],
+	        "limit": ["base"]
+	      },
+        "CE_CP_CMFE-I": {
+	        "general": ["ce_cp","ce_shared","re_sl"],
+	        "limit": ["base"]
+	      },
+	      "RE_ALSE": {
+	        "general": ["base","re_alse"],
+	        "limit": ["base"]
+	      },
+	      "EMC_04_RE_NFA": {
+	        "general": ["base","re_nfa"],
+	        "limit": ["base"]
+	      },
+	      "EMC_05_RE_SL": {
+	        "general": ["base","ce_lisn","ce_shared","re_sl"],
+	        "limit": ["base"]
+	      },
+	      "EMC_06_RE_CCC": {
+	        "general": ["base","ce_lisn","ce_shared","re_ccc","re_sl"],
+	        "limit": ["base"]
+	      },
+	      "RE_MAG_60-cm loop": {
+	        "general": ["base","re_mag1","re_mag2"],
+	        "limit": ["base"]
+	      },
+        "RE_MAG_40-mm loop": {
+	        "general": ["base","re_mag2"],
+	        "limit": ["base"]
+	      },
+        "RE_MAG_12-cm loop": {
+	        "general": ["base","re_mag2"],
+	        "limit": ["base"]
+	      },
+        "RE_MAG_6-cm loop": {
+	        "general": ["base","re_mag2"],
+	        "limit": ["base"]
+	      },
+	      "EMC_08_CE_VP": {
+	        "general": ["base"],
+	        "limit": ["base"]
+	      }
+	    },
+	    "RF_Immunity": {
+	      "EMC_10_RI_ALSE": {
+	        "general": ["base","ri_alse","ri_alse_ri_pt"],
+	        "limit": ["base"]
+	      },
+	      "EMC_11_RI_TEM": {
+	        "general": ["base","ri_tem"],
+	        "limit": ["base"]
+	      },
+	      "EMC_12_RI_BCI": {
+	        "general": ["base","ri_bci"],
+	        "limit": ["base"]
+	      },
+	     "EMC_13_RI_SL": {
+	        "general": ["base","ri_sl"],
+	        "limit": ["base"]
+	      },
+	      "EMC_14_RI_Triplate": {
+	        "general": ["base","ri_triplate"],
+	        "limit": ["base"]
+	      },
+	      "EMC_16_RI_MAG": {
+	        "general": ["base","ri_mag"],
+	        "limit": ["base"]
+	      },
+	      "EMC_17_RI_PT": {
+	        "general": ["base","ri_pt","ri_alse_ri_pt"],
+	        "limit": ["base"]
+	      },
+	      "EMC_19_RI_REVERB": {
+	        "general": ["base","ri_reverberation"],
+	        "limit": ["base"]
+	      }
+	},
+    "Transient_Coupled_Immunity": {
+      "CTI_TSUP": {
+        "general": [],
+        "limit": {
+          "Pulse_1_12V": [
+            {"key": "listLevel", "label": "List Level", "type": "text", "placeholder": "Level III"},
+            {"key": "maxUA", "label": "Max UA(V)", "type": "number", "placeholder": "V"},
+            {"key": "minUA", "label": "Min UA(V)", "type": "number", "placeholder": "V"},
+            {"key": "maxUS", "label": "Max US(V)", "type": "number", "placeholder": "V"},
+            {"key": "minUS", "label": "Min US(V)", "type": "number", "placeholder": "V"},
+            {"key": "maxRi", "label": "Max Ri(Ω)", "type": "number", "placeholder": "Ω"},
+            {"key": "minRi", "label": "Min Ri(Ω)", "type": "number", "placeholder": "Ω"},
+            {"key": "td", "label": "td", "type": "number", "placeholder": "ms"},
+            {"key": "tr", "label": "tr", "type": "number", "placeholder": "μs"},
+            {"key": "t1", "label": "t1", "type": "number", "placeholder": "ms"},
+            {"key": "t2", "label": "t2", "type": "number", "placeholder": "ms"},
+            {"key": "t3", "label": "t3", "type": "number", "placeholder": "ms"},
+            {"key": "t4", "label": "t4", "type": "number", "placeholder": "ms"},
+            {"key": "duration", "label": "Duration(min)", "type": "number", "placeholder": "min"},
+            {"key": "pulseNumber", "label": "Number of Pulses", "type": "number", "placeholder": "5000"},
+            {"key": "functionStatus", "label": "Function Status", "type": "select", "options": ["Class A", "Class B", "Class C", "Class D", "Class E"], "placeholder": "Select"}
+          ],
+          "Pulse_1b_12V": [
+            {"key": "listLevel", "label": "List Level", "type": "text", "placeholder": "Level III"},
+            {"key": "maxUA", "label": "Max UA(V)", "type": "number", "placeholder": "V"},
+            {"key": "minUA", "label": "Min UA(V)", "type": "number", "placeholder": "V"},
+            {"key": "maxUS", "label": "Max US(V)", "type": "number", "placeholder": "V"},
+            {"key": "minUS", "label": "Min US(V)", "type": "number", "placeholder": "V"},
+            {"key": "maxRi", "label": "Max Ri(Ω)", "type": "number", "placeholder": "Ω"},
+            {"key": "minRi", "label": "Min Ri(Ω)", "type": "number", "placeholder": "Ω"},
+            {"key": "td", "label": "td", "type": "number", "placeholder": "ms"},
+            {"key": "tr", "label": "tr", "type": "number", "placeholder": "μs"},
+            {"key": "t1", "label": "t1", "type": "number", "placeholder": "ms"},
+            {"key": "t2", "label": "t2", "type": "number", "placeholder": "ms"},
+            {"key": "duration", "label": "Duration(min)", "type": "number", "placeholder": "min"},
+            {"key": "pulseNumber", "label": "Number of Pulses", "type": "number", "placeholder": "5000"},
+            {"key": "functionStatus", "label": "Function Status", "type": "select", "options": ["Class A", "Class B", "Class C", "Class D", "Class E"]}
+          ],
+          "Pulse_2b_12V": [
+            {"key": "listLevel", "label": "List Level", "type": "text", "placeholder": "Level III"},
+            {"key": "maxUA", "label": "Max UA(V)", "type": "number", "placeholder": "V"},
+            {"key": "minUA", "label": "Min UA(V)", "type": "number", "placeholder": "V"},
+            {"key": "maxUS", "label": "Max US(V)", "type": "number", "placeholder": "V"},
+            {"key": "minUS", "label": "Min US(V)", "type": "number", "placeholder": "V"},
+            {"key": "maxRi", "label": "Max Ri(Ω)", "type": "number", "placeholder": "Ω"},
+            {"key": "minRi", "label": "Min Ri(Ω)", "type": "number", "placeholder": "Ω"},
+            {"key": "td", "label": "td", "type": "number", "placeholder": "ms"},
+            {"key": "tr", "label": "tr", "type": "number", "placeholder": "μs"},
+            {"key": "t5", "label": "t5", "type": "number", "placeholder": "ms"},
+            {"key": "t6", "label": "t6", "type": "number", "placeholder": "ms"},
+            {"key": "t12", "label": "t12", "type": "number", "placeholder": "ms"},
+            {"key": "duration", "label": "Duration(min)", "type": "number", "placeholder": "min"},
+            {"key": "pulseNumber", "label": "Number of Pulses", "type": "number", "placeholder": "5000"},
+            {"key": "functionStatus", "label": "Function Status", "type": "select", "options": ["Class A", "Class B", "Class C", "Class D", "Class E"]}
+          ],
+          "Pulse_3a_12V": [
+            {"key": "listLevel", "label": "List Level", "type": "text", "placeholder": "Level III"},
+            {"key": "maxUA", "label": "Max UA(V)", "type": "number", "placeholder": "V"},
+            {"key": "minUA", "label": "Min UA(V)", "type": "number", "placeholder": "V"},
+            {"key": "maxUS", "label": "Max US(V)", "type": "number", "placeholder": "V"},
+            {"key": "minUS", "label": "Min US(V)", "type": "number", "placeholder": "V"},
+            {"key": "maxRi", "label": "Max Ri(Ω)", "type": "number", "placeholder": "Ω"},
+            {"key": "minRi", "label": "Min Ri(Ω)", "type": "number", "placeholder": "Ω"},
+            {"key": "td", "label": "td", "type": "number", "placeholder": "ms"},
+            {"key": "tr", "label": "tr", "type": "number", "placeholder": "μs"},
+            {"key": "t1", "label": "t1", "type": "number", "placeholder": "ms"},
+            {"key": "t3", "label": "t3", "type": "number", "placeholder": "ms"},
+            {"key": "t5", "label": "t5", "type": "number", "placeholder": "ms"},
+            {"key": "t6", "label": "t6", "type": "number", "placeholder": "ms"},
+            {"key": "duration", "label": "Duration(min)", "type": "number", "placeholder": "min"},
+            {"key": "pulseNumber", "label": "Number of Pulses", "type": "number", "placeholder": "5000"},
+            {"key": "functionStatus", "label": "Function Status", "type": "select", "options": ["Class A", "Class B", "Class C", "Class D", "Class E"]}
+          ]
+        }
+      },
+      "CTI_CI220": {
+        "general": [],
+        "limit": [
+          {"key": "limitLevel", "label": "Limit Level", "type": "text", "placeholder": "Level III"},
+          {"key": "acceptanceCriteria", "label": "Acceptance Criteria", "type": "select", "options": ["Class A", "Class B", "Class C", "Class D", "Class E"]}
+        ]
+      }
+    }
+  },
+  "waveformParameterMapping": {
+    "Transient_Coupled_Immunity": {
+      "CTI_TSUP": {
+        "Pulse_1_12V": {
+          "image": "images/waveforms/pulse_1.png"
+        },
+        "Pulse_2a_12V": {
+          "image": "images/waveforms/pulse_2a.png"
+        },
+        "Pulse_2b_12V": {
+          "image": "images/waveforms/pulse_2b.png"
+        },
+        "Pulse_3a_12V": {
+          "image": "images/waveforms/pulse_3a.png"
+        },
+        "Pulse_3b_12V": {
+          "image": "images/waveforms/pulse_3b.png"
+        }
+      }
+    }
+  },
+  "templates": {
+    "VW": {
+      "customer": "VW",
+      "specification": "TL81000",
+      "specification_version": "",
+      "specification_date": "2024-09",
+      "Specification_ID":"VW_EMC_2023-06",
+      "comment": "",
+	  "temperature": "23±5℃;20%RH～80%RH(ESD:20%RH～40%RH)",
+      "measurement_setup": "acc. ISO7637-2",
+	  "Table_setup": "w/ GND Plane",
+	  "scan_method":"FFT",
+	  "Ambient_Noise_Margin":"6dB",
+      "harness_length": "1.7m(+300mm;-0mm)",
+      "ECU_power_voltage": "13.5V±0.5V",
+      "special_mode": "No",
+      "limit_level": "Group 1",
+      "ab_ecu_applicable": "Yes"
+    }
+  }
+}
+
+
+
+
+
+
+
+
+

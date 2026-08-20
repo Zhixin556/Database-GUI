@@ -1,0 +1,3863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMC测试标准分析工具 - BOSCH</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+		/* General Reset & Body */
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { 
+			font-family: Arial, sans-serif; 
+			background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+			padding: 0;
+			font-size: 12px; 
+			min-height: 100vh;
+			overflow: hidden; /* 防止body滚动 */
+		}
+
+		/* ========== 顶部彩虹渐变装饰条 ========== */
+		.gradient-bar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 5px;
+			background: linear-gradient(
+				to right,
+				#8B1538 0%,
+				#E60000 8%,
+				#E91E63 16%,
+				#9C27B0 24%,
+				#673AB7 32%,
+				#3F51B5 40%,
+				#2196F3 48%,
+				#03A9F4 56%,
+				#00BCD4 64%,
+				#009688 72%,
+				#4CAF50 80%,
+				#8BC34A 88%,
+				#CDDC39 96%
+			);
+			z-index: 10000;
+			box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+		}
+
+		/* ========== 两栏布局占满整个页面 ========== */
+		.app-container {
+			display: flex;
+			gap: 0;
+			height: calc(100vh - 5px);
+			margin-top: 5px;
+			overflow: hidden;
+		}
+
+		/* 左侧主表单 - 修改为自适应宽度 */
+		.main-column {
+			flex: 1; /* 改为自适应，占据剩余空间 */
+			min-width: 580px; /* 设置最小宽度 */
+			background: white;
+			box-shadow: 
+				3px 0 15px rgba(0,0,0,0.1),
+				0 0 30px rgba(0,0,0,0.05);
+			overflow-y: auto;
+			overflow-x: hidden;
+			position: relative;
+			z-index: 2;
+			transition: flex 0.3s ease; /* 添加平滑过渡效果 */
+		}
+
+		/* 当参数面板显示时，主列宽度调整 */
+		.main-column.with-panel {
+			flex: 0 0 580px; /* 当面板显示时恢复固定宽度 */
+		}
+
+		.main-column::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		.main-column::-webkit-scrollbar-track {
+			background: #f1f1f1;
+		}
+
+		.main-column::-webkit-scrollbar-thumb {
+			background: #8BC34A;
+			border-radius: 4px;
+		}
+
+		.main-column::-webkit-scrollbar-thumb:hover {
+			background: #7CB342;
+		}
+
+		/* 右侧参数面板 - 修改显示逻辑 */
+		.parameter-column {
+			flex: 0 0 0; /* 默认宽度为0 */
+			display: flex; /* 改为始终flex布局 */
+			background: white;
+			box-shadow: 
+				-3px 0 15px rgba(0,0,0,0.1),
+				0 0 30px rgba(0,0,0,0.05);
+			flex-direction: column;
+			position: relative;
+			overflow: hidden;
+			opacity: 0; /* 默认透明 */
+			transition: flex 0.3s ease, opacity 0.3s ease; /* 添加平滑过渡 */
+		}
+
+		/* 面板显示状态 */
+		.parameter-column.show {
+			flex: 1; /* 显示时占据剩余空间 */
+			opacity: 1;
+		}
+
+		.parameter-column::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			width: 5px;
+			background: linear-gradient(
+				to bottom,
+				#E60000 0%,
+				#E91E63 14.28%,
+				#9C27B0 28.56%,
+				#3F51B5 42.84%,
+				#2196F3 57.12%,
+				#00BCD4 71.4%,
+				#4CAF50 85.68%,
+				#CDDC39 100%
+			);
+			z-index: 1;
+		}
+
+		/* ========== BOSCH Header（彩虹渐变）========== */
+		.header { 
+			background: linear-gradient(
+				to right,
+				#E60000 0%,
+				#E91E63 14.28%,
+				#9C27B0 28.56%,
+				#673AB7 42.84%,
+				#2196F3 57.12%,
+				#00BCD4 71.4%,
+				#4CAF50 85.68%,
+				#CDDC39 100%
+			) !important;
+			padding: 12px 20px; 
+			display: flex; 
+			justify-content: space-between; 
+			align-items: center; 
+			box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+			position: relative;
+		}
+
+		.header::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 3px;
+			background: linear-gradient(
+				to right,
+				#8B1538 0%,
+				#E60000 8%,
+				#E91E63 16%,
+				#9C27B0 24%,
+				#673AB7 32%,
+				#3F51B5 40%,
+				#2196F3 48%,
+				#03A9F4 56%,
+				#00BCD4 64%,
+				#009688 72%,
+				#4CAF50 80%,
+				#8BC34A 88%,
+				#CDDC39 96%
+			);
+		}
+
+		.logo { display: flex; align-items: center; gap: 10px; }
+		.logo-icon { width: 24px; height: 24px; background: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+		.logo-text { font-size: 22px; font-weight: bold; color: white; font-family: Arial Black, sans-serif; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+		.nav-dropdowns select { 
+			padding: 6px 20px 6px 10px; 
+			border: 2px solid white; 
+			font-size: 11px; 
+			margin-left: 8px; 
+			cursor: pointer; 
+			background: white; 
+			border-radius: 4px;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+			transition: all 0.3s;
+		}
+
+		.nav-dropdowns select:hover {
+			box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+			transform: translateY(-1px);
+		}
+
+		/* ========== Section 标题（彩虹渐变）========== */
+		.section { margin: 0; border-bottom: 1px solid #e0e0e0; }
+		.section:last-child { border-bottom: none; }
+		.section-header { 
+			background: linear-gradient(
+				to right,
+				#E60000 0%,
+				#E91E63 14.28%,
+				#9C27B0 28.56%,
+				#673AB7 42.84%,
+				#2196F3 57.12%,
+				#00BCD4 71.4%,
+				#4CAF50 85.68%,
+				#CDDC39 100%
+			) !important;
+			color: white;
+			text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+			padding: 10px 15px; 
+			font-weight: 600; 
+			font-size: 13px;
+			position: relative;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+		}
+
+		.section-header::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			width: 5px;
+			background: linear-gradient(
+				to bottom,
+				#CDDC39 0%,
+				#4CAF50 25%,
+				#2196F3 50%,
+				#9C27B0 75%,
+				#E60000 100%
+			);
+		}
+
+		.section-content { padding: 15px; background: white; }
+
+		/* ========== 参数面板 Header（彩虹渐变）========== */
+		.panel-header {
+			background: linear-gradient(
+				to right,
+				#E60000 0%,
+				#E91E63 14.28%,
+				#9C27B0 28.56%,
+				#673AB7 42.84%,
+				#2196F3 57.12%,
+				#00BCD4 71.4%,
+				#4CAF50 85.68%,
+				#CDDC39 100%
+			) !important;
+			padding: 18px 25px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+			position: relative;
+		}
+
+		.panel-header::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 3px;
+			background: linear-gradient(
+				to right,
+				#8B1538 0%,
+				#E60000 8%,
+				#E91E63 16%,
+				#9C27B0 24%,
+				#673AB7 32%,
+				#3F51B5 40%,
+				#2196F3 48%,
+				#03A9F4 56%,
+				#00BCD4 64%,
+				#009688 72%,
+				#4CAF50 80%,
+				#8BC34A 88%,
+				#CDDC39 96%
+			);
+		}
+
+		.panel-header h3 { margin: 0; color: white; font-size: 18px; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+		.panel-close { 
+			background: rgba(255,255,255,0.2);
+			border: 2px solid white;
+			border-radius: 50%;
+			font-size: 24px; 
+			cursor: pointer; 
+			color: white;
+			padding: 0; 
+			width: 35px; 
+			height: 35px; 
+			line-height: 31px; 
+			text-align: center; 
+			transition: all 0.3s;
+			text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+		}
+		.panel-close:hover { 
+			background: rgba(255,255,255,0.3);
+			transform: rotate(90deg);
+		}
+
+		.panel-body-large {
+			padding: 0;
+			overflow: hidden;
+			flex: 1;
+			display: flex;
+			gap: 0;
+		}
+
+		.panel-footer {
+			padding: 18px 25px;
+			border-top: 2px solid #e0e0e0;
+			display: flex;
+			justify-content: flex-end;
+			gap: 12px;
+			background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+			box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+		}
+
+		/* ========== 参数表格小标题（纯色背景）========== */
+		.param-section-title {
+			font-size: 14px;
+			font-weight: 600;
+			color: #333;
+			margin-bottom: 12px;
+			padding: 10px 15px;
+			background: #E8F5E9;
+			border-left: 5px solid #4CAF50;
+			box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+		}
+
+		.param-table-wrapper { overflow-x: auto; margin-bottom: 18px; }
+		.param-table { 
+			width: 100%; 
+			border-collapse: collapse; 
+			font-size: 10px; 
+			min-width: 1200px; 
+		}
+
+		/* 表格标题行（纯色背景）*/
+		.param-table th { 
+			background: #9FA8DA;
+			color: black;
+			padding: 8px 6px; 
+			text-align: center; 
+			border: 1px solid #666; 
+			font-weight: 600; 
+			font-size: 10px; 
+			line-height: 1.3; 
+		}
+
+		.param-table td { 
+			padding: 4px 6px; 
+			border: 1px solid #ccc; 
+			background: white; 
+		}
+
+		.param-table input, .param-table select { 
+			width: 100%; 
+			padding: 4px 6px; 
+			border: 1px solid #ddd; 
+			font-size: 10px; 
+			box-sizing: border-box;
+			border-radius: 3px;
+			transition: all 0.2s;
+		}
+
+		.param-table input:focus, .param-table select:focus { 
+			outline: none; 
+			border-color: #2196F3; 
+			background: #E3F2FD;
+			box-shadow: 0 0 5px rgba(33,150,243,0.3);
+		}
+
+		.param-table .btn-copy, .param-table .btn-remove { 
+			padding: 4px 10px; 
+			cursor: pointer; 
+			font-size: 10px; 
+			border-radius: 4px; 
+			white-space: nowrap; 
+			font-weight: 500;
+			transition: all 0.3s;
+		}
+
+		.param-table .btn-copy { 
+			background: #C8E6C9;
+			color: #2E7D32; 
+			border: 1px solid #81C784; 
+			margin-right: 6px; 
+		}
+		.param-table .btn-copy:hover { 
+			background: #A5D6A7;
+			transform: translateY(-2px);
+			box-shadow: 0 3px 8px rgba(76,175,80,0.3);
+		}
+
+		.param-table .btn-remove { 
+			background: #FFCDD2;
+			color: #C62828; 
+			border: 1px solid #E57373; 
+		}
+		.param-table .btn-remove:hover { 
+			background: #EF9A9A;
+			transform: translateY(-2px);
+			box-shadow: 0 3px 8px rgba(244,67,54,0.3);
+		}
+	    
+		/* 参数输入框验证状态 */
+		.param-input[data-invalid="true"] {
+		    border-color: #f44336 !important;
+		    background-color: #FFEBEE !important;
+		    box-shadow: 0 0 5px rgba(244, 67, 54, 0.5) !important;
+		    animation: shake 0.3s;
+		}
+	    
+		/* ========== 波形参考图区 ========== */
+		.waveform-image-section { 
+			width: 420px; 
+			background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+			border-right: 3px solid #dee2e6; 
+			display: flex; 
+			flex-direction: column; 
+			padding: 25px; 
+			overflow-y: auto; 
+		}
+
+		.waveform-title { 
+			font-size: 15px; 
+			font-weight: 600; 
+			color: #333;
+			margin-bottom: 18px; 
+			padding: 10px 15px; 
+			background: #E3F2FD;
+			border-left: 5px solid #2196F3;
+			box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+			border-radius: 4px;
+		}
+
+		.waveform-image-container { 
+			flex: 1; 
+			display: flex; 
+			align-items: center; 
+			justify-content: center; 
+			background: white; 
+			border: 3px dashed #dee2e6; 
+			border-radius: 8px; 
+			padding: 25px; 
+			min-height: 350px;
+			box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+		}
+
+		.waveform-image-container img { 
+			max-width: 100%; 
+			max-height: 100%; 
+			object-fit: contain; 
+			border-radius: 6px; 
+			box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+		}
+
+		.waveform-placeholder { text-align: center; color: #999; font-size: 14px; }
+		.waveform-placeholder svg { width: 90px; height: 90px; margin-bottom: 12px; opacity: 0.3; }
+		.parameters-section { 
+			flex: 1; 
+			padding: 25px; 
+			overflow-y: auto;
+			background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+		}
+
+		.parameters-section::-webkit-scrollbar,
+		.waveform-image-section::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		.parameters-section::-webkit-scrollbar-track,
+		.waveform-image-section::-webkit-scrollbar-track {
+			background: #f1f1f1;
+		}
+
+		.parameters-section::-webkit-scrollbar-thumb,
+		.waveform-image-section::-webkit-scrollbar-thumb {
+			background: #2196F3;
+			border-radius: 4px;
+		}
+
+		.parameters-section::-webkit-scrollbar-thumb:hover,
+		.waveform-image-section::-webkit-scrollbar-thumb:hover {
+			background: #1976D2;
+		}
+
+		.param-label-highlight { 
+			background: #FFF9C4;
+			padding: 3px 8px; 
+			border-radius: 4px; 
+			font-weight: 600; 
+			color: #F57C00; 
+			font-size: 10px; 
+			margin-left: 6px;
+			box-shadow: 0 1px 3px rgba(245,124,0,0.2);
+		}
+
+		.param-input[required] { 
+			border: 2px solid #FF9800 !important;
+			background: #FFF9C4 !important;
+		}
+
+		/* ========== Loading Overlay ========== */
+		.loading-overlay { 
+			position: fixed; 
+			top: 0; 
+			left: 0; 
+			width: 100%; 
+			height: 100%; 
+			background: rgba(0,0,0,0.85); 
+			display: flex; 
+			align-items: center; 
+			justify-content: center; 
+			z-index: 9999; 
+		}
+
+		.loading-content { 
+			background: white; 
+			padding: 40px 50px; 
+			border-radius: 12px; 
+			text-align: center; 
+			max-width: 500px;
+			box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+		}
+
+		.loading-content h3 { color: #333; margin-bottom: 20px; font-size: 20px; }
+
+		.loading-spinner { 
+			border: 5px solid #f3f3f3; 
+			border-top: 5px solid #2196F3; 
+			border-radius: 50%; 
+			width: 50px; 
+			height: 50px; 
+			animation: spin 1s linear infinite; 
+			margin: 25px auto; 
+		}
+
+		@keyframes spin { 
+			0% { transform: rotate(0deg); } 
+			100% { transform: rotate(360deg); } 
+		}
+
+		.error-message { 
+			color: #D32F2F; 
+			margin-top: 20px; 
+			font-size: 13px; 
+			line-height: 1.6; 
+			text-align: left; 
+		}
+
+		.error-message code { 
+			background: #f5f5f5; 
+			padding: 3px 8px; 
+			border-radius: 4px; 
+			font-family: monospace; 
+		}
+
+		/* ========== Test Item 选择区 ========== */
+		.test-grid { display: grid; grid-template-columns: 140px 1fr; border: 1px solid #999; }
+
+		.level-label { 
+			background: #9FA8DA;
+			color: black;
+			padding: 8px 10px; 
+			font-weight: 600; 
+			font-size: 11px; 
+			border-bottom: 1px solid #999; 
+			border-right: 1px solid #999; 
+		}
+
+		.level-labels-row { display: grid; grid-template-columns: 1.3fr 1fr 0.7fr; }
+		.level-labels-row > div { 
+			background: #9FA8DA;
+			color: black;
+			padding: 8px 10px; 
+			font-weight: 600; 
+			font-size: 11px; 
+			border-bottom: 1px solid #999; 
+			border-right: 1px solid #999; 
+		}
+		.level-labels-row > div:last-child { border-right: none; }
+
+		.level-content { 
+			background: white; 
+			min-height: 320px; 
+			max-height: 320px; 
+			padding: 10px; 
+			border-bottom: 1px solid #999; 
+			border-right: 1px solid #999; 
+			overflow-y: auto; 
+		}
+
+		.level-content-row { display: grid; grid-template-columns: 1.3fr 1fr 0.7fr; background: white; }
+		.level-content-row > div { 
+			padding: 10px; 
+			border-bottom: 1px solid #999; 
+			border-right: 1px solid #999; 
+			min-height: 320px; 
+			max-height: 320px; 
+			background: white; 
+			overflow-y: auto; 
+		}
+		.level-content-row > div:last-child { border-right: none; }
+
+		.level-item { 
+			padding: 6px 10px; 
+			margin: 4px 0; 
+			cursor: pointer; 
+			font-size: 11px; 
+			border-radius: 4px; 
+			transition: all 0.2s; 
+		}
+
+		.level-item:hover { 
+			opacity: 0.85; 
+			transform: translateX(3px); 
+			box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+		}
+
+		.level-item.selected { 
+			outline: 3px solid #2196F3;
+			box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+			font-weight: 600; 
+			background: white;
+		}
+
+		.color-green { background: #A5D6A7; }
+		.color-red { background: #E57373; color: white; }
+		.color-gray { background: #BDBDBD; }
+		.color-white { background: white; border: 1px solid #ddd; }
+
+		.confirm-area { 
+			grid-column: 1 / -1; 
+			padding: 15px; 
+			text-align: center; 
+			background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+			border-top: 2px solid #e0e0e0; 
+		}
+
+		.btn-confirm { 
+			padding: 10px 50px; 
+			background: #BBDEFB;
+			border: 2px solid #2196F3; 
+			color: #0D47A1; 
+			font-weight: 600; 
+			cursor: pointer; 
+			font-size: 13px; 
+			border-radius: 6px; 
+			transition: all 0.3s;
+			box-shadow: 0 2px 5px rgba(33,150,243,0.2);
+		}
+
+		.btn-confirm:hover { 
+			background: #90CAF9;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+		}
+
+		.selected-info { 
+			margin-top: 12px; 
+			padding: 10px; 
+			background: #E8F5E9;
+			border: 2px solid #4CAF50;
+			font-size: 11px; 
+			border-radius: 6px; 
+			display: none;
+			box-shadow: 0 2px 5px rgba(76,175,80,0.2);
+		}
+
+		.selected-info strong { color: #2E7D32; }
+
+		/* ========== Form 表单样式 ========== */
+		.form-grid { display: grid; grid-template-columns: 160px 1fr; gap: 0; border: 1px solid #999; }
+
+		.form-label { 
+			background: #9FA8DA;
+			color: black;
+			padding: 8px 12px; 
+			font-size: 11px; 
+			border: 1px solid #999; 
+			font-weight: 500; 
+		}
+
+		.form-label.highlight { 
+			background: #FFF9C4;
+			color: #F57C00;
+		}
+
+		.form-value { padding: 6px 12px; background: white; border: 1px solid #999; }
+		.form-value.highlight { 
+			background: #FFF9C4;
+		}
+
+		.form-value input, .form-value select { 
+			width: 100%; 
+			padding: 6px 8px; 
+			border: 1px solid #ddd; 
+			font-size: 11px;
+			border-radius: 3px;
+			transition: all 0.2s;
+		}
+
+		.form-value input:focus, .form-value select:focus {
+			border-color: #2196F3;
+			box-shadow: 0 0 5px rgba(33,150,243,0.3);
+			outline: none;
+		}
+
+		.field-row { display: contents; }
+		.field-row.hidden { display: none !important; }
+		.field-row.hidden .form-label, .field-row.hidden .form-value { display: none !important; }
+
+		/* ========== 按钮样式 ========== */
+		.button-group { display: flex; gap: 12px; margin-top: 15px; justify-content: center; }
+
+		.btn { 
+			padding: 9px 25px; 
+			border: 2px solid #999; 
+			background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+			cursor: pointer; 
+			font-size: 12px; 
+			border-radius: 6px; 
+			transition: all 0.3s;
+			font-weight: 500;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+		}
+
+		.btn:hover { 
+			background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%);
+			transform: translateY(-2px);
+			box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+		}
+
+		.btn-danger { 
+			background: #FFCDD2;
+			color: #C62828; 
+			border-color: #E57373; 
+		}
+
+		.btn-danger:hover {
+			background: #EF9A9A;
+			box-shadow: 0 4px 10px rgba(244,67,54,0.3);
+		}
+
+		.btn-export { 
+			background: #C8E6C9;
+			color: #2E7D32; 
+			border-color: #81C784; 
+		}
+
+		.btn-export:hover {
+			background: #A5D6A7;
+			box-shadow: 0 4px 10px rgba(76,175,80,0.3);
+		}
+
+		.file-input { display: none; }
+
+		/* ========== Notification 通知 ========== */
+		.notification { 
+			position: fixed; 
+			top: 20px;
+			right: 20px; 
+			padding: 15px 25px; 
+			background: #4CAF50;
+			color: white; 
+			border-radius: 8px; 
+			font-size: 13px; 
+			z-index: 3000; 
+			box-shadow: 0 5px 20px rgba(0,0,0,0.3); 
+			animation: slideIn 0.3s; 
+			border-left: 5px solid #2E7D32;
+		}
+
+		.notification.error { 
+			background: #F44336;
+			border-left-color: #C62828;
+		}
+
+		@keyframes slideIn { 
+			from { transform: translateX(400px); opacity: 0; } 
+			to { transform: translateX(0); opacity: 1; } 
+		}
+
+		@keyframes slideOut { 
+			from { transform: translateX(0); opacity: 1; } 
+			to { transform: translateX(400px); opacity: 0; } 
+		}
+
+	       /* ✅ 新增：Group 和 Level 表头样式 */
+		.param-table th {
+		    position: relative;
+		    vertical-align: top;
+		    padding: 12px 8px;
+		    min-width: 150px;
+		}
+		
+		/* Group 标题样式 */
+		.group-header {
+		    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+		    color: white !important;
+		    font-weight: bold;
+		    font-size: 13px;
+		    border-left: 3px solid #fff !important;
+		    padding: 15px 10px !important;
+		}
+		
+		/* Level 标题样式 - 使用不同颜色区分 */
+		.level-header-group1 {
+		    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+		    color: white !important;
+		    font-size: 11px;
+		    font-weight: 600;
+		}
+		
+		.level-header-group2 {
+		    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+		    color: white !important;
+		    font-size: 11px;
+		    font-weight: 600;
+		}
+		
+		.level-header-group3 {
+		    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
+		    color: white !important;
+		    font-size: 11px;
+		    font-weight: 600;
+		}
+		
+		.level-header-group4 {
+		    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important;
+		    color: white !important;
+		    font-size: 11px;
+		    font-weight: 600;
+		}
+		
+		.level-header-group5 {
+		    background: linear-gradient(135deg, #30cfd0 0%, #330867 100%) !important;
+		    color: white !important;
+		    font-size: 11px;
+		    font-weight: 600;
+		}
+		
+		/* 普通列样式 */
+		.normal-header {
+		    background: #f8f9fa !important;
+		    color: #495057;
+		    font-size: 11px;
+		}
+		
+		/* 删除按钮样式优化 */
+		.btn-remove {
+		    background: rgba(255, 255, 255, 0.3);
+		    border: 1px solid rgba(255, 255, 255, 0.5);
+		    color: white;
+		    padding: 3px 8px;
+		    font-size: 10px;
+		    border-radius: 4px;
+		    cursor: pointer;
+		    margin-left: 8px;
+		    transition: all 0.2s;
+		    font-weight: bold;
+		}
+		
+		.btn-remove:hover {
+		    background: rgba(255, 255, 255, 0.5);
+		    transform: scale(1.05);
+		}
+		
+		/* Group 标记 */
+		.group-badge {
+		    display: inline-block;
+		    background: rgba(255, 255, 255, 0.3);
+		    padding: 2px 8px;
+		    border-radius: 12px;
+		    font-size: 10px;
+		    margin-right: 5px;
+		    font-weight: bold;
+		}
+		
+		/* Level 标记 */
+		.level-badge {
+		    display: inline-block;
+		    background: rgba(255, 255, 255, 0.2);
+		    padding: 2px 6px;
+		    border-radius: 10px;
+		    font-size: 9px;
+		    margin-right: 4px;
+		}
+	    /* ========== Help Button & Manual Styles ========== */
+		.help-button {
+		    position: fixed;
+		    bottom: 30px;
+		    right: 30px;
+		    width: 60px;
+		    height: 60px;
+		    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		    border: none;
+		    border-radius: 50%;
+		    color: white;
+		    font-size: 28px;
+		    cursor: pointer;
+		    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+		    transition: all 0.3s;
+		    z-index: 1000;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		}
+		
+		.help-button:hover {
+		    transform: translateY(-3px) scale(1.05);
+		    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+		}
+		
+		.help-button::before {
+		    content: '?';
+		    font-weight: bold;
+		    font-family: Arial, sans-serif;
+		}
+		
+		.manual-overlay {
+		    position: fixed;
+		    top: 0;
+		    left: 0;
+		    right: 0;
+		    bottom: 0;
+		    background: rgba(0, 0, 0, 0.85);
+		    display: none;
+		    align-items: center;
+		    justify-content: center;
+		    z-index: 10001;
+		    animation: fadeIn 0.3s;
+		}
+		
+		.manual-overlay.show {
+		    display: flex;
+		}
+		
+		.manual-content {
+		    background: white;
+		    width: 90%;
+		    max-width: 900px;
+		    max-height: 85vh;
+		    border-radius: 12px;
+		    overflow: hidden;
+		    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+		    display: flex;
+		    flex-direction: column;
+		}
+		
+		.manual-header {
+		    background: linear-gradient(
+		        to right,
+		        #667eea 0%,
+		        #764ba2 50%,
+		        #667eea 100%
+		    );
+		    padding: 20px 30px;
+		    display: flex;
+		    justify-content: space-between;
+		    align-items: center;
+		}
+		
+		.manual-header h2 {
+		    color: white;
+		    margin: 0;
+		    font-size: 24px;
+		    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+		}
+		
+		.manual-close {
+		    background: rgba(255, 255, 255, 0.2);
+		    border: 2px solid white;
+		    border-radius: 50%;
+		    width: 40px;
+		    height: 40px;
+		    color: white;
+		    font-size: 28px;
+		    cursor: pointer;
+		    transition: all 0.3s;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		}
+		
+		.manual-close:hover {
+		    background: rgba(255, 255, 255, 0.3);
+		    transform: rotate(90deg);
+		}
+		
+		.manual-body {
+		    padding: 30px;
+		    overflow-y: auto;
+		    flex: 1;
+		}
+		
+		.manual-body::-webkit-scrollbar {
+		    width: 10px;
+		}
+		
+		.manual-body::-webkit-scrollbar-track {
+		    background: #f1f1f1;
+		}
+		
+		.manual-body::-webkit-scrollbar-thumb {
+		    background: #667eea;
+		    border-radius: 5px;
+		}
+		
+		.manual-section {
+		    margin-bottom: 30px;
+		}
+		
+		.manual-section h3 {
+		    color: #667eea;
+		    font-size: 18px;
+		    margin-bottom: 15px;
+		    padding-bottom: 8px;
+		    border-bottom: 2px solid #667eea;
+		}
+		
+		.manual-section h4 {
+		    color: #764ba2;
+		    font-size: 15px;
+		    margin: 15px 0 10px 0;
+		}
+		
+		.manual-section p, .manual-section li {
+		    color: #333;
+		    line-height: 1.8;
+		    font-size: 14px;
+		    margin-bottom: 10px;
+		}
+		
+		.manual-section ul, .manual-section ol {
+		    margin-left: 20px;
+		    margin-bottom: 15px;
+		}
+		
+		.manual-section code {
+		    background: #f5f5f5;
+		    padding: 2px 6px;
+		    border-radius: 3px;
+		    font-family: 'Courier New', monospace;
+		    color: #e83e8c;
+		}
+		
+		.manual-tip {
+		    background: #e3f2fd;
+		    border-left: 4px solid #2196f3;
+		    padding: 12px 15px;
+		    margin: 15px 0;
+		    border-radius: 4px;
+		}
+		
+		.manual-warning {
+		    background: #fff3cd;
+		    border-left: 4px solid #ffc107;
+		    padding: 12px 15px;
+		    margin: 15px 0;
+		    border-radius: 4px;
+		}
+		
+		.manual-step {
+		    background: #f8f9fa;
+		    padding: 15px;
+		    border-radius: 6px;
+		    margin: 10px 0;
+		    border-left: 4px solid #667eea;
+		}
+		
+		@keyframes fadeIn {
+		    from { opacity: 0; }
+		    to { opacity: 1; }
+		}
+	    /* 必填字段标识 */
+		.form-label.required::after {
+		    content: ' *';
+		    color: #f44336;
+		    font-weight: bold;
+		}
+		
+		/* 输入框错误状态 */
+		input.error, select.error {
+		    border-color: #f44336 !important;
+		    box-shadow: 0 0 8px rgba(244,67,54,0.5) !important;
+		    animation: shake 0.3s;
+		}
+		
+		@keyframes shake {
+		    0%, 100% { transform: translateX(0); }
+		    25% { transform: translateX(-5px); }
+		    75% { transform: translateX(5px); }
+		}
+    </style>
+</head>
+<body>
+	<!-- 顶部渐变装饰条 -->
+    <div class="gradient-bar"></div>
+    <!-- Loading Overlay (Unchanged) -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <h3>Loading Config...</h3>
+            <div class="loading-spinner"></div>
+            <p style="color: #666; font-size: 12px;">Pls Wait a Moment</p>
+            <div class="error-message" id="errorMessage" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- NEW App Container for two-column layout -->
+    <div class="app-container">
+        
+        <!-- Main Form Column (Left Side) -->
+        <div class="main-column">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon"></div>
+                    <div class="logo-text">BOSCH</div>
+                </div>
+                <div class="nav-dropdowns">
+                    <select id="templateSelect">
+                        <option value="">Select Template</option>
+                        <option value="">Default</option>
+                    </select>
+                    <select id="customerSelect">
+                        <option value="">Select Customer</option>
+                        <option value="">Default</option>
+                    </select>
+                </div>
+            </div>
+                <!-- Test Item Selection -->
+            <div class="section">
+                <div class="section-header">1. Test item</div>
+                <div class="section-content">
+                    <div class="test-grid">
+                        <div class="level-label">Level 1</div>
+                        <div class="level-labels-row">
+                            <div>Level 2</div>
+                            <div>Level 3</div>
+                            <div>Level 4</div>
+                        </div>
+                        
+                        <div class="level-content" id="level1Content"></div>
+                        <div class="level-content-row">
+                            <div id="level2Content"></div>
+                            <div id="level3Content"></div>
+                            <div id="level4Content"></div>
+                        </div>
+                        
+                        <div class="confirm-area">
+                            <button class="btn-confirm" onclick="confirmSelection()">Confirm</button>
+                            <div class="selected-info" id="selectedInfo"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specification -->
+            <div class="section">
+                <div class="section-header">2. Specification</div>
+                <div class="section-content">
+                    <div class="form-grid">
+                        <div class="form-label required">Customer</div>
+                        <div class="form-value"><input type="text" id="customer" required></div>
+                        
+                        <div class="form-label required">Specification</div>
+			<div class="form-value"><input type="text" id="specification" required></div>
+
+			<div class="form-label">Specification_Version</div>
+            		<div class="form-value"><input type="text" id="specification_version"></div>
+			
+			<div class="form-label required">Specification_Date</div>
+			<div class="form-value"><input type="text" id="specification_date" required></div>
+                                               
+                        <div class="form-label required">Specification_ID</div>
+                        <div class="form-value"><input type="text" id="specification_id" required></div>
+                        
+                        <div class="form-label">Comment</div>
+                        <div class="form-value"><input type="text" id="comment"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- General Information -->
+            <div class="section">
+                <div class="section-header">3. General Information</div>
+                <div class="section-content">
+                    <div class="form-grid" id="generalInfoGrid">
+                        <div class="form-label">Temperature and Humidity</div>
+                        <div class="form-value"><input type="text" id="temperature"></div>
+                        
+                        <div class="form-label">Measurement_Setup</div>
+                        <div class="form-value"><input type="text" id="measurement_setup"></div>
+                        
+                        <div class="field-row" id="row_table_setup">
+                            <div class="form-label">Table setup</div>
+                            <div class="form-value"><input type="text" id="table_setup"></div>
+                        </div>
+                        
+                        <div class="field-row" id="row_scan_method">
+                            <div class="form-label">Scan_Method</div>
+                            <div class="form-value"><input type="text" id="scan_method"></div>
+                        </div>
+                        
+                        <div class="field-row" id="row_ambient_noise_margin">
+                            <div class="form-label">Ambient_Noise_Margin</div>
+                            <div class="form-value"><input type="text" id="ambient_noise_margin"></div>
+                        </div>
+                        
+                        <div class="form-label">Harness_Length</div>
+                        <div class="form-value"><input type="text" id="harness_length"></div>
+                        
+                        <div class="form-label">ECU_Power_Voltage</div>
+                        <div class="form-value"><input type="text" id="power_voltage"></div>
+                        
+                        <div class="form-label">Special_Mode</div>
+                        <div class="form-value"><input type="text" id="special_mode"></div>
+                        
+                        <div class="form-label highlight">Limit_Level</div>
+                        <div class="form-value highlight"><input type="text" id="limit_level"></div>
+                        
+                        <div class="form-label highlight">AB_ECU_Applicable</div>
+                        <div class="form-value highlight">
+                            <select id="ab_ecu_applicable">
+                                <option value="">Pls Select</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Level and Parameter -->
+            <div class="section">
+                <div class="section-header">4. Test level and parameter</div>
+                <div class="section-content">
+                    <div class="form-grid">
+                        <div class="form-label">Level_Par</div>
+                        <div class="form-value" style="display: flex; gap: 10px; align-items: center;">
+                            <input type="text" id="cit_setting" readonly placeholder="Click Button to setup Parameter" style="flex: 1; background: #f5f5f5;">
+                            <!-- MODIFIED: Changed onclick to showParameterPanel() -->
+                            <button class="btn btn-export" onclick="showParameterPanel()" style="white-space: nowrap;">Setting Parameter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="section">
+                <div class="section-content" style="border-radius: 0 0 4px 4px;">
+                    <div class="button-group">
+                        <button class="btn btn-danger" onclick="clearForm()">Clear All</button>
+                        <button class="btn" onclick="document.getElementById('importFile').click()">Import Excel</button>
+                        <button class="btn btn-export" onclick="exportToExcel()">Export2Excel</button>
+                        <input type="file" id="importFile" class="file-input" accept=".xlsx,.xls" onchange="importFromExcel(event)">
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End of .main-column -->
+
+        <!-- Parameter Panel (Right Side) -->
+	<div id="parameterPanel" class="parameter-column">
+	    <div class="panel-header">
+	        <h3 id="dialogTitle">Parameter Settings</h3>
+	        <button class="panel-close" onclick="hideParameterPanel()">×</button>
+	    </div>
+	    
+	    <div class="panel-body-large">
+	        <!-- Left side: Waveform image -->
+	        <div class="waveform-image-section" id="waveformSection" style="display: none;">
+	            <div class="waveform-title" id="waveformTitle">📊 Waveform Reference</div>
+	            <div class="waveform-image-container" id="waveformImageContainer"></div>
+	            <div id="waveformParamInfo" style="margin-top: 15px; display: none;">
+	                <div style="font-size: 12px; color: #666; padding: 10px; background: #FFF9C4; border-radius: 4px;">
+	                    <strong>📌 Required Parameters:</strong>
+	                    <div id="requiredParamsList" style="margin-top: 8px; font-size: 11px;"></div>
+	                </div>
+	            </div>
+	        </div>
+	        
+	        <!-- ✅ Right side: Parameter tables（修复后的唯一正确版本）-->
+	        <div class="parameters-section">
+	            <!-- General Parameters -->
+	            <div class="param-section-title" id="generalSectionTitle" style="display: none;">General Parameters</div>
+	            <div class="param-table-wrapper" id="generalTableWrapper" style="display: none;">
+	                <table class="param-table" id="generalTable">
+	                    <thead></thead>
+	                    <tbody id="generalTableBody"></tbody>
+	                </table>
+	                <div style="display: flex; gap: 10px; margin-top: 10px;">
+	                    <button class="btn" onclick="addGeneralRow()">+ Add Rows</button>
+	                </div>
+	            </div>
+	
+	            <!-- Limit Settings -->
+	            <div class="param-section-title" id="limitSectionTitle">Limit Settings</div>
+	            <div class="param-table-wrapper" id="limitTableWrapper">
+	                <table class="param-table" id="limitTable">
+	                    <thead></thead>
+	                    <tbody id="limitTableBody"></tbody>
+	                </table>
+	                
+	                <!-- ✅ 修复按钮 onclick -->
+	                <div style="display: flex; gap: 10px; margin-top: 10px;">
+	                    <button class="btn" onclick="addLimitRow()">+ Add Rows</button>
+	                    <button class="btn btn-export" onclick="addGroupColumn()" id="addGroupBtn" style="display: none;">
+	                        + Add Group (Max 5)
+	                    </button>
+	                    <button class="btn btn-export" onclick="addLevelColumn()" id="addLevelBtn" style="display: none;">
+	                        + Add Level (Max 5)
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	
+	    <div class="panel-footer">
+	        <button class="btn" onclick="hideParameterPanel()">Cancel</button>
+	        <button class="btn btn-danger" onclick="clearParameters()">Clear</button>
+	        <button class="btn btn-export" onclick="saveParameters()">Confirm</button>
+	    </div>
+	</div> <!-- End of #parameterPanel -->
+
+    </div> <!-- End of .app-container -->
+
+   	
+    <!-- Help Button -->
+    <button class="help-button" onclick="toggleManual()" title="User Manual"></button>
+
+    <!-- User Manual Overlay -->
+    <div class="manual-overlay" id="manualOverlay" onclick="closeManualOnOverlay(event)">
+        <div class="manual-content" onclick="event.stopPropagation()">
+            <div class="manual-header">
+                <h2>📖 User Manual - EMC Test Standard Analysis Tool</h2>
+                <button class="manual-close" onclick="toggleManual()">×</button>
+            </div>
+            
+            <div class="manual-body">
+                <!-- Quick Start -->
+                <div class="manual-section">
+                    <h3>🚀 Quick Start Guide</h3>
+                    <p>Welcome! This tool helps you generate EMC test reports efficiently. Follow these simple steps:</p>
+                    
+                    <div class="manual-step">
+                        <h4>Step 1: Select Test Item</h4>
+                        <ul>
+                            <li>Click on items in <strong>Level 1</strong> (e.g., Conducted Emission, Radiated Emission)</li>
+                            <li>Select corresponding items in <strong>Level 2, 3, 4</strong> as required</li>
+                            <li>Click <code>Confirm</code> button to save your selection</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="manual-step">
+                        <h4>Step 2: Fill in Specification</h4>
+                        <ul>
+                            <li>Enter customer name, specification version, date, etc.</li>
+                            <li>These fields help identify the test standard</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="manual-step">
+                        <h4>Step 3: Complete General Information</h4>
+                        <ul>
+                            <li>Fill in test environment (temperature, humidity)</li>
+                            <li>Measurement setup and harness length</li>
+                            <li><span style="color: #f57c00; font-weight: bold;">★ Yellow highlighted fields are mandatory</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="manual-step">
+                        <h4>Step 4: Configure Parameters</h4>
+                        <ul>
+                            <li>Click <code>Setting Parameter</code> button</li>
+                            <li>A right-side panel will open with parameter tables</li>
+                            <li>Fill in required parameters (marked with ★)</li>
+                            <li>Click <code>Confirm</code> to save</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="manual-step">
+                        <h4>Step 5: Export Report</h4>
+                        <ul>
+                            <li>Click <code>Export2Excel</code> to generate Excel file</li>
+                            <li>File name will be auto-generated based on test item</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Detailed Features -->
+                <div class="manual-section">
+                    <h3>🔍 Detailed Feature Guide</h3>
+                    
+                    <h4>1. Test Item Selection</h4>
+                    <p><strong>Color Coding:</strong></p>
+                    <ul>
+                        <li><span style="background: #A5D6A7; padding: 2px 8px; border-radius: 3px;">Green</span> - Available test items</li>
+                        <li><span style="background: #E57373; color: white; padding: 2px 8px; border-radius: 3px;">Red</span> - Important items requiring attention</li>
+                        <li><span style="background: #BDBDBD; padding: 2px 8px; border-radius: 3px;">Gray</span> - Unavailable items</li>
+                        <li><span style="background: white; border: 1px solid #999; padding: 2px 8px; border-radius: 3px;">White</span> - Sub-level items</li>
+                    </ul>
+                    
+                    <div class="manual-tip">
+                        <strong>💡 Tip:</strong> Selected items will show a blue border. Make sure to click <code>Confirm</code> to save your selection.
+                    </div>
+                    
+                    <h4>2. Template & Customer Selection</h4>
+                    <p>Use the dropdown menus in the top-right corner:</p>
+                    <ul>
+                        <li><strong>Select Template:</strong> Load pre-configured test templates</li>
+                        <li><strong>Select Customer:</strong> Auto-fill customer information</li>
+                    </ul>
+                    
+                    <h4>3. Parameter Configuration Panel</h4>
+                    <p><strong>Two types of parameter tables:</strong></p>
+                    <ul>
+                        <li><strong>General Parameters:</strong> Common test settings (scan method, measurement setup, etc.)</li>
+                        <li><strong>Limit Settings:</strong> Test level and limit values</li>
+                    </ul>
+                    
+                    <p><strong>For CTI (Transient Coupled Immunity) tests:</strong></p>
+                    <ul>
+                        <li>Left side shows waveform reference image</li>
+                        <li>Right side shows waveform parameters table</li>
+                        <li>Fields marked with <span style="background: #FFF9C4; color: #F57C00; padding: 2px 6px; border-radius: 3px;">★</span> are mandatory</li>
+                    </ul>
+                    
+                    <h4>4. Table Operations</h4>
+                    <ul>
+                        <li><code>Copy</code> button: Duplicate current row with same values</li>
+                        <li><code>Delete</code> button: Remove current row (at least 1 row must remain)</li>
+                        <li><code>+ Add Rows</code> button: Add new empty row</li>
+                    </ul>
+                    
+                    <div class="manual-warning">
+                        <strong>⚠️ Warning:</strong> For CTI tests, all mandatory parameters (★) must be filled before saving!
+                    </div>
+                </div>
+
+                <!-- Import/Export -->
+                <div class="manual-section">
+                    <h3>📂 Import & Export</h3>
+                    
+                    <h4>Export to Excel</h4>
+                    <ol>
+                        <li>Complete all required fields</li>
+                        <li>Click <code>Export2Excel</code> button</li>
+                        <li>Generated file contains:
+                            <ul>
+                                <li><strong>General Information</strong> sheet: Test item, specification, general info</li>
+                                <li><strong>SettingPar</strong> sheet: General parameters (if applicable)</li>
+                                <li><strong>LimitLevel</strong> sheet: Limit settings</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    
+                    <h4>Import from Excel</h4>
+                    <ol>
+                        <li>Click <code>Import Excel</code> button</li>
+                        <li>Select previously exported Excel file</li>
+                        <li>System will auto-fill all fields and parameters</li>
+                    </ol>
+                    
+                    <div class="manual-tip">
+                        <strong>💡 Best Practice:</strong> Export your work regularly to save progress and create backups.
+                    </div>
+                </div>
+
+                <!-- Troubleshooting -->
+                <div class="manual-section">
+                    <h3>🔧 Troubleshooting</h3>
+                    
+                    <h4>Common Issues & Solutions</h4>
+                    
+                    <p><strong>Q: Config loading failed on startup?</strong></p>
+                    <p>A: Make sure:</p>
+                    <ul>
+                        <li><code>Config.json</code> file is in the same folder as HTML file</li>
+                        <li>Open HTML via HTTP server (not by double-clicking)</li>
+                        <li>Check browser console (F12) for detailed error messages</li>
+                    </ul>
+                    
+                    <p><strong>Q: Parameter panel doesn't show?</strong></p>
+                    <p>A: Ensure you have:</p>
+                    <ul>
+                        <li>Selected and confirmed test item first</li>
+                        <li>Chosen appropriate Level 2 and Level 3 items</li>
+                    </ul>
+                    
+                    <p><strong>Q: Can't save parameters?</strong></p>
+                    <p>A: Check if:</p>
+                    <ul>
+                        <li>All mandatory fields (★) are filled</li>
+                        <li>Values are in correct format (numbers, selections, etc.)</li>
+                    </ul>
+                    
+                    <p><strong>Q: Waveform image not displaying?</strong></p>
+                    <p>A: Verify:</p>
+                    <ul>
+                        <li>Image path in Config.json is correct</li>
+                        <li>Image file exists in specified location</li>
+                        <li>File format is supported (PNG, JPG, SVG)</li>
+                    </ul>
+                    
+                    <div class="manual-warning">
+                        <strong>⚠️ Data Loss Prevention:</strong> Always click <code>Confirm</code> in parameter panel and test selection to save your work!
+                    </div>
+                </div>
+
+                <!-- Keyboard Shortcuts -->
+                <div class="manual-section">
+                    <h3>⌨️ Tips & Tricks</h3>
+                    <ul>
+                        <li><strong>Quick Clear:</strong> Use <code>Clear All</code> to reset entire form</li>
+                        <li><strong>Batch Entry:</strong> Use <code>Copy</code> button to quickly duplicate similar rows</li>
+                        <li><strong>Visual Feedback:</strong> Newly copied rows briefly highlight in green</li>
+                        <li><strong>Auto-save:</strong> Parameter summary shows in main form after saving</li>
+                        <li><strong>Responsive Layout:</strong> Right panel automatically adjusts width</li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="manual-section">
+                    <h3>📞 Support</h3>
+                    <p>For technical support or feature requests, please contact:</p>
+                    <ul>
+                        <li>Email: <code>emc-support@bosch.com</code></li>
+                        <li>Version: 2.0</li>
+                        <li>Last Updated: 2024</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+			
+    <script>
+        // --- JAVASCRIPT ---
+        // The previous JavaScript code remains largely the same,
+        // except for the dialog-handling functions.
+        // Below are the only functions that need to be changed.
+        // You can just replace these functions in your existing script.
+
+        let config = null;
+        let selectedLevel1 = null;
+        let selectedLevel2 = null;
+        let selectedLevel3 = null;
+        let selectedLevel4 = null;
+
+	let groupLevelConfig = {}; // 存储每个 Group 的 Level 数量，例如：{1: 2, 2: 3}
+	const MAX_GROUPS = 5;
+	const MAX_LEVELS_PER_GROUP = 5;
+	const DEFAULT_GROUP_COUNT = 1;
+	const DEFAULT_LEVEL_COUNT = 2;
+        
+        let parameterData = {
+            general: [],
+            limit: []
+        };
+        
+        // --- START OF MODIFIED JAVASCRIPT FUNCTIONS ---
+
+        // NEW: Shows the right-side parameter panel
+        function showParameterPanel() {
+	    if (!selectedLevel1 || !selectedLevel2) {
+	        showNotification('❌ Please select and confirm test item first!', 'error');
+	        return;
+	    }
+	    
+	    const level1Data = config.testHierarchy[selectedLevel1];
+	    const level2Data = level1Data.level2[selectedLevel2];
+	    const dialogTitle = document.getElementById('dialogTitle');
+	    let titleText = `${level1Data.displayName} - ${level2Data.displayName}`;
+	    if (selectedLevel3) titleText += ` - ${selectedLevel3}`;
+	    dialogTitle.textContent = titleText + ' - Parameter Settings';
+	
+	    // ========== CTI 测试特殊处理 ==========
+	    if (selectedLevel1 === 'Transient_Coupled_Immunity') {
+	        document.getElementById('waveformSection').style.display = 'flex';
+	        loadWaveformImage();
+	        
+	        // ✅ 隐藏 General Parameters（CTI 不需要）
+	        const generalSectionTitle = document.getElementById('generalSectionTitle');
+	        const generalTableWrapper = document.getElementById('generalTableWrapper');
+	        if (generalSectionTitle) generalSectionTitle.style.display = 'none';
+	        if (generalTableWrapper) generalTableWrapper.style.display = 'none';
+	        
+	        document.getElementById('limitSectionTitle').textContent = 'Waveform Parameters';
+	        
+	        const columnMapping = config.level2ColumnMapping?.[selectedLevel1]?.[selectedLevel2];
+	        if (!columnMapping || !columnMapping.limit) {
+	            showNotification('❌ Waveform parameter config not found', 'error');
+	            return;
+	        }
+	        
+	        let waveformColumns = null;
+	        if (Array.isArray(columnMapping.limit)) {
+	            waveformColumns = columnMapping.limit;
+	        } else {
+	            if (!selectedLevel3) {
+	                showNotification('❌ Please select waveform type first (Level 3)!', 'error');
+	                return;
+	            }
+	            waveformColumns = columnMapping.limit[selectedLevel3];
+	        }
+	        
+	        if (!waveformColumns || waveformColumns.length === 0) {
+	            showNotification('❌ Waveform parameter config empty', 'error');
+	            return;
+	        }
+	        
+	        generateLimitTable(null, waveformColumns);
+	        loadSavedParameterData();
+	        
+	        const wfCfg = config.waveformParameterMapping?.[selectedLevel1]?.[selectedLevel2]?.[selectedLevel3];
+	        showRequiredParameters(wfCfg?.requiredParams || []);
+	        
+	    } 
+	    // ========== 其他测试（Emission/Immunity）==========
+	    else {
+	        document.getElementById('waveformSection').style.display = 'none';
+	        document.getElementById('limitSectionTitle').textContent = 'Limit Settings';
+	        
+	        const columnMapping = config.level2ColumnMapping?.[selectedLevel1]?.[selectedLevel2];
+	        if (!columnMapping) {
+	            showNotification('❌ Parameter config not found', 'error');
+	            return;
+	        }
+	        
+	        // ✅ 显示/隐藏 General Parameters
+	        const generalConfig = config.parameterConfig[selectedLevel1]?.general;
+	        const generalSectionTitle = document.getElementById('generalSectionTitle');
+	        const generalTableWrapper = document.getElementById('generalTableWrapper');
+	        
+	        if (generalConfig && columnMapping.general && columnMapping.general.length > 0) {
+	            if (generalSectionTitle) {
+	                generalSectionTitle.style.display = 'block';
+	                generalSectionTitle.textContent = 'General Parameters';
+	            }
+	            if (generalTableWrapper) {
+	                generalTableWrapper.style.display = 'block';
+	                generateGeneralTable(generalConfig, columnMapping.general);
+	            }
+	        } else {
+	            if (generalSectionTitle) generalSectionTitle.style.display = 'none';
+	            if (generalTableWrapper) generalTableWrapper.style.display = 'none';
+	        }
+	        
+	        // ✅ 显示/隐藏 Limit Settings
+	        const limitConfig = config.parameterConfig[selectedLevel1]?.limit;
+	        const limitTableWrapper = document.getElementById('limitTableWrapper');
+	        
+	        if (limitConfig && columnMapping.limit && columnMapping.limit.length > 0) {
+	            if (limitTableWrapper) {
+	                limitTableWrapper.style.display = 'block';
+	                generateLimitTable(limitConfig, columnMapping.limit);
+	            }
+	        } else {
+	            if (limitTableWrapper) limitTableWrapper.style.display = 'none';
+	        }
+	        
+	        loadSavedParameterData();
+	    }
+	    
+	    // ✅ 显示参数面板
+	    const panel = document.getElementById('parameterPanel');
+	    const mainColumn = document.querySelector('.main-column');
+	    
+	    if (panel && mainColumn) {
+	        panel.classList.add('show');
+	        mainColumn.classList.add('with-panel');
+	    }
+	    
+	    console.log('✅ Parameter panel shown with data:', JSON.parse(JSON.stringify(parameterData)));
+	}
+
+        // NEW: Hides the right-side parameter panel
+		function hideParameterPanel() {
+			const panel = document.getElementById('parameterPanel');
+			const mainColumn = document.querySelector('.main-column');
+			
+			panel.classList.remove('show');
+			mainColumn.classList.remove('with-panel');
+			
+			console.log('✅ Parameter panel hidden');
+		}
+		
+		
+	function loadSavedParameterData() {
+	    console.log('🔄 开始加载保存的参数...', JSON.parse(JSON.stringify(parameterData)));
+	    
+	    // ✅ 检查列配置是否已初始化
+	    if (!window.currentGeneralColumns && !window.currentLimitColumns) {
+	        console.warn('⚠️ 列配置未初始化，无法加载参数');
+	        showNotification('⚠️ 请先选择测试项并确认', 'error');
+	        return;
+	    }
+	    
+	    // ✅ 加载 General Parameters
+	    if (parameterData.general && parameterData.general.length > 0) {
+	        const generalTableBody = document.getElementById('generalTableBody');
+	        if (generalTableBody && window.currentGeneralColumns) {
+	            generalTableBody.innerHTML = ''; // 清空默认行
+	            parameterData.general.forEach((rowData, index) => {
+	                console.log(`  添加 General 行 ${index + 1}:`, rowData);
+	                addGeneralRowDynamic(rowData);
+	            });
+	        } else {
+	            console.warn('  ⚠️ General 表格不存在或列配置缺失');
+	        }
+	    }
+	    
+	    // ✅ 加载 Limit Parameters
+	    if (parameterData.limit && parameterData.limit.length > 0) {
+	        const limitTableBody = document.getElementById('limitTableBody');
+	        if (limitTableBody && window.currentLimitColumns) {
+	            limitTableBody.innerHTML = ''; // 清空默认行
+	            parameterData.limit.forEach((rowData, index) => {
+	                console.log(`  添加 Limit Row ${index + 1}:`, rowData);
+	                addLimitRowDynamic(rowData);
+	            });
+	        } else {
+	            console.warn('  ⚠️ Limit 表格不存在或列配置缺失');
+	        }
+	    }
+	    
+	    console.log('✅ 参数加载完成');
+	}
+
+        // MODIFIED: saveParameters now also hides the panel on success
+        
+	    function saveParameters() {
+	    // ========== 1. 验证参数格式 ==========
+	    let hasInvalidFormat = false;
+	    const allRows = document.querySelectorAll('#generalTableBody tr, #limitTableBody tr');
+	    
+	    allRows.forEach(row => {
+	        // ========== Emission 测试验证 ==========
+	        const emissionPairs = [
+	            { typeKey: 'pkLimitType', valueKey: 'pk' },
+	            { typeKey: 'qpLimitType', valueKey: 'qp' },
+	            { typeKey: 'avLimitType', valueKey: 'av' }
+	        ];
+	        
+	        emissionPairs.forEach(pair => {
+	            const typeSelect = row.querySelector(`select[data-key="${pair.typeKey}"]`);
+	            const valueInput = row.querySelector(`input[data-key="${pair.valueKey}"]`);
+	            
+	            if (typeSelect && valueInput && valueInput.value) {
+	                const limitType = typeSelect.value;
+	                
+	                if (!limitType) {
+	                    typeSelect.style.borderColor = '#f44336';
+	                    typeSelect.style.boxShadow = '0 0 5px rgba(244, 67, 54, 0.5)';
+	                    hasInvalidFormat = true;
+	                } else {
+	                    const isValid = validateInput(valueInput, limitType);
+	                    if (!isValid) {
+	                        hasInvalidFormat = true;
+	                    }
+	                    typeSelect.style.borderColor = '';
+	                    typeSelect.style.boxShadow = '';
+	                }
+	            }
+	        });
+	        
+	        // ========== Immunity 测试验证：limitCalculationType + limitValue1/2 ==========
+	        const limitCalcSelect = row.querySelector('select[data-key="limitCalculationType"]');
+	        
+	        if (limitCalcSelect) {
+	            const limitType = limitCalcSelect.value;
+	            const limitValue1 = row.querySelector('input[data-key="limitValue1"]');
+	            const limitValue2 = row.querySelector('input[data-key="limitValue2"]');
+	            
+	            // 验证 limitValue1
+	            if (limitValue1 && limitValue1.value) {
+	                if (!limitType) {
+	                    limitCalcSelect.style.borderColor = '#f44336';
+	                    limitCalcSelect.style.boxShadow = '0 0 5px rgba(244, 67, 54, 0.5)';
+	                    hasInvalidFormat = true;
+	                } else {
+	                    const isValid = validateInput(limitValue1, limitType);
+	                    if (!isValid) {
+	                        hasInvalidFormat = true;
+	                    }
+	                }
+	            }
+	            
+	            // 验证 limitValue2
+	            if (limitValue2 && limitValue2.value) {
+	                if (!limitType) {
+	                    limitCalcSelect.style.borderColor = '#f44336';
+	                    limitCalcSelect.style.boxShadow = '0 0 5px rgba(244, 67, 54, 0.5)';
+	                    hasInvalidFormat = true;
+	                } else {
+	                    const isValid = validateInput(limitValue2, limitType);
+	                    if (!isValid) {
+	                        hasInvalidFormat = true;
+	                    }
+	                }
+	            }
+	            
+	            // 如果验证通过，清除错误状态
+	            if (limitType) {
+	                limitCalcSelect.style.borderColor = '';
+	                limitCalcSelect.style.boxShadow = '';
+	            }
+	        }
+	    });
+	    
+	    if (hasInvalidFormat) {
+	        showNotification('❌ Parameter format error! Please check red marked fields.', 'error');
+	        return;
+	    }
+	    
+	    // ========== 2. 验证 CTI 必填字段 ==========
+	    if (selectedLevel1 === 'Transient_Coupled_Immunity') {
+	        const requiredInputs = document.querySelectorAll('#limitTableBody input[required], #limitTableBody select[required]');
+	        let hasEmpty = false;
+	        requiredInputs.forEach(input => {
+	            if (!input.value || input.value.trim() === '') {
+	                input.style.borderColor = '#f44336';
+	                input.style.boxShadow = '0 0 5px rgba(244, 67, 54, 0.5)';
+	                hasEmpty = true;
+	            } else {
+	                input.style.borderColor = '#ddd';
+	                input.style.boxShadow = 'none';
+	            }
+	        });
+	        if (hasEmpty) {
+	            showNotification('❌ Pls fill in all mandatory parameter！', 'error');
+	            return;
+	        }
+	        
+	        const limitRows = document.querySelectorAll('#limitTableBody tr');
+	        parameterData.general = [];
+	        parameterData.limit = [];
+	        limitRows.forEach(row => {
+	            const inputs = row.querySelectorAll('input[data-key], select[data-key]');
+	            const rowData = {};
+	            let hasData = false;
+	            inputs.forEach(input => {
+	                const key = input.getAttribute('data-key');
+	                const value = input.value.trim();
+	                rowData[key] = value;
+	                if (value) hasData = true;
+	            });
+	            if (hasData) {
+	                parameterData.limit.push(rowData);
+	            }
+	        });
+	    } else {
+	        const generalRows = document.querySelectorAll('#generalTableBody tr');
+	        parameterData.general = [];
+	        generalRows.forEach(row => {
+	            const inputs = row.querySelectorAll('input[data-key], select[data-key]');
+	            const rowData = {};
+	            let hasData = false;
+	            inputs.forEach(input => {
+	                const key = input.getAttribute('data-key');
+	                const value = input.value.trim();
+	                rowData[key] = value;
+	                if (value) hasData = true;
+	            });
+	            if (hasData) {
+	                parameterData.general.push(rowData);
+	            }
+	        });
+	        
+	        const limitRows = document.querySelectorAll('#limitTableBody tr');
+	        parameterData.limit = [];
+	        limitRows.forEach(row => {
+	            const inputs = row.querySelectorAll('input[data-key], select[data-key]');
+	            const rowData = {};
+	            let hasData = false;
+	            inputs.forEach(input => {
+	                const key = input.getAttribute('data-key');
+	                const value = input.value.trim();
+	                rowData[key] = value;
+	                if (value) hasData = true;
+	            });
+	            if (hasData) {
+	                parameterData.limit.push(rowData);
+	            }
+	        });
+	    }
+	    
+	    console.log('💾 Saved parameter data:', JSON.parse(JSON.stringify(parameterData)));
+	    
+	    const summary = generateParameterSummary();
+	    document.getElementById('cit_setting').value = summary;
+	    
+	    hideParameterPanel();
+	    showNotification('✅ Parameter Saved');
+	}
+
+        // --- END OF MODIFIED JAVASCRIPT FUNCTIONS ---
+
+        // Paste the rest of your original JavaScript here
+        // (from 'window.addEventListener' down to the end)
+
+        window.addEventListener('DOMContentLoaded', async function() {
+            await loadConfig();
+        });
+
+        async function loadConfig() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const errorMessage = document.getElementById('errorMessage');
+    
+            try {
+                loadingOverlay.style.display = 'flex';
+                const response = await fetch('./Config.json');
+        
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ConfigFile loading Failed`);
+                config = await response.json();
+                if (!config.testHierarchy) throw new Error('No testHierarchy in config file');
+        
+                console.log('✅ ConfigFile Loaded successfully');
+                initializePage();
+                loadingOverlay.style.display = 'none';
+        
+            } catch (error) {
+                console.error('❌ Loading Failed:', error);
+                errorMessage.style.display = 'block';
+                errorMessage.innerHTML = `<strong>ConfigFile loading Failed</strong><br>${error.message}<br><br><strong>Solution：</strong><br>1. make sure JSON file under same folder with HTML<br>2. Open HTML with HTTP server（Do not directly click）<br>3. Find detailed failure in explore console`;
+            }
+        }
+
+        function initializePage() {
+            loadLevel1();
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            document.getElementById('templateSelect').addEventListener('change', loadTemplate);
+            document.getElementById('customerSelect').addEventListener('change', handleCustomerChange);
+        }
+
+        function loadLevel1() {
+            const level1Content = document.getElementById('level1Content');
+            level1Content.innerHTML = '';
+            for (const [key, value] of Object.entries(config.testHierarchy)) {
+                const item = document.createElement('div');
+                const color = value.color || 'green';
+        	item.className = `level-item color-${color}`;
+                item.textContent = value.displayName;
+                item.onclick = () => selectLevel1(key, event);
+                level1Content.appendChild(item);
+            }
+        }
+        
+        function selectLevel1(level1Key, event) {
+            selectedLevel1 = level1Key;
+            selectedLevel2 = null;
+            selectedLevel3 = null;
+            selectedLevel4 = null;
+            document.querySelectorAll('#level1Content .level-item').forEach(item => item.classList.remove('selected'));
+            event.target.classList.add('selected');
+            loadLevel2(level1Key);
+            document.getElementById('level3Content').innerHTML = '';
+            document.getElementById('level4Content').innerHTML = '';
+        }
+
+	function loadLevel2(level1Key) {
+	    const level2Content = document.getElementById('level2Content');
+	    level2Content.innerHTML = '';
+	    
+	    const level1Data = config.testHierarchy[level1Key];
+	    
+	    // ✅ 修复：检查 level2 是否存在且不为空
+	    if (!level1Data || !level1Data.level2 || Object.keys(level1Data.level2).length === 0) {
+	        level2Content.innerHTML = '<div style="padding: 10px; color: #999;">No available items</div>';
+	        return;
+	    }
+	    
+	    for (const [key, value] of Object.entries(level1Data.level2)) {
+	        const item = document.createElement('div');
+	        item.className = `level-item color-${value.color}`;
+	        item.textContent = value.displayName;
+	        item.onclick = (e) => selectLevel2(key, e);
+	        level2Content.appendChild(item);
+	    }
+	}
+
+        function selectLevel2(level2Key, event) {
+            selectedLevel2 = level2Key;
+            selectedLevel3 = null;
+            selectedLevel4 = null;
+            document.querySelectorAll('#level2Content .level-item').forEach(item => item.classList.remove('selected'));
+            event.target.classList.add('selected');
+            loadLevel3(selectedLevel1, level2Key);
+            document.getElementById('level4Content').innerHTML = '';
+        }
+
+	function loadLevel3(level1Key, level2Key) {
+	    const level3Content = document.getElementById('level3Content');
+	    level3Content.innerHTML = '';
+	    
+	    const level1Data = config.testHierarchy[level1Key];
+	    
+	    // ✅ 修复：安全检查
+	    if (!level1Data || !level1Data.level2 || !level1Data.level2[level2Key]) {
+	        level3Content.innerHTML = '<div style="padding: 10px; color: #999;">No available items</div>';
+	        return;
+	    }
+	    
+	    const level2Data = level1Data.level2[level2Key];
+	    
+	    if (!level2Data.level3 || level2Data.level3.length === 0) {
+	        level3Content.innerHTML = '<div style="padding: 10px; color: #999;">No available items</div>';
+	        return;
+	    }
+	    
+	    level2Data.level3.forEach(level3Item => {
+	        const item = document.createElement('div');
+	        item.className = 'level-item color-white';
+	        item.textContent = level3Item;
+	        item.onclick = (e) => selectLevel3(level3Item, e);
+	        level3Content.appendChild(item);
+	    });
+	}
+        
+        function selectLevel3(level3Key, event) {
+            selectedLevel3 = level3Key;
+            selectedLevel4 = null;
+            document.querySelectorAll('#level3Content .level-item').forEach(item => item.classList.remove('selected'));
+            event.target.classList.add('selected');
+            loadLevel4(selectedLevel1, selectedLevel2, level3Key);
+        }
+
+	function loadLevel4(level1Key, level2Key, level3Key) {
+	    const level4Content = document.getElementById('level4Content');
+	    level4Content.innerHTML = '';
+	    
+	    const level1Data = config.testHierarchy[level1Key];
+	    
+	    // ✅ 修复：安全检查
+	    if (!level1Data || !level1Data.level2 || !level1Data.level2[level2Key]) {
+	        return;
+	    }
+	    
+	    const level2Data = level1Data.level2[level2Key];
+	    
+	    if (!level2Data.level4 || !level2Data.level4[level3Key]) {
+	        return;
+	    }
+	    
+	    level2Data.level4[level3Key].forEach(level4Item => {
+	        const item = document.createElement('div');
+	        item.className = 'level-item color-white';
+	        item.textContent = level4Item;
+	        item.onclick = (e) => selectLevel4(level4Item, e);
+	        level4Content.appendChild(item);
+	    });
+	}
+
+        function selectLevel4(level4Key, event) {
+            selectedLevel4 = level4Key;
+            document.querySelectorAll('#level4Content .level-item').forEach(item => item.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function confirmSelection() {
+            let path = [];
+            if (selectedLevel1 && config.testHierarchy[selectedLevel1]) path.push(config.testHierarchy[selectedLevel1].displayName);
+            if (selectedLevel2) path.push(selectedLevel2);
+            if (selectedLevel3) path.push(selectedLevel3);
+            if (selectedLevel4) path.push(selectedLevel4);
+            if (path.length === 0) {
+                showNotification('❌ Pls select test item！', 'error');
+                return;
+            }
+            const selectedInfo = document.getElementById('selectedInfo');
+            selectedInfo.style.display = 'block';
+            selectedInfo.innerHTML = '<strong>Selected：</strong>' + path.join(' → ');
+            updateFormFields();
+            showNotification('✅ Test item confirmed！');
+        }
+
+        function updateFormFields() {
+            if (!selectedLevel1 || !config.testHierarchy[selectedLevel1]) return;
+            const requiredFields = config.testHierarchy[selectedLevel1].requiredFields;
+            toggleFieldRow('row_table_setup', requiredFields.table_setup);
+            toggleFieldRow('row_scan_method', requiredFields.scan_method);
+            toggleFieldRow('row_ambient_noise_margin', requiredFields.ambient_noise_margin);
+        }
+
+        function toggleFieldRow(rowId, isRequired) {
+            const row = document.getElementById(rowId);
+            if (!row) return;
+            row.classList.toggle('hidden', !isRequired);
+        }
+
+        function loadTemplate() {
+            const templateName = document.getElementById('templateSelect').value;
+            if (!templateName || !config.templates[templateName]) return;
+            const template = config.templates[templateName];
+            for (const [key, value] of Object.entries(template)) {
+                const element = document.getElementById(key);
+                if (element) element.value = value;
+            }
+            showNotification(`✅ Already loaded ${templateName} Template`);
+        }
+
+        function handleCustomerChange() {
+            const customer = document.getElementById('customerSelect').value;
+            if (customer) document.getElementById('customer').value = customer;
+        }
+
+        function clearForm() {
+	    if (!confirm('Are you sure to clear all list？')) return;
+	    
+	    // ========== 1. 清空主表单所有输入框和下拉框 ==========
+	    document.querySelectorAll('input[type="text"], select').forEach(el => {
+	        if (el.id !== 'templateSelect' && el.id !== 'customerSelect') {
+	            el.value = '';
+	        }
+	    });
+	    
+	    // ========== 2. 清空测试项选择状态 ==========
+	    const selectedInfo = document.getElementById('selectedInfo');
+	    selectedInfo.style.display = 'none';
+	    selectedInfo.innerHTML = '';
+	    
+	    selectedLevel1 = selectedLevel2 = selectedLevel3 = selectedLevel4 = null;
+	    
+	    document.querySelectorAll('.level-item.selected').forEach(item => {
+	        item.classList.remove('selected');
+	    });
+	    
+	    ['level2Content', 'level3Content', 'level4Content'].forEach(id => {
+	        document.getElementById(id).innerHTML = '';
+	    });
+	    
+	    // ========== 3. 恢复所有字段为可见状态 ==========
+	    toggleFieldRow('row_table_setup', true);
+	    toggleFieldRow('row_scan_method', true);
+	    toggleFieldRow('row_ambient_noise_margin', true);
+	    
+	    // ========== 4. 清空参数数据（全局变量）==========
+	    parameterData = {
+	        general: [],
+	        limit: []
+	    };
+	    
+	    // ========== 5. 清空参数汇总显示 ==========
+	    document.getElementById('cit_setting').value = '';
+	    
+	    // ========== 6. 清空参数面板中的表格数据 ==========
+	    const generalTableBody = document.getElementById('generalTableBody');
+	    const limitTableBody = document.getElementById('limitTableBody');
+	    
+	    if (generalTableBody) {
+	        generalTableBody.innerHTML = '';
+	    }
+	    
+	    if (limitTableBody) {
+	        limitTableBody.innerHTML = '';
+	    }
+	    
+	    // ========== 7. 关闭右侧参数面板 ==========
+	    hideParameterPanel();
+	    
+	    // ========== 8. 清空列配置 ==========
+	    window.currentGeneralColumns = null;
+	    window.currentLimitColumns = null;
+	    
+	    console.log('✅ All data cleared:', {
+	        selectedLevels: {selectedLevel1, selectedLevel2, selectedLevel3, selectedLevel4},
+	        parameterData: parameterData,
+	        columnConfig: {
+	            generalColumns: window.currentGeneralColumns,
+	            limitColumns: window.currentLimitColumns
+	        }
+	    });
+	    
+	    showNotification('✅ All data cleared (including parameters)');
+	}
+
+		function showNotification(message, type = 'success') {
+			const existingNotif = document.querySelector('.notification');
+			if (existingNotif) existingNotif.remove();
+			const notification = document.createElement('div');
+			notification.className = `notification ${type === 'error' ? 'error' : ''}`;
+			notification.textContent = message;
+			document.body.appendChild(notification);
+			setTimeout(() => {
+				notification.style.animation = 'slideOut 0.3s ease-out forwards';
+				setTimeout(() => notification.remove(), 300);
+			}, 3000);
+		}
+
+
+
+	   /**
+	 * 验证参数值格式
+	 * @param {string} limitType - Limit类型（Linear, Const, Log, Single, Poly）
+	 * @param {string} value - 输入的值
+	 * @returns {boolean} - 是否有效
+	 */
+	function validateParameterFormat(limitType, value) {
+	    if (!value || !value.trim()) {
+	        return true; // 空值允许（可选字段）
+	    }
+	    
+	    value = value.trim();
+	    
+	    switch(limitType) {
+	        case 'Const':
+	        case 'Single':
+	            // 只能是单个数字（可以是负数、小数）
+	            return /^-?\d+(\.\d+)?$/.test(value);
+	            
+	        case 'Log':
+	        case 'Linear':
+	        case 'Poly':
+	            // 必须是两个数字，用逗号分隔
+	            const parts = value.split(',');
+	            if (parts.length !== 2) return false;
+	            return parts.every(part => /^-?\d+(\.\d+)?$/.test(part.trim()));
+	            
+	        default:
+	            return true;
+	    }
+	}
+	
+	/**
+	 * 获取参数格式提示文本
+	 */
+	function getFormatHint(limitType) {
+	    switch(limitType) {
+	        case 'Const':
+	        case 'Single':
+	            return 'Enter single value (e.g., 79)';
+	        case 'Log':
+	        case 'Linear':
+	        case 'Poly':
+	            return 'Enter two values separated by comma (e.g., 79,73)';
+	        default:
+	            return '';
+	    }
+	}
+	
+	/**
+	 * 验证输入框并添加视觉反馈
+	 */
+	function validateInput(input, limitType) {
+	    const value = input.value.trim();
+	    const isValid = validateParameterFormat(limitType, value);
+	    
+	    if (!isValid && value !== '') {
+	        // 错误状态
+	        input.style.borderColor = '#f44336';
+	        input.style.boxShadow = '0 0 5px rgba(244, 67, 54, 0.5)';
+	        input.style.backgroundColor = '#FFEBEE';
+	        input.setAttribute('data-invalid', 'true');
+	        return false;
+	    } else {
+	        // 正确状态
+	        if (value !== '') {
+	            input.style.borderColor = '#4CAF50';
+	            input.style.boxShadow = '0 0 5px rgba(76, 175, 80, 0.3)';
+	            input.style.backgroundColor = '#E8F5E9';
+	        } else {
+	            clearValidationStyle(input);
+	        }
+	        input.removeAttribute('data-invalid');
+	        return true;
+	    }
+	}
+	
+	/**
+	 * 清除验证样式
+	 */
+	function clearValidationStyle(input) {
+	    input.style.borderColor = '';
+	    input.style.boxShadow = '';
+	    input.style.backgroundColor = '';
+	    input.removeAttribute('data-invalid');
+	}
+	
+	/**
+	 * 为参数表格设置实时验证
+	 */
+	function setupParameterValidation(row) {
+	    // ========== 1. Emission 测试：PK/QP/AV + LimitType ==========
+	    const emissionPairs = [
+	        { typeKey: 'pkLimitType', valueKey: 'pk' },
+	        { typeKey: 'qpLimitType', valueKey: 'qp' },
+	        { typeKey: 'avLimitType', valueKey: 'av' }
+	    ];
+	    
+	    emissionPairs.forEach(pair => {
+	        const typeSelect = row.querySelector(`select[data-key="${pair.typeKey}"]`);
+	        const valueInput = row.querySelector(`input[data-key="${pair.valueKey}"]`);
+	        
+	        if (typeSelect && valueInput) {
+	            setupValidationPair(typeSelect, valueInput);
+	        }
+	    });
+	    
+	    // ========== 2. Immunity 测试：limitCalculationType + limitValue1/2 ==========
+	    // 🔥 关键修改：使用 querySelectorAll 找到所有的 limitCalculationType
+	    const limitCalcSelects = row.querySelectorAll('select[data-key="limitCalculationType"]');
+	    
+	    limitCalcSelects.forEach(limitCalcSelect => {
+	        // 找到当前 limitCalculationType 所在的单元格
+	        const currentCell = limitCalcSelect.closest('td');
+	        if (!currentCell) return;
+	        
+	        // 获取当前单元格的索引
+	        const cellIndex = currentCell.cellIndex;
+	        
+	        // 找到后续两个单元格（应该是 limitValue1 和 limitValue2）
+	        const cells = row.cells;
+	        
+	        // limitValue1 应该在 limitCalculationType 后面第 1 列
+	        const limitValue1Cell = cells[cellIndex + 1];
+	        const limitValue1 = limitValue1Cell ? limitValue1Cell.querySelector('input[data-key="limitValue1"]') : null;
+	        
+	        // acceptanceCriteria1 在第 2 列（跳过）
+	        
+	        // limitValue2 应该在 limitCalculationType 后面第 3 列
+	        const limitValue2Cell = cells[cellIndex + 3];
+	        const limitValue2 = limitValue2Cell ? limitValue2Cell.querySelector('input[data-key="limitValue2"]') : null;
+	        
+	        // 为找到的输入框设置验证
+	        if (limitValue1) {
+	            setupValidationPair(limitCalcSelect, limitValue1);
+	        }
+	        
+	        if (limitValue2) {
+	            setupValidationPair(limitCalcSelect, limitValue2);
+	        }
+	    });
+	}
+	
+	/**
+	 * 为一对 select 和 input 设置验证
+	 */
+	function setupValidationPair(typeSelect, valueInput) {
+	    // 监听类型下拉框变化
+	    typeSelect.addEventListener('change', function() {
+	        const limitType = this.value;
+	        valueInput.placeholder = getFormatHint(limitType);
+	        
+	        // 如果输入框已有值，立即验证
+	        if (valueInput.value) {
+	            validateInput(valueInput, limitType);
+	        } else {
+	            clearValidationStyle(valueInput);
+	        }
+	    });
+	    
+	    // 监听值输入框实时输入
+	    valueInput.addEventListener('input', function() {
+	        const limitType = typeSelect.value;
+	        if (limitType) {
+	            validateInput(this, limitType);
+	        }
+	    });
+	    
+	    // 监听失去焦点事件
+	    valueInput.addEventListener('blur', function() {
+	        const limitType = typeSelect.value;
+	        if (limitType && this.value) {
+	            validateInput(this, limitType);
+	        }
+	    });
+	    
+	    // 初始化：如果已有值，触发验证
+	    if (typeSelect.value && valueInput.value) {
+	        validateInput(valueInput, typeSelect.value);
+	    }
+	}
+	/**
+	 * 生成 Excel 导出文件名
+	 * 格式：客户名称_Level2_Level3_Level4_Specification_SpecDate_YYYYMMDD_HHMMSS.xlsx
+	 */
+	function generateExcelFileName() {
+	    // ========== 1. 获取客户名称 ==========
+	    const customer = document.getElementById('customer').value.trim() || 'UnknownCustomer';
+	    
+	    // ========== 2. 获取测试项信息 ==========
+	    const level2 = selectedLevel2 || 'NoLevel2';
+	    const level3 = selectedLevel3 || '';
+	    const level4 = selectedLevel4 || '';
+	    
+	    // ========== 3. 获取规格信息 ==========
+	    const specification = document.getElementById('specification').value.trim() || 'NoSpec';
+	    const specDate = document.getElementById('specification_date').value.trim() || '';
+	    
+	    // ========== 4. 获取当前日期时间（格式：YYYYMMDD_HHMMSS）==========
+	    const now = new Date();
+	    const year = now.getFullYear();
+	    const month = String(now.getMonth() + 1).padStart(2, '0');
+	    const day = String(now.getDate()).padStart(2, '0');
+	    const hours = String(now.getHours()).padStart(2, '0');
+	    const minutes = String(now.getMinutes()).padStart(2, '0');
+	    const seconds = String(now.getSeconds()).padStart(2, '0');
+	    const currentDateTime = `${year}${month}${day}_${hours}${minutes}${seconds}`;
+	    
+	    // ========== 5. 清理特殊字符（避免文件名非法）==========
+	    const cleanString = (str) => {
+	        return str.replace(/[<>:"/\\|?*\s]/g, '_'); // 替换Windows不允许的字符和空格
+	    };
+	    
+	    // ========== 6. 构建文件名各部分 ==========
+	    const parts = [
+	        cleanString(customer),           // 客户名称
+	        cleanString(level2)              // Level 2
+	    ];
+	    
+	    if (level3) parts.push(cleanString(level3));  // Level 3（如果有）
+	    if (level4) parts.push(cleanString(level4));  // Level 4（如果有）
+	    
+	    parts.push(cleanString(specification));  // Specification
+	    
+	    if (specDate) {
+	        parts.push(cleanString(specDate));  // Specification Date（如果有）
+	    }
+	    
+	    parts.push(currentDateTime);  // 当前日期时间
+	    
+	    // ========== 7. 拼接文件名 ==========
+	    const fileName = parts.join('_') + '.xlsx';
+	    
+	    console.log('📄 生成文件名:', fileName);
+	    return fileName;
+	}
+	    
+        function exportToExcel() {
+	    // ========== 1. 验证必填字段 ==========
+	    if (!selectedLevel1) {
+	        showNotification('❌ Pls select test item！', 'error');
+	        return;
+	    }
+	    
+	    const specification = document.getElementById('specification').value.trim();
+	    const specificationDate = document.getElementById('specification_date').value.trim();
+	    
+	    if (!specification) {
+	        showNotification('❌ Specification is required!', 'error');
+	        document.getElementById('specification').style.borderColor = '#f44336';
+	        document.getElementById('specification').style.boxShadow = '0 0 8px rgba(244,67,54,0.5)';
+	        document.getElementById('specification').focus();
+	        return;
+	    }
+	    
+	    if (!specificationDate) {
+	        showNotification('❌ Specification_Date is required!', 'error');
+	        document.getElementById('specification_date').style.borderColor = '#f44336';
+	        document.getElementById('specification_date').style.boxShadow = '0 0 8px rgba(244,67,54,0.5)';
+	        document.getElementById('specification_date').focus();
+	        return;
+	    }
+	    
+	    document.getElementById('specification').style.borderColor = '';
+	    document.getElementById('specification').style.boxShadow = '';
+	    document.getElementById('specification_date').style.borderColor = '';
+	    document.getElementById('specification_date').style.boxShadow = '';
+	    
+	    // ========== 2. 生成 Excel 数据 ==========
+	    const data = [
+	        ['Test Item Selection', ''],
+	        ['1st Level', selectedLevel1 ? config.testHierarchy[selectedLevel1].displayName : ''],
+	        ['2nd Level', selectedLevel2 || ''],
+	        ['3rd Level', selectedLevel3 || ''],
+	        ['4th Level', selectedLevel4 || ''],
+	        ['', ''],
+	        ['Specification Information', ''],
+	        ['Customer', document.getElementById('customer').value],
+	        ['Specification', specification],
+	        ['Specification_Date', specificationDate],
+	        ['Specification_ID', document.getElementById('specification_id')?.value || ''],
+	        ['Comment', document.getElementById('comment')?.value || ''],
+	        ['', ''],
+	        ['General Information', ''],
+	        ['Temperature and Humidity', document.getElementById('temperature')?.value || ''],
+	        ['Measurement_Setup', document.getElementById('measurement_setup')?.value || ''],
+	        ['Table setup', document.getElementById('table_setup')?.value || ''],
+	        ['Scan_Method', document.getElementById('scan_method')?.value || ''],
+	        ['Ambient_Noise_Margin', document.getElementById('ambient_noise_margin')?.value || ''],
+	        ['Harness_Length', document.getElementById('harness_length')?.value || ''],
+	        ['ECU_Power_Voltage', document.getElementById('power_voltage')?.value || ''],
+	        ['Special_Mode', document.getElementById('special_mode')?.value || ''],
+	        ['Limit_Level', document.getElementById('limit_level')?.value || ''],
+	        ['AB_ECU_Applicable', document.getElementById('ab_ecu_applicable')?.value || ''],
+	        ['', ''],
+	    ];
+	    
+	    // ========== 3. 创建工作簿并美化 ==========
+	    const wb = XLSX.utils.book_new();
+	    
+	    // 创建 General Information 工作表
+	    const ws = XLSX.utils.aoa_to_sheet(data);
+	    
+	    // ✅ 美化 General Information 工作表
+	    beautifyGeneralSheet(ws, data);
+	    
+	    XLSX.utils.book_append_sheet(wb, ws, "General Information");
+	    
+	    // ========== 4. 导出参数表并美化 ==========
+	    exportParametersToSheet(wb);
+	    
+	    // ========== 5. 生成文件名并导出 ==========
+	    const fileName = generateExcelFileName();
+	    
+	    try {
+	        XLSX.writeFile(wb, fileName, {
+	            bookType: 'xlsx',
+	            cellStyles: true
+	        });
+	        
+	        showNotification('✅ Excel Export Done: ' + fileName);
+	        console.log('📄 导出成功:', fileName);
+	    } catch (error) {
+	        console.error('❌ 导出失败:', error);
+	        showNotification('❌ Export failed: ' + error.message, 'error');
+	    }
+	}
+
+	    /**
+	 * 美化 General Information 工作表
+	 */
+	function beautifyGeneralSheet(ws, data) {
+	    const range = XLSX.utils.decode_range(ws['!ref']);
+	    
+	    // 设置列宽
+	    ws['!cols'] = [
+	        { wch: 30 },  // A列：标签列
+	        { wch: 50 }   // B列：数值列
+	    ];
+	    
+	    // 遍历所有单元格，添加样式
+	    for (let R = range.s.r; R <= range.e.r; ++R) {
+	        for (let C = range.s.c; C <= range.e.c; ++C) {
+	            const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+	            if (!ws[cellAddress]) continue;
+	            
+	            const cell = ws[cellAddress];
+	            
+	            // 初始化单元格样式
+	            if (!cell.s) cell.s = {};
+	            
+	            // 🎨 标题行样式（Test Item Selection, Specification Information, General Information）
+	            if (C === 0 && data[R][0] && 
+	                (data[R][0].includes('Selection') || 
+	                 data[R][0].includes('Information'))) {
+	                cell.s = {
+	                    fill: { fgColor: { rgb: "A5D6A7" } },  // 淡紫色背景
+	                    font: { bold: true, sz: 12, color: { rgb: "000000" } },
+	                    alignment: { horizontal: "left", vertical: "center" },
+	                    border: {
+	                        top: { style: "thin", color: { rgb: "000000" } },
+	                        bottom: { style: "thin", color: { rgb: "000000" } },
+	                        left: { style: "thin", color: { rgb: "000000" } },
+	                        right: { style: "thin", color: { rgb: "000000" } }
+	                    }
+	                };
+	            }
+	            // 🎨 标签列样式（A列非标题行）
+	            else if (C === 0 && data[R][0] && data[R][0] !== '') {
+	                cell.s = {
+	                    fill: { fgColor: { rgb: "E8EAF6" } },  // 浅紫色背景
+	                    font: { bold: true, sz: 10, color: { rgb: "000000" } },
+	                    alignment: { horizontal: "left", vertical: "center" },
+	                    border: {
+	                        top: { style: "thin", color: { rgb: "CCCCCC" } },
+	                        bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+	                        left: { style: "thin", color: { rgb: "CCCCCC" } },
+	                        right: { style: "thin", color: { rgb: "CCCCCC" } }
+	                    }
+	                };
+	            }
+	            // 🎨 数值列样式（B列）
+	            else if (C === 1 && data[R][1] !== undefined) {
+	                cell.s = {
+	                    fill: { fgColor: { rgb: "FFFFFF" } },  // 白色背景
+	                    font: { sz: 10, color: { rgb: "000000" } },
+	                    alignment: { horizontal: "left", vertical: "center", wrapText: true },
+	                    border: {
+	                        top: { style: "thin", color: { rgb: "CCCCCC" } },
+	                        bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+	                        left: { style: "thin", color: { rgb: "CCCCCC" } },
+	                        right: { style: "thin", color: { rgb: "CCCCCC" } }
+	                    }
+	                };
+	            }
+	        }
+	    }
+	    
+	    // 设置行高
+	    if (!ws['!rows']) ws['!rows'] = [];
+	    for (let i = 0; i <= range.e.r; i++) {
+	        ws['!rows'][i] = { hpt: 20 };  // 设置行高为 20
+	    }
+	}
+	/**
+	 * 初始化列配置（导入后需要手动设置）
+	 */
+	function initializeColumnConfiguration(level1, level2, level3) {
+	    console.log('🔧 初始化列配置...', {level1, level2, level3});
+	    
+	    if (!level1 || !level2) {
+	        console.warn('⚠️ 缺少必要的测试项信息');
+	        return;
+	    }
+	    
+	    const columnMapping = config.level2ColumnMapping?.[level1]?.[level2];
+	    if (!columnMapping) {
+	        console.warn('⚠️ 找不到列映射配置');
+	        return;
+	    }
+	    
+	    // ========== 初始化 General 列配置 ==========
+	    if (columnMapping.general && columnMapping.general.length > 0) {
+	        const generalConfig = config.parameterConfig[level1]?.general;
+	        if (generalConfig) {
+	            let generalColumns = [];
+	            columnMapping.general.forEach(group => {
+	                if (generalConfig[group]) {
+	                    generalColumns = generalColumns.concat(generalConfig[group]);
+	                }
+	            });
+	            window.currentGeneralColumns = generalColumns;
+	            console.log('  ✅ General 列配置:', generalColumns.length, '列');
+	        }
+	    }
+	    
+	    // ========== 初始化 Limit 列配置 ==========
+	    if (level1 === 'Transient_Coupled_Immunity') {
+	        // CTI 特殊处理
+	        let waveformColumns = null;
+	        
+	        if (Array.isArray(columnMapping.limit)) {
+	            waveformColumns = columnMapping.limit;
+	        } else if (level3 && columnMapping.limit[level3]) {
+	            waveformColumns = columnMapping.limit[level3];
+	        }
+	        
+	        if (waveformColumns && waveformColumns.length > 0) {
+	            window.currentLimitColumns = waveformColumns;
+	            console.log('  ✅ CTI Limit 列配置:', waveformColumns.length, '列');
+	        }
+	    } else {
+	        // 普通测试项
+	        if (columnMapping.limit && columnMapping.limit.length > 0) {
+	            const limitConfig = config.parameterConfig[level1]?.limit;
+	            if (limitConfig) {
+	                let limitColumns = [];
+	                columnMapping.limit.forEach(group => {
+	                    if (limitConfig[group]) {
+	                        limitColumns = limitColumns.concat(limitConfig[group]);
+	                    }
+	                });
+	                window.currentLimitColumns = limitColumns;
+	                console.log('  ✅ Limit 列配置:', limitColumns.length, '列');
+	            }
+	        }
+	    }
+	}
+        function importFromExcel(event) {
+	    const file = event.target.files[0];
+	    if (!file) return;
+	    
+	    const reader = new FileReader();
+	    reader.onload = function(e) {
+	        try {
+	            const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+	            
+	            // ========== 1. 检查必要的工作表 ==========
+	            if (!workbook.SheetNames.includes('General Information')) {
+	                showNotification('❌ Excel文件缺少 General Information 工作表', 'error');
+	                return;
+	            }
+	            
+	            const generalSheet = workbook.Sheets['General Information'];
+	            const generalData = XLSX.utils.sheet_to_json(generalSheet, { header: 1 });
+	            
+	            // ========== 2. 解析测试项选择 ==========
+	            let level1Value = null, level2Value = null, level3Value = null, level4Value = null;
+	            
+	            generalData.forEach(row => {
+	                const key = row[0];
+	                const value = row[1];
+	                
+	                // 提取测试项
+	                if (key === '1st Level' && value) {
+	                    for (const [k, v] of Object.entries(config.testHierarchy)) {
+	                        if (v.displayName === value) {
+	                            level1Value = k;
+	                            break;
+	                        }
+	                    }
+	                }
+	                if (key === '2nd Level' && value) level2Value = value;
+	                if (key === '3rd Level' && value) level3Value = value;
+	                if (key === '4th Level' && value) level4Value = value;
+	                
+	                // 填充表单字段
+	                const fieldMapping = {
+	                    'Customer': 'customer',
+	                    'Specification': 'specification',
+	                    'Specification_Version': 'specification_version',
+	                    'Specification_Date': 'specification_date',
+	                    'Specification_ID': 'specification_id',
+	                    'Comment': 'comment',
+	                    'Temperature and Humidity': 'temperature',
+	                    'Measurement_Setup': 'measurement_setup',
+	                    'Table setup': 'table_setup',
+	                    'Scan_Method': 'scan_method',
+	                    'Ambient_Noise_Margin': 'ambient_noise_margin',
+	                    'Harness_Length': 'harness_length',
+	                    'ECU_Power_Voltage': 'power_voltage',
+	                    'Special_Mode': 'special_mode',
+	                    'Limit_Level': 'limit_level',
+	                    'AB_ECU_Applicable': 'ab_ecu_applicable'
+	                };
+	                
+	                if (fieldMapping[key]) {
+	                    const element = document.getElementById(fieldMapping[key]);
+	                    if (element && value !== undefined && value !== null) {
+	                        element.value = value;
+	                    }
+	                }
+	            });
+	            
+	            console.log('📋 解析的测试项:', {level1Value, level2Value, level3Value, level4Value});
+	            
+	            // ========== 3. 读取参数数据 ==========
+	            parameterData = {
+	                general: [],
+	                limit: []
+	            };
+	            
+	            // 读取 SettingPar（通用参数）
+	            if (workbook.SheetNames.includes('SettingPar')) {
+	                const settingSheet = workbook.Sheets['SettingPar'];
+	                const settingRows = XLSX.utils.sheet_to_json(settingSheet);
+	                
+	                if (settingRows.length > 0 && level1Value && level2Value) {
+	                    const columnMapping = config.level2ColumnMapping?.[level1Value]?.[level2Value];
+	                    if (columnMapping && columnMapping.general) {
+	                        const generalConfig = config.parameterConfig[level1Value]?.general;
+	                        if (generalConfig) {
+	                            let allColumns = [];
+	                            columnMapping.general.forEach(group => {
+	                                if (generalConfig[group]) {
+	                                    allColumns = allColumns.concat(generalConfig[group]);
+	                                }
+	                            });
+	                            
+	                            const labelToKey = {};
+	                            allColumns.forEach(col => {
+	                                labelToKey[col.label] = col.key;
+	                            });
+	                            
+	                            settingRows.forEach(row => {
+	                                const newRow = {};
+	                                for (const [label, value] of Object.entries(row)) {
+	                                    const key = labelToKey[label] || label;
+	                                    newRow[key] = value;
+	                                }
+	                                parameterData.general.push(newRow);
+	                            });
+	                            
+	                            console.log(`✅ 读取 ${parameterData.general.length} 行 General 参数`);
+	                        }
+	                    }
+	                }
+	            }
+	            
+	            // 读取 LimitLevel（限制参数）
+	            if (workbook.SheetNames.includes('LimitLevel')) {
+	                const limitSheet = workbook.Sheets['LimitLevel'];
+	                const limitRows = XLSX.utils.sheet_to_json(limitSheet);
+	                
+	                if (limitRows.length > 0 && level1Value && level2Value) {
+	                    if (level1Value === 'Transient_Coupled_Immunity') {
+	                        // CTI 特殊处理
+	                        const columnMapping = config.level2ColumnMapping?.[level1Value]?.[level2Value];
+	                        let waveformColumns = null;
+	                        
+	                        if (columnMapping && columnMapping.limit) {
+	                            if (Array.isArray(columnMapping.limit)) {
+	                                waveformColumns = columnMapping.limit;
+	                            } else if (level3Value && columnMapping.limit[level3Value]) {
+	                                waveformColumns = columnMapping.limit[level3Value];
+	                            }
+	                        }
+	                        
+	                        if (waveformColumns) {
+	                            const labelToKey = {};
+	                            waveformColumns.forEach(col => {
+	                                labelToKey[col.label] = col.key;
+	                            });
+	                            
+	                            limitRows.forEach(row => {
+	                                const newRow = {};
+	                                for (const [label, value] of Object.entries(row)) {
+	                                    const key = labelToKey[label] || label;
+	                                    newRow[key] = value;
+	                                }
+	                                parameterData.limit.push(newRow);
+	                            });
+	                            
+	                            console.log(`✅ 读取 ${parameterData.limit.length} 行 CTI Limit 参数`);
+	                        }
+	                    } else {
+	                        // 其他测试项
+	                        const columnMapping = config.level2ColumnMapping?.[level1Value]?.[level2Value];
+	                        if (columnMapping && columnMapping.limit) {
+	                            const limitConfig = config.parameterConfig[level1Value]?.limit;
+	                            if (limitConfig) {
+	                                let allColumns = [];
+	                                columnMapping.limit.forEach(group => {
+	                                    if (limitConfig[group]) {
+	                                        allColumns = allColumns.concat(limitConfig[group]);
+	                                    }
+	                                });
+	                                
+	                                const labelToKey = {};
+	                                allColumns.forEach(col => {
+	                                    labelToKey[col.label] = col.key;
+	                                });
+	                                
+	                                limitRows.forEach(row => {
+	                                    const newRow = {};
+	                                    for (const [label, value] of Object.entries(row)) {
+	                                        const key = labelToKey[label] || label;
+	                                        newRow[key] = value;
+	                                    }
+	                                    parameterData.limit.push(newRow);
+	                                });
+	                                
+	                                console.log(`✅ 读取 ${parameterData.limit.length} 行 Limit 参数`);
+	                            }
+	                        }
+	                    }
+	                }
+	            }
+	            
+	            // ========== 4. 验证必要数据 ==========
+	            if (!level1Value) {
+	                showNotification('⚠️ 未找到有效的测试项信息', 'error');
+	                return;
+	            }
+	            
+	            // ========== 5. 恢复测试项选择状态 ==========
+	            selectedLevel1 = level1Value;
+	            const level1Items = document.querySelectorAll('#level1Content .level-item');
+	            level1Items.forEach(item => {
+	                const itemKey = Object.keys(config.testHierarchy).find(k => 
+	                    config.testHierarchy[k].displayName === item.textContent
+	                );
+	                if (itemKey === level1Value) {
+	                    item.classList.add('selected');
+	                }
+	            });
+	            loadLevel2(level1Value);
+	            
+	            // ✅ 延迟等待 DOM 更新
+	            setTimeout(() => {
+	                if (level2Value) {
+	                    selectedLevel2 = level2Value;
+	                    const level2Items = document.querySelectorAll('#level2Content .level-item');
+	                    level2Items.forEach(item => {
+	                        if (item.textContent === level2Value) {
+	                            item.classList.add('selected');
+	                        }
+	                    });
+	                    loadLevel3(selectedLevel1, level2Value);
+	                }
+	                
+	                setTimeout(() => {
+	                    if (level3Value) {
+	                        selectedLevel3 = level3Value;
+	                        const level3Items = document.querySelectorAll('#level3Content .level-item');
+	                        level3Items.forEach(item => {
+	                            if (item.textContent === level3Value) {
+	                                item.classList.add('selected');
+	                            }
+	                        });
+	                        loadLevel4(selectedLevel1, selectedLevel2, level3Value);
+	                    }
+	                    
+	                    setTimeout(() => {
+	                        if (level4Value) {
+	                            selectedLevel4 = level4Value;
+	                            const level4Items = document.querySelectorAll('#level4Content .level-item');
+	                            level4Items.forEach(item => {
+	                                if (item.textContent === level4Value) {
+	                                    item.classList.add('selected');
+	                                }
+	                            });
+	                        }
+	                        
+	                        // ✅ 显示选择信息
+	                        const selectedInfo = document.getElementById('selectedInfo');
+	                        let path = [];
+	                        if (selectedLevel1) path.push(config.testHierarchy[selectedLevel1].displayName);
+	                        if (selectedLevel2) path.push(selectedLevel2);
+	                        if (selectedLevel3) path.push(selectedLevel3);
+	                        if (selectedLevel4) path.push(selectedLevel4);
+	                        
+	                        if (path.length > 0) {
+	                            selectedInfo.style.display = 'block';
+	                            selectedInfo.innerHTML = '<strong>已选择：</strong>' + path.join(' → ');
+	                        }
+	                        
+	                        // ✅ 更新表单字段显示
+	                        updateFormFields();
+	                        
+	                        // ========== 🔥 初始化列配置 ==========
+	                        initializeColumnConfiguration(level1Value, level2Value, level3Value);
+	                        
+	                        // ✅ 更新参数汇总显示
+	                        document.getElementById('cit_setting').value = generateParameterSummary();
+	                        
+	                        // ========== 🔥🔥 关键：自动打开参数面板 ==========
+	                        setTimeout(() => {
+	                            showParameterPanel();
+	                            console.log('✅ 参数面板已自动打开');
+	                        }, 200);
+	                        
+	                        console.log('✅ 导入完成 - 测试项:', {level1Value, level2Value, level3Value, level4Value});
+	                        console.log('✅ 导入的参数:', JSON.parse(JSON.stringify(parameterData)));
+	                        console.log('✅ 列配置已初始化:', {
+	                            generalColumns: window.currentGeneralColumns?.length || 0,
+	                            limitColumns: window.currentLimitColumns?.length || 0
+	                        });
+	                        
+	                        showNotification('✅ Excel 数据导入成功！参数面板已自动打开');
+	                        
+	                    }, 100);
+	                }, 100);
+	            }, 100);
+	            
+	        } catch (error) {
+	            console.error('❌ 导入错误:', error);
+	            showNotification('❌ 导入失败: ' + error.message, 'error');
+	        }
+	    };
+	    
+	    reader.readAsArrayBuffer(file);
+	    event.target.value = '';
+	}
+
+        function generateGeneralTable(generalConfig, columnGroups) {
+            const table = document.getElementById('generalTable');
+            const thead = table.querySelector('thead');
+            const tbody = document.getElementById('generalTableBody');
+            if (!generalConfig) return;
+            let columns = [];
+            columnGroups.forEach(group => {
+                if (generalConfig[group]) columns = columns.concat(generalConfig[group]);
+            });
+            thead.innerHTML = '';
+            const headerRow = document.createElement('tr');
+            columns.forEach(col => {
+                const th = document.createElement('th');
+                th.textContent = col.label;
+                th.style.minWidth = '120px';
+                headerRow.appendChild(th);
+            });
+            const actionTh = document.createElement('th');
+            actionTh.textContent = 'Operation';
+            actionTh.style.minWidth = '120px';
+            headerRow.appendChild(actionTh);
+            thead.appendChild(headerRow);
+            tbody.innerHTML = '';
+            window.currentGeneralColumns = columns;
+            addGeneralRowDynamic();
+        }
+
+        function generateCTITable(columns) {
+            const table = document.getElementById('generalTable');
+            const thead = table.querySelector('thead');
+            const tbody = document.getElementById('generalTableBody');
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+            const headerRow = document.createElement('tr');
+            columns.forEach(col => {
+                const th = document.createElement('th');
+                const isRequired = isRequiredParameter(col.key);
+                th.innerHTML = `${col.label} ${isRequired ? '<span class="param-label-highlight">★</span>' : ''} ${col.placeholder ? `<br><small style="color:#666;">(${col.placeholder})</small>` : ''}`; 
+                if (isRequired) th.style.backgroundColor = '#FFF9C4';
+                th.style.minWidth = '100px';
+                headerRow.appendChild(th);
+            });
+            const actionTh = document.createElement('th');
+            actionTh.textContent = 'Operation';
+            actionTh.style.minWidth = '120px';
+            headerRow.appendChild(actionTh);
+            thead.appendChild(headerRow);
+            window.currentGeneralColumns = columns;
+            addCTIRow();
+        }
+
+        function addCTIRow(data = {}) {
+            const tbody = document.getElementById('generalTableBody');
+            const row = tbody.insertRow();
+            const columns = window.currentGeneralColumns || [];
+            columns.forEach(col => {
+                const cell = row.insertCell();
+                if (col.type === 'select' && col.options) {
+                    const select = document.createElement('select');
+                    select.setAttribute('data-key', col.key);
+                    if (isRequiredParameter(col.key)) {
+                        select.required = true;
+                        select.style.borderColor = '#FF9800';
+                        select.style.backgroundColor = '#FFF9C4';
+                    }
+                    const emptyOption = document.createElement('option');
+                    emptyOption.value = '';
+                    emptyOption.textContent = '-- Select --';
+                    select.appendChild(emptyOption);
+                    col.options.forEach(option => {
+                        const opt = document.createElement('option');
+                        opt.value = option;
+                        opt.textContent = option;
+                        if (data[col.key] === option) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                    cell.appendChild(select);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = col.type || 'text';
+                    input.setAttribute('data-key', col.key);
+                    input.value = data[col.key] || '';
+                    input.placeholder = col.placeholder || '';
+                    if (isRequiredParameter(col.key)) {
+                        input.required = true;
+                        input.style.borderColor = '#FF9800';
+                        input.style.backgroundColor = '#FFF9C4';
+                    }
+                    cell.appendChild(input);
+                }
+            });
+            const actionCell = row.insertCell();
+            actionCell.style.whiteSpace = 'nowrap';
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn-copy';
+            copyBtn.textContent = 'Copy';
+            copyBtn.onclick = function() { copyCTIRow(this); };
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn-remove';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = function() { removeCTIRow(this); };
+            actionCell.appendChild(copyBtn);
+            actionCell.appendChild(deleteBtn);
+        }
+
+        function copyCTIRow(btn) {
+            const currentRow = btn.closest('tr');
+            const inputs = currentRow.querySelectorAll('input[data-key], select[data-key]');
+            const rowData = {};
+            inputs.forEach(input => rowData[input.getAttribute('data-key')] = input.value);
+            addCTIRow(rowData);
+            const newRow = document.getElementById('generalTableBody').lastElementChild;
+            newRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            newRow.style.backgroundColor = '#E8F5E9';
+            setTimeout(() => { newRow.style.backgroundColor = ''; }, 1000);
+            showNotification('✅ Already copy and add new row');
+        }
+
+        function removeCTIRow(btn) {
+            const tbody = btn.closest('tbody');
+            if (tbody.rows.length <= 1) {
+                showNotification('⚠️ Minimum keep 1 row', 'error');
+                return;
+            }
+            btn.closest('tr').remove();
+            showNotification('✅ Row Deleted');
+        }
+
+	function generateLimitTable(limitConfig, columnGroupsOrColumns) {
+	    const table = document.getElementById('limitTable');
+	    const thead = table.querySelector('thead');
+	    const tbody = document.getElementById('limitTableBody');
+	    thead.innerHTML = '';
+	    tbody.innerHTML = '';
+	
+	    let columns = [];
+	
+	    // ========== CTI 测试：直接传列定义数组 ==========
+	    if (Array.isArray(columnGroupsOrColumns) &&
+	        columnGroupsOrColumns.length > 0 &&
+	        typeof columnGroupsOrColumns[0] === 'object' &&
+	        columnGroupsOrColumns[0].key) {
+	        columns = columnGroupsOrColumns;
+	        document.getElementById('addGroupBtn').style.display = 'none';
+	        document.getElementById('addLevelBtn').style.display = 'none';
+	    } 
+	    // ========== Immunity 测试：动态 Group + Level ==========
+	    else if (limitConfig && Array.isArray(columnGroupsOrColumns)) {
+	        // 1. 先加载 base 列
+	        let baseColumns = [];
+	        columnGroupsOrColumns.forEach(groupKey => {
+	            if (groupKey === 'base' && limitConfig.base) {
+	                baseColumns = limitConfig.base;
+	            }
+	        });
+	
+	        if (baseColumns.length === 0) {
+	            tbody.innerHTML = '<tr><td colspan="100" style="text-align:center;color:#999;">无参数配置</td></tr>';
+	            return;
+	        }
+	
+	        // 2. 初始化 Group 和 Level 配置（默认 1 个 Group，每个 Group 2 个 Level）
+	        groupLevelConfig = { 1: DEFAULT_LEVEL_COUNT };
+	        
+	        const groupTemplate = limitConfig.groupTemplate;
+	        if (!groupTemplate) {
+	            console.error('❌ 缺少 groupTemplate 配置');
+	            return;
+	        }
+	        
+	        columns = [...baseColumns];
+	        
+	        // 3. 生成 Group 和 Level 列
+	        for (const [groupIndex, levelCount] of Object.entries(groupLevelConfig)) {
+	            const groupNum = parseInt(groupIndex);
+	            
+	            // 添加 Limit_CalculationType（每个 Group 1 个）
+	            columns.push({
+	                ...groupTemplate.limitCalculationType,
+	                key: `${groupTemplate.limitCalculationType.key}_group${groupNum}`,
+	                label: `Group ${groupNum} - ${groupTemplate.limitCalculationType.label}`,
+	                groupIndex: groupNum,
+	                isGroupHeader: true
+	            });
+	            
+	            // 添加该 Group 的所有 Level
+	            for (let levelIdx = 1; levelIdx <= levelCount; levelIdx++) {
+	                groupTemplate.levelTemplate.forEach(col => {
+	                    columns.push({
+	                        ...col,
+	                        key: `${col.key}_group${groupNum}_level${levelIdx}`,
+	                        label: `Group ${groupNum}_Level ${levelIdx}_${col.label}`,
+	                        groupIndex: groupNum,
+	                        levelIndex: levelIdx
+	                    });
+	                });
+	            }
+	        }
+	
+	        // 显示按钮
+	        document.getElementById('addGroupBtn').style.display = 'inline-block';
+	        document.getElementById('addLevelBtn').style.display = 'inline-block';
+	    }
+	
+	    if (columns.length === 0) {
+	        tbody.innerHTML = '<tr><td colspan="100" style="text-align:center;color:#999;">无参数配置</td></tr>';
+	        return;
+	    }
+	
+	    // ========== 生成表头 ==========
+	    const headerRow = document.createElement('tr');
+	    columns.forEach(col => {
+	        const th = document.createElement('th');
+	        
+	        // ✅ Group Header（Limit_CalculationType）- 添加删除 Group 按钮
+	        if (col.isGroupHeader) {
+	            th.innerHTML = `
+	                ${col.label}
+	                <button class="btn-remove" onclick="removeGroupColumn(${col.groupIndex})" 
+	                        style="margin-left: 5px; padding: 2px 6px; font-size: 9px;">
+	                    ✕ Group
+	                </button>
+	            `;
+	        }
+	        // ✅ Level Header（第一个 Level 字段）- 添加删除 Level 按钮
+	        else if (col.levelIndex && col.key.includes('limitValue')) {
+	            th.innerHTML = `
+	                ${col.label}
+	                <button class="btn-remove" onclick="removeLevelColumn(${col.groupIndex}, ${col.levelIndex})" 
+	                        style="margin-left: 5px; padding: 2px 6px; font-size: 9px;">
+	                    ✕ Level
+	                </button>
+	            `;
+	        } else {
+	            th.textContent = col.label;
+	        }
+	        
+	        th.style.minWidth = '120px';
+	        headerRow.appendChild(th);
+	    });
+	
+	    const actionTh = document.createElement('th');
+	    actionTh.textContent = 'Operation';
+	    actionTh.style.minWidth = '100px';
+	    headerRow.appendChild(actionTh);
+	    thead.appendChild(headerRow);
+	
+	    window.currentLimitColumns = columns;
+	    addLimitRowDynamic();
+	}
+
+	function addGroupColumn() {
+	    const totalGroups = Object.keys(groupLevelConfig).length;
+	
+	    if (totalGroups >= MAX_GROUPS) {
+	        showNotification(`⚠️ Maximum ${MAX_GROUPS} Groups reached.`, 'error');
+	        return;
+	    }
+	
+	    // 找到下一个可用的 Group 编号
+	    let nextGroupIndex = 1;
+	    while (groupLevelConfig[nextGroupIndex]) {
+	        nextGroupIndex++;
+	    }
+	
+	    // 增加新的 Group（默认 2 个 Level）
+	    groupLevelConfig[nextGroupIndex] = DEFAULT_LEVEL_COUNT;
+	
+	    console.log('➕ 添加 Group:', nextGroupIndex, groupLevelConfig);
+	
+	    // 重新生成表格
+	    regenerateTable();
+	
+	    showNotification(`✅ Added Group ${nextGroupIndex} with ${DEFAULT_LEVEL_COUNT} Levels.`);
+	}
+
+	function addLevelColumn() {
+	    const maxLevelCount = Math.max(...Object.values(groupLevelConfig));
+	    
+	    if (maxLevelCount >= MAX_LEVELS_PER_GROUP) {
+	        showNotification(`⚠️ Maximum ${MAX_LEVELS_PER_GROUP} Levels reached!`, 'error');
+	        return;
+	    }
+	
+	    // 为每个 Group 增加一个 Level
+	    Object.keys(groupLevelConfig).forEach((groupKey) => {
+	        groupLevelConfig[groupKey]++;
+	    });
+	
+	    console.log('➕ 添加 Level 到所有 Group:', groupLevelConfig);
+	
+	    // 重新生成表格
+	    regenerateTable();
+	
+	    showNotification(`✅ Added Level ${maxLevelCount + 1} to all groups.`);
+	}
+
+	function removeGroupColumn(groupIndex) {
+	    const totalGroups = Object.keys(groupLevelConfig).length;
+	    
+	    if (totalGroups <= 1) {
+	        showNotification('⚠️ At least keep 1 Group', 'error');
+	        return;
+	    }
+	
+	    if (!confirm(`🗑️ Delete Group ${groupIndex}?\n\nThis will remove Group ${groupIndex} and all its levels.`)) {
+	        return;
+	    }
+	
+	    // 直接删除指定的 Group
+	    delete groupLevelConfig[groupIndex];
+	
+	    console.log('🗑️ 删除 Group:', groupIndex, '剩余:', groupLevelConfig);
+	
+	    // 重新生成表格
+	    regenerateTable();
+	
+	    showNotification(`✅ Deleted Group ${groupIndex}`);
+	}
+
+	function removeLevelColumn(groupIndex, levelIndex) {
+	    // ✅ 检查所有 Group 的最小 Level 数量
+	    const minLevelCount = Math.min(...Object.values(groupLevelConfig));
+	    
+	    if (minLevelCount <= 1) {
+	        showNotification('⚠️ At least keep 1 level in each group', 'error');
+	        return;
+	    }
+	    
+	    if (!confirm(`🗑️ Delete Level ${levelIndex} from ALL groups?\n\nThis will remove Level ${levelIndex} from all ${Object.keys(groupLevelConfig).length} group(s).`)) {
+	        return;
+	    }
+	    
+	    // ✅ 从所有 Group 中减少一个 Level
+	    Object.keys(groupLevelConfig).forEach(gIndex => {
+	        if (groupLevelConfig[gIndex] > 0) {
+	            groupLevelConfig[gIndex]--;
+	        }
+	    });
+	    
+	    console.log('🗑️ 从所有 Group 删除 Level:', levelIndex, '剩余:', groupLevelConfig);
+	    
+	    // 重新生成表格
+	    regenerateTable();
+	    
+	    showNotification(`✅ Deleted Level ${levelIndex} from all groups`);
+	}
+	    
+
+
+	function regenerateTable() {
+	    console.log('🔄 重新生成表格...', JSON.parse(JSON.stringify(groupLevelConfig)));
+	    
+	    // ========== 1. 保存当前数据 ==========
+	    const tbody = document.getElementById('limitTableBody');
+	    const savedData = [];
+	    
+	    tbody.querySelectorAll('tr').forEach((row) => {
+	        const rowData = {};
+	        row.querySelectorAll('input[data-key], select[data-key]').forEach((input) => {
+	            const key = input.getAttribute('data-key');
+	            rowData[key] = input.value;
+	        });
+	        savedData.push(rowData);
+	    });
+	    
+	    console.log('  保存的数据:', savedData.length, '行');
+	    
+	    // ========== 2. 获取 base 列配置 ==========
+	    const columnMapping = config.level2ColumnMapping?.[selectedLevel1]?.[selectedLevel2];
+	    if (!columnMapping || !columnMapping.limit) {
+	        console.error('❌ 缺少列配置');
+	        return;
+	    }
+	    
+	    const limitConfig = config.parameterConfig[selectedLevel1]?.limit;
+	    if (!limitConfig) {
+	        console.error('❌ 缺少 limitConfig');
+	        return;
+	    }
+	    
+	    // 加载 base 列
+	    let baseColumns = [];
+	    columnMapping.limit.forEach(groupKey => {
+	        if (groupKey === 'base' && limitConfig.base) {
+	            baseColumns = limitConfig.base;
+	        }
+	    });
+	    
+	    if (baseColumns.length === 0) {
+	        console.error('❌ 缺少 base 列配置');
+	        return;
+	    }
+	    
+	    // ========== 3. 动态生成新列配置 ==========
+	    const groupTemplate = limitConfig.groupTemplate;
+	    if (!groupTemplate) {
+	        console.error('❌ 缺少 groupTemplate');
+	        return;
+	    }
+	    
+	    const newColumns = [...baseColumns];
+	    
+	    // 生成 Group 和 Level 列
+	    for (const [groupIndex, levelCount] of Object.entries(groupLevelConfig)) {
+	        const groupNum = parseInt(groupIndex);
+	        
+	        // 添加 Limit_CalculationType（每个 Group 1 个）
+	        newColumns.push({
+	            ...groupTemplate.limitCalculationType,
+	            key: `${groupTemplate.limitCalculationType.key}_group${groupNum}`,
+	            label: `Group ${groupNum} - ${groupTemplate.limitCalculationType.label}`,
+	            groupIndex: groupNum,
+	            isGroupHeader: true
+	        });
+	        
+	        // 添加该 Group 的所有 Level
+	        for (let levelIdx = 1; levelIdx <= levelCount; levelIdx++) {
+	            groupTemplate.levelTemplate.forEach(col => {
+	                newColumns.push({
+	                    ...col,
+	                    key: `${col.key}_group${groupNum}_level${levelIdx}`,
+	                    label: `Group ${groupNum}_Level ${levelIdx}_${col.label}`,
+	                    groupIndex: groupNum,
+	                    levelIndex: levelIdx
+	                });
+	            });
+	        }
+	    }
+	    
+	    console.log('  生成新列配置:', newColumns.length, '列');
+	    
+	    // ========== 4. 更新全局列配置 ==========
+	    window.currentLimitColumns = newColumns;
+	    
+	    // ========== 5. 重新生成表头 ==========
+	    const table = document.getElementById('limitTable');
+	    const thead = table.querySelector('thead');
+	    thead.innerHTML = '';
+	    
+	    const headerRow = document.createElement('tr');
+	    newColumns.forEach(col => {
+	        const th = document.createElement('th');
+	        
+	        // ✅ Group Header - 添加删除按钮
+	        if (col.isGroupHeader) {
+	            th.className = 'group-header';
+	            th.innerHTML = `
+	                <span class="group-badge">Group ${col.groupIndex}</span>
+	                ${col.label}
+	                <button class="btn-remove" onclick="removeGroupColumn(${col.groupIndex})" 
+	                        title="Delete Group ${col.groupIndex}">
+	                    ✕
+	                </button>
+	            `;
+	        }
+	        // ✅ Level Header - 添加删除按钮（只在 limitValue 列显示）
+	        else if (col.levelIndex && col.key.includes('limitValue')) {
+	            th.className = `level-header-group${col.groupIndex}`;
+	            th.innerHTML = `
+	                <span class="level-badge">Level ${col.levelIndex}</span>
+	                ${col.label}
+	                <button class="btn-remove" onclick="removeLevelColumn(${col.groupIndex}, ${col.levelIndex})" 
+	                        title="Delete Level ${col.levelIndex} from all groups">
+	                    ✕
+	                </button>
+	            `;
+	        } else {
+	            th.className = col.groupIndex ? `level-header-group${col.groupIndex}` : 'normal-header';
+	            th.textContent = col.label;
+	        }
+	        
+	        th.style.minWidth = '120px';
+	        headerRow.appendChild(th);
+	    });
+	    
+	    // 添加操作列
+	    const actionTh = document.createElement('th');
+	    actionTh.textContent = 'Operation';
+	    actionTh.style.minWidth = '100px';
+	    actionTh.className = 'normal-header';
+	    headerRow.appendChild(actionTh);
+	    thead.appendChild(headerRow);
+	    
+	    // ========== 6. 重新生成数据行 ==========
+	    tbody.innerHTML = '';
+	    
+	    if (savedData.length === 0) {
+	        // 如果没有保存的数据，添加一行空白行
+	        addLimitRowDynamic();
+	    } else {
+	        // 恢复保存的数据
+	        savedData.forEach(rowData => {
+	            addLimitRowDynamic(rowData);
+	        });
+	    }
+	    
+	    // ========== 7. 更新按钮显示状态 ==========
+	    const totalGroups = Object.keys(groupLevelConfig).length;
+	    const maxLevelCount = Math.max(...Object.values(groupLevelConfig));
+	    
+	    document.getElementById('addGroupBtn').style.display = 
+	        totalGroups >= MAX_GROUPS ? 'none' : 'inline-block';
+	    
+	    document.getElementById('addLevelBtn').style.display = 
+	        maxLevelCount >= MAX_LEVELS_PER_GROUP ? 'none' : 'inline-block';
+	    
+	    console.log('✅ 表格重新生成完成');
+	}
+
+        function addGeneralRowDynamic(data = {}) {
+            const tbody = document.getElementById('generalTableBody');
+            const row = tbody.insertRow();
+            const columns = window.currentGeneralColumns || [];
+            columns.forEach(col => {
+                const cell = row.insertCell();
+                if (col.type === 'select' && col.options) {
+                    const select = document.createElement('select');
+                    select.setAttribute('data-key', col.key);
+                    const emptyOption = document.createElement('option');
+                    emptyOption.value = '';
+                    emptyOption.textContent = col.placeholder || 'Pls select';
+                    select.appendChild(emptyOption);
+                    col.options.forEach(option => {
+                        const opt = document.createElement('option');
+                        opt.value = option;
+                        opt.textContent = option;
+                        if (data[col.key] === option) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                    if (data[col.key] && !col.options.includes(data[col.key])) select.value = '';
+                    cell.appendChild(select);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.setAttribute('data-key', col.key);
+                    input.value = data[col.key] || '';
+                    input.placeholder = col.placeholder || '';
+                    cell.appendChild(input);
+                }
+            });
+            const actionCell = row.insertCell();
+            actionCell.style.whiteSpace = 'nowrap';
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn-copy';
+            copyBtn.textContent = 'Copy';
+            copyBtn.onclick = function() { copyRow(this, 'general'); };
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn-remove';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = function() { removeRow(this); };
+            actionCell.appendChild(copyBtn);
+            actionCell.appendChild(deleteBtn);
+	    
+	    setupParameterValidation(row);
+		
+        }
+
+		function addLimitRowDynamic(data = {}) {
+			  const tbody = document.getElementById('limitTableBody');
+			  const row = tbody.insertRow();
+			  const columns = window.currentLimitColumns || [];
+			  if (columns.length === 0) return;
+
+			  columns.forEach(col => {
+				const cell = row.insertCell();
+
+				if (col.type === 'select' && col.options) {
+				  const select = document.createElement('select');
+				  select.className = 'param-input';
+				  select.setAttribute('data-key', col.key);
+
+				  // CTI 必填高亮（依赖 waveformParameterMapping.requiredParams）
+				  if (selectedLevel1 === 'Transient_Coupled_Immunity' && isRequiredParameter(col.key)) {
+					select.required = true;
+				  }
+
+				  const emptyOption = document.createElement('option');
+				  emptyOption.value = '';
+				  emptyOption.textContent = col.placeholder || 'Pls Select';
+				  select.appendChild(emptyOption);
+
+				  col.options.forEach(option => {
+					const opt = document.createElement('option');
+					opt.value = option;
+					opt.textContent = option;
+					if (data[col.key] === option) opt.selected = true;
+					select.appendChild(opt);
+				  });
+
+				  cell.appendChild(select);
+				} else {
+				  const input = document.createElement('input');
+				  input.className = 'param-input';
+				  input.type = col.type || 'text';
+				  input.setAttribute('data-key', col.key);
+				  input.value = data[col.key] || '';
+				  input.placeholder = col.placeholder || '';
+
+				  // CTI 必填高亮（依赖 waveformParameterMapping.requiredParams）
+				  if (selectedLevel1 === 'Transient_Coupled_Immunity' && isRequiredParameter(col.key)) {
+					input.required = true;
+				  }
+
+				  cell.appendChild(input);
+				}
+			  });
+
+			  const actionCell = row.insertCell();
+			  actionCell.style.whiteSpace = 'nowrap';
+			  const copyBtn = document.createElement('button');
+			  copyBtn.className = 'btn-copy';
+			  copyBtn.textContent = 'Copy';
+			  copyBtn.onclick = function() { copyRow(this, 'limit'); };
+			  const deleteBtn = document.createElement('button');
+			  deleteBtn.className = 'btn-remove';
+			  deleteBtn.textContent = 'Delete';
+			  deleteBtn.onclick = function() { removeRow(this); };
+			  actionCell.appendChild(copyBtn);
+			  actionCell.appendChild(deleteBtn);
+
+			  setupParameterValidation(row);
+			}
+
+		function addGeneralRow() {
+			if (selectedLevel1 === 'Transient_Coupled_Immunity') addCTIRow({});
+			else addGeneralRowDynamic({});
+		}
+
+		function addLimitRow() {
+			addLimitRowDynamic({});
+		}
+
+		function copyRow(btn, tableType) {
+			const currentRow = btn.closest('tr');
+			const inputs = currentRow.querySelectorAll('input[data-key], select[data-key]');
+			const rowData = {};
+			inputs.forEach(input => rowData[input.getAttribute('data-key')] = input.value);
+			if (tableType === 'general') addGeneralRowDynamic(rowData);
+			else if (tableType === 'limit') addLimitRowDynamic(rowData);
+			const newRow = currentRow.parentNode.lastElementChild;
+			newRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+			newRow.style.backgroundColor = '#E8F5E9';
+			setTimeout(() => { newRow.style.backgroundColor = ''; }, 1000);
+			showNotification('✅ Already Copy and add rows');
+		}
+
+		function removeRow(btn) {
+			const tbody = btn.closest('tbody');
+			if (tbody.rows.length <= 1) {
+				showNotification('⚠️ Keep 1 row at least', 'error');
+				return;
+			}
+			btn.closest('tr').remove();
+			showNotification('✅ Already delete row');
+		}
+
+		function clearParameters() {
+			if (!confirm('Confirm to Clear all parameter？')) return;
+			
+			// ✅ 清空全局数据
+			parameterData.general = [];
+			parameterData.limit = [];
+			
+			if (selectedLevel1 === 'Transient_Coupled_Immunity') {
+				document.getElementById('limitTableBody').innerHTML = '';
+				addLimitRowDynamic();
+			} else {
+				const generalTableBody = document.getElementById('generalTableBody');
+				const limitTableBody = document.getElementById('limitTableBody');
+				
+				if (generalTableBody) {
+					generalTableBody.innerHTML = '';
+					addGeneralRowDynamic();
+				}
+				if (limitTableBody) {
+					limitTableBody.innerHTML = '';
+					addLimitRowDynamic();
+				}
+			}
+			
+			// ✅ 清空显示的汇总文本
+			document.getElementById('cit_setting').value = '';
+			
+			showNotification('✅ 参数已清空');
+		}
+
+		function loadWaveformImage() {
+            const waveformSection = document.getElementById('waveformSection');
+            const imageContainer = document.getElementById('waveformImageContainer');
+            const waveformTitle = document.getElementById('waveformTitle');
+            if (selectedLevel1 !== 'Transient_Coupled_Immunity') {
+                waveformSection.style.display = 'none';
+                return;
+            }
+            waveformSection.style.display = 'flex';
+            if (!selectedLevel3) {
+                imageContainer.innerHTML = `<div class="waveform-placeholder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16V4H3v12h18m0-14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-7v2h2v2H8v-2h2v-2H3a2 2 0 0 1-2-2V4c0-1.11.89-2 2-2h18M5 6h9v5H5V6m10 0h4v2h-4V6m4 3v5h-4V9h4M5 12h4v2H5v-2m5 0h4v2h-4v-2z"/></svg><p>Please select a waveform (Level 3)</p></div>`;
+                return;
+            }
+            const waveformConfig = config.waveformParameterMapping?.[selectedLevel1]?.[selectedLevel2]?.[selectedLevel3];
+            if (waveformConfig && waveformConfig.image) {
+                waveformTitle.innerHTML = `📊 Waveform: <span style="color: #2196F3;">${selectedLevel3}</span>`;
+                imageContainer.innerHTML = `<img src="${waveformConfig.image}" alt="${selectedLevel3}" onerror="handleImageError(this)">`;
+            } else {
+                waveformTitle.textContent = '📊 Waveform Reference';
+                imageContainer.innerHTML = `<div class="waveform-placeholder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg><p>No waveform image available<br>for ${selectedLevel3}</p></div>`;
+            }
+        }
+
+		function showRequiredParameters(requiredParams) {
+			const paramInfo = document.getElementById('waveformParamInfo');
+			const requiredList = document.getElementById('requiredParamsList');
+			if (requiredParams && requiredParams.length > 0) {
+				requiredList.innerHTML = requiredParams.map(param => `<span class="param-label-highlight">${param}</span>`).join(' ');
+				paramInfo.style.display = 'block';
+			} else {
+				paramInfo.style.display = 'none';
+			}
+		}
+
+		function handleImageError(img) {
+			img.parentElement.innerHTML = `<div class="waveform-placeholder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11,15H13V17H11V15M11,7H13V13H11V7M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg><p style="color:#f44336;">⚠️ Image failed to load</p><small style="color:#999;">Please check the image path</small></div>`;
+		}
+
+		function isRequiredParameter(paramName) {
+			if (selectedLevel1 !== 'Transient_Coupled_Immunity' || !selectedLevel3) return false;
+			const waveformConfig = config.waveformParameterMapping?.[selectedLevel1]?.[selectedLevel2]?.[selectedLevel3];
+			if (!waveformConfig || !waveformConfig.requiredParams) return false;
+			return waveformConfig.requiredParams.includes(paramName);
+		}
+
+		function generateParameterSummary() {
+			if (selectedLevel1 === 'Transient_Coupled_Immunity') {
+				const count = parameterData.limit.length;
+				return count > 0 ? `${count} 行测试参数` : '';
+			}
+			const generalCount = parameterData.general.length;
+			const limitCount = parameterData.limit.length;
+			if (generalCount === 0 && limitCount === 0) return '';
+			return `General: ${generalCount} Row, Limit: ${limitCount} Row`;
+		}
+
+		function exportParametersToSheet(workbook) {
+		    // ========== 导出 General Parameters ==========
+		    if (parameterData.general && parameterData.general.length > 0) {
+		        const generalColumns = window.currentGeneralColumns || [];
+		        const headerMapping = {};
+		        generalColumns.forEach(col => headerMapping[col.key] = col.label);
+		        
+		        const generalDataWithLabels = parameterData.general.map(row => {
+		            const newRow = {};
+		            for (const [key, value] of Object.entries(row)) {
+		                newRow[headerMapping[key] || key] = value;
+		            }
+		            return newRow;
+		        });
+		        
+		        const generalSheet = XLSX.utils.json_to_sheet(generalDataWithLabels);
+		        
+		        // ✅ 美化 SettingPar 表
+		        beautifyParameterSheet(generalSheet, generalColumns);
+		        
+		        XLSX.utils.book_append_sheet(workbook, generalSheet, "SettingPar");
+		    }
+		    
+		    // ========== 导出 Limit Parameters ==========
+		    if (parameterData.limit && parameterData.limit.length > 0) {
+		        const limitColumns = window.currentLimitColumns || [];
+		        const headerMapping = {};
+		        limitColumns.forEach(col => headerMapping[col.key] = col.label);
+		        
+		        const limitDataWithLabels = parameterData.limit.map(row => {
+		            const newRow = {};
+		            for (const [key, value] of Object.entries(row)) {
+		                newRow[headerMapping[key] || key] = value;
+		            }
+		            return newRow;
+		        });
+		        
+		        const limitSheet = XLSX.utils.json_to_sheet(limitDataWithLabels);
+		        
+		        // ✅ 美化 LimitLevel 表
+		        beautifyParameterSheet(limitSheet, limitColumns);
+		        
+		        XLSX.utils.book_append_sheet(workbook, limitSheet, "LimitLevel");
+		    }
+		}
+
+	    /**
+		 * 美化参数工作表（SettingPar 和 LimitLevel）
+		 */
+		function beautifyParameterSheet(ws, columns) {
+		    const range = XLSX.utils.decode_range(ws['!ref']);
+		    
+		    // 设置列宽（根据列数自动调整）
+		    ws['!cols'] = columns.map(() => ({ wch: 15 }));
+		    
+		    // 遍历所有单元格，添加样式
+		    for (let R = range.s.r; R <= range.e.r; ++R) {
+		        for (let C = range.s.c; C <= range.e.c; ++C) {
+		            const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+		            if (!ws[cellAddress]) continue;
+		            
+		            const cell = ws[cellAddress];
+		            
+		            // 初始化单元格样式
+		            if (!cell.s) cell.s = {};
+		            
+		            // 🎨 表头行样式（第一行）
+		            if (R === 0) {
+		                cell.s = {
+		                    fill: { fgColor: { rgb: "4472C4" } },  // 淡紫色背景
+		                    font: { bold: true, sz: 11, color: { rgb: "FFFFFF" } },
+		                    alignment: { horizontal: "center", vertical: "center", wrapText: true },
+		                    border: {
+		                        top: { style: "medium", color: { rgb: "000000" } },
+		                        bottom: { style: "medium", color: { rgb: "000000" } },
+		                        left: { style: "thin", color: { rgb: "000000" } },
+		                        right: { style: "thin", color: { rgb: "000000" } }
+		                    }
+		                };
+		            }
+		            // 🎨 数据行样式（奇数行）
+		            else if (R % 2 === 1) {
+		                cell.s = {
+		                    fill: { fgColor: { rgb: "FFFFFF" } },  // 白色背景
+		                    font: { sz: 10, color: { rgb: "000000" } },
+		                    alignment: { horizontal: "center", vertical: "center" },
+		                    border: {
+		                        top: { style: "thin", color: { rgb: "DDDDDD" } },
+		                        bottom: { style: "thin", color: { rgb: "DDDDDD" } },
+		                        left: { style: "thin", color: { rgb: "DDDDDD" } },
+		                        right: { style: "thin", color: { rgb: "DDDDDD" } }
+		                    }
+		                };
+		            }
+		            // 🎨 数据行样式（偶数行）- 斑马纹
+		            else {
+		                cell.s = {
+		                    fill: { fgColor: { rgb: "F5F5F5" } },  // 浅灰色背景
+		                    font: { sz: 10, color: { rgb: "000000" } },
+		                    alignment: { horizontal: "center", vertical: "center" },
+		                    border: {
+		                        top: { style: "thin", color: { rgb: "DDDDDD" } },
+		                        bottom: { style: "thin", color: { rgb: "DDDDDD" } },
+		                        left: { style: "thin", color: { rgb: "DDDDDD" } },
+		                        right: { style: "thin", color: { rgb: "DDDDDD" } }
+		                    }
+		                };
+		            }
+		        }
+		    }
+		    
+		    // 设置行高
+		    if (!ws['!rows']) ws['!rows'] = [];
+		    ws['!rows'][0] = { hpt: 25 };  // 表头行高
+		    for (let i = 1; i <= range.e.r; i++) {
+		        ws['!rows'][i] = { hpt: 20 };  // 数据行行高
+		    }
+		    
+		    // 冻结首行（表头）
+		    ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+		}
+        
+		function getWaveformParameters(level2, level3) {
+			const parameterMapping = { "CTI_TSUP": { "Pulse_1_12V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t1", "t2", "t3", "t4", "Duration", "Number_of_Pulses", "Function_Status"], "Pulse_1_16V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t1", "t2", "t3", "t4", "Duration", "Number_of_Pulses", "Function_Status"], "Pulse_1_48V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t1", "t2", "t3", "t4", "Duration", "Number_of_Pulses", "Function_Status"], "Pulse_1b_12V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t1", "t2", "Duration", "Number_of_Pulses", "Function_Status"], "Pulse_1b_16V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t1", "t2", "Duration", "Number_of_Pulses", "Function_Status"], "Pulse_2a_12V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t1", "t2", "Duration", "Number_of_Pulses", "Function_Status"], "Pulse_2b_12V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t5", "t6", "Duration", "Number_of_Pulses", "Function_Status"], "Pulse_3a_12V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t1", "t2", "t3", "t4", "Duration", "Number_of_Pulses", "Function_Status"], "Pulse_3b_12V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t1", "t2", "t3", "t4", "Duration", "Number_of_Pulses", "Function_Status"] }, "CTI_CI220": { "Pulse_A2-1_Mode_2": ["List", "Duration", "Number_of_Pulses", "Function_Status"], "Pulse_A2-2_Mode_2": ["List", "Duration", "Number_of_Pulses", "Function_Status"], "Pulse_C-1_Mode_3": ["List", "Duration", "Number_of_Pulses", "Function_Status"] }, "CTI_DCC": { "slow_transient_pulse_2a_positive_12V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t1", "t2", "Duration", "Number_of_Pulses", "Function_Status"], "fast_transient_pulse_3a_12V": ["List", "Max_UA", "Min_UA", "Max_US", "Min_US", "Max_Ri", "Min_Ri", "td", "tr", "t1", "t2", "t3", "t4", "Duration", "Number_of_Pulses", "Function_Status"] } };
+			const parameterDefinitions = { "List": {label: "List Level", type: "text", placeholder: "Level III"}, "Max_UA": {label: "Max UA(V)", type: "number", placeholder: "V"}, "Min_UA": {label: "Min UA(V)", type: "number", placeholder: "V"}, "Max_US": {label: "Max US(V)", type: "number", placeholder: "V"}, "Min_US": {label: "Min US(V)", type: "number", placeholder: "V"}, "Max_Ri": {label: "Max Ri(Ω)", type: "number", placeholder: "Ω"}, "Min_Ri": {label: "Min Ri(Ω)", type: "number", placeholder: "Ω"}, "td": {label: "td", type: "number", placeholder: "ms"}, "tr": {label: "tr (μs)", type: "number", placeholder: "μs"}, "t1": {label: "t1 (ms)", type: "number", placeholder: "ms"}, "t2": {label: "t2 (ms)", type: "number", placeholder: "ms"}, "t3": {label: "t3 (ms)", type: "number", placeholder: "ms"}, "t4": {label: "t4 (ms)", type: "number", placeholder: "ms"}, "t5": {label: "t5 (ms)", type: "number", placeholder: "ms"}, "t6": {label: "t6 (ms)", type: "number", placeholder: "ms"}, "t12": {label: "t12 (ms)", type: "number", placeholder: "ms"}, "Duration": {label: "Duration (min)", type: "number", placeholder: "min"}, "Number_of_Pulses": {label: "Number of Pulses", type: "number", placeholder: "5000"}, "Function_Status": { label: "Function Status", type: "select", options: ["Class A", "Class B", "Class C", "Class D", "Class E"], placeholder: "Select" } };
+			const paramKeys = parameterMapping[level2]?.[level3] || [];
+			return paramKeys.map(key => ({ key: key, ...parameterDefinitions[key] }));
+		}
+	            // ========== User Manual Functions ==========
+	        function toggleManual() {
+	            const overlay = document.getElementById('manualOverlay');
+	            overlay.classList.toggle('show');
+	            
+	            // Prevent body scroll when manual is open
+	            if (overlay.classList.contains('show')) {
+	                document.body.style.overflow = 'hidden';
+	            } else {
+	                document.body.style.overflow = '';
+	            }
+	        }
+	
+	        function closeManualOnOverlay(event) {
+	            if (event.target.id === 'manualOverlay') {
+	                toggleManual();
+	            }
+	        }
+	
+	        // Close manual with ESC key
+	        document.addEventListener('keydown', function(e) {
+	            if (e.key === 'Escape') {
+	                const overlay = document.getElementById('manualOverlay');
+	                if (overlay.classList.contains('show')) {
+	                    toggleManual();
+	                }
+	            }
+	        });
+    </script>
+</body>
+</html>
