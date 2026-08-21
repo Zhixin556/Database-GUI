@@ -1654,19 +1654,18 @@
 	        document.getElementById('limitSectionTitle').textContent = 'Limit Settings';
 	        
 	        // ✅ 修复：获取列映射配置
-	        const columnMapping = config.level2ColumnMapping?.[selectedLevel1]?.[selectedLevel2];
-	        
-	        // ✅ 修复：如果没有列映射，尝试通过 Level3 查找
-	        let actualLevel2 = selectedLevel2;
-	        if (!columnMapping && selectedLevel3) {
-	            // 尝试用 selectedLevel3 作为 Level2 查找
-	            const altMapping = config.level2ColumnMapping?.[selectedLevel1]?.[selectedLevel3];
-	            if (altMapping) {
-	                actualLevel2 = selectedLevel3;
-	            }
-	        }
-	        
-	        const finalColumnMapping = config.level2ColumnMapping?.[selectedLevel1]?.[actualLevel2];
+const resolvedLevel2Key = resolveColumnMappingKey(selectedLevel1, selectedLevel2, selectedLevel3);
+        const columnMapping = resolvedLevel2Key ? config.level2ColumnMapping?.[selectedLevel1]?.[resolvedLevel2Key] : null;
+        
+        let actualLevel2 = resolvedLevel2Key || selectedLevel2;
+        if (!columnMapping && selectedLevel3) {
+            const altMapping = config.level2ColumnMapping?.[selectedLevel1]?.[selectedLevel3];
+            if (altMapping) {
+                actualLevel2 = selectedLevel3;
+            }
+        }
+        
+        const finalColumnMapping = actualLevel2 ? config.level2ColumnMapping?.[selectedLevel1]?.[actualLevel2] : null;
 	        
 	        if (!finalColumnMapping) {
 	            console.error('❌ 列映射配置缺失:', {
@@ -1997,196 +1996,215 @@
         }
 
         // ===== Level 1 函数 =====
-	function loadLevel1() {
-	    const level1Content = document.getElementById('level1Content');
-	    level1Content.innerHTML = '';
-	    
-	    for (const [key, value] of Object.entries(config.testHierarchy)) {
-	        const item = document.createElement('div');
-	        const color = value.color || 'gray';
-	        item.className = `level-item color-${color}`;
-	        item.textContent = value.displayName;
-	        item.onclick = (event) => selectLevel1(key, event);
-	        level1Content.appendChild(item);
-	    }
-	}
-	
-	function selectLevel1(level1Key, event) {
-	    selectedLevel1 = level1Key;
-	    selectedLevel2 = null;
-	    selectedLevel3 = null;
-	    selectedLevel4 = null;
-	    
-	    // 更新选中状态
-	    document.querySelectorAll('#level1Content .level-item').forEach(item => 
-	        item.classList.remove('selected')
-	    );
-	    event.target.classList.add('selected');
-	    
-	    // 加载 Level 2
-	    loadLevel2(level1Key);
-	    
-	    // 清空后续层级
-	    document.getElementById('level3Content').innerHTML = '';
-	    document.getElementById('level4Content').innerHTML = '';
-	}
-	
-	// ===== Level 2 函数 =====
-	function loadLevel2(level1Key) {
-	    const level2Content = document.getElementById('level2Content');
-	    level2Content.innerHTML = '';
-	    
-	    const level1Data = config.testHierarchy[level1Key];
-	    
-	    // 检查 level2 是否存在且不为空
-	    if (!level1Data || !level1Data.level2 || Object.keys(level1Data.level2).length === 0) {
-	        level2Content.innerHTML = '<div style="padding: 10px; color: #999;">No available items</div>';
-	        return;
-	    }
-	    
-	    // 渲染 Level 2 项目
-	    for (const [key, value] of Object.entries(level1Data.level2)) {
-	        const item = document.createElement('div');
-	        const color = value.color || 'gray';
-	        item.className = `level-item color-${color}`;
-	        item.textContent = value.displayName;
-	        item.onclick = (event) => selectLevel2(level1Key, key, event);
-	        level2Content.appendChild(item);
-	    }
-	}
-	
-	function selectLevel2(level1Key, level2Key, event) {
-	    selectedLevel2 = level2Key;
-	    selectedLevel3 = null;
-	    selectedLevel4 = null;
-	    
-	    // 更新选中状态
-	    document.querySelectorAll('#level2Content .level-item').forEach(item => 
-	        item.classList.remove('selected')
-	    );
-	    event.target.classList.add('selected');
-	    
-	    // 加载 Level 3
-	    loadLevel3(level1Key, level2Key);
-	    
-	    // 清空 Level 4
-	    document.getElementById('level4Content').innerHTML = '';
-	}
-	
-	// ===== Level 3 函数 =====
-	function loadLevel3(level1Key, level2Key) {
-	    const level3Content = document.getElementById('level3Content');
-	    level3Content.innerHTML = '';
-	    
-	    const level2Data = config.testHierarchy[level1Key]?.level2?.[level2Key];
-	    
-	    if (!level2Data || !level2Data.level3) {
-	        level3Content.innerHTML = '<div style="padding: 10px; color: #999;">No available items</div>';
-	        return;
-	    }
-	    
-	    const level3Data = level2Data.level3;
-	    
-	    // ✅ 处理 level3 是数组的情况（如 RF_Emission, RF_Immunity）
-	    if (Array.isArray(level3Data)) {
-	        level3Data.forEach(item => {
-	            const div = document.createElement('div');
-	            div.className = 'level-item color-green';
-	            div.textContent = item;
-	            div.onclick = (event) => selectLevel3(level1Key, level2Key, item, event);
-	            level3Content.appendChild(div);
-	        });
-	        return;
-	    }
-	    
-	    // ✅ 处理 level3 是对象的情况（如 Transient_Coupled_Immunity）
-	    if (typeof level3Data === 'object') {
-	        for (const [key, value] of Object.entries(level3Data)) {
-	            const item = document.createElement('div');
-	            const color = value.color || 'gray';
-	            item.className = `level-item color-${color}`;
-	            item.textContent = value.displayName;
-	            item.onclick = (event) => selectLevel3(level1Key, level2Key, key, event);
-	            level3Content.appendChild(item);
-	        }
-	    }
-	}
-	
-	function selectLevel3(level1Key, level2Key, level3Key, event) {
-	    selectedLevel3 = level3Key;
-	    selectedLevel4 = null;
-	    
-	    // 更新选中状态
-	    document.querySelectorAll('#level3Content .level-item').forEach(item => 
-	        item.classList.remove('selected')
-	    );
-	    event.target.classList.add('selected');
-	    
-	    // 加载 Level 4
-	    loadLevel4(level1Key, level2Key, level3Key);
-	}
-	
-	// ===== Level 4 函数 =====
-	function loadLevel4(level1Key, level2Key, level3Key) {
-	    const level4Content = document.getElementById('level4Content');
-	    level4Content.innerHTML = '';
-	    
-	    const level3Data = config.testHierarchy[level1Key]?.level2?.[level2Key]?.level3;
-	    
-	    // ✅ 如果 level3 是数组，则没有 level4
-	    if (Array.isArray(level3Data)) {
-	        console.log('No Level 4 for array-based Level 3');
-	        return;
-	    }
-	    
-	    // ✅ 如果 level3 是对象，检查是否有 level4
-	    const level3Item = level3Data?.[level3Key];
-	    
-	    if (!level3Item || !level3Item.level4 || !Array.isArray(level3Item.level4)) {
-	        level4Content.innerHTML = '<div style="padding: 10px; color: #999;">No available items</div>';
-	        return;
-	    }
-	    
-	    // 渲染 Level 4 项目
-	    level3Item.level4.forEach(item => {
-	        const div = document.createElement('div');
-	        div.className = 'level-item color-green';
-	        div.textContent = item;
-	        div.onclick = (event) => selectLevel4(item, event);
-	        level4Content.appendChild(div);
-	    });
-	}
-	
-	function selectLevel4(level4Key, event) {
-	    selectedLevel4 = level4Key;
-	    
-	    // 更新选中状态
-	    document.querySelectorAll('#level4Content .level-item').forEach(item => 
-	        item.classList.remove('selected')
-	    );
-	    event.target.classList.add('selected');
-	    
-	    console.log('Selected:', {
-	        level1: selectedLevel1,
-	        level2: selectedLevel2,
-	        level3: selectedLevel3,
-	        level4: selectedLevel4
-	    });
-	}
+        function loadLevel1() {
+            const level1Content = document.getElementById('level1Content');
+            level1Content.innerHTML = '';
 
-        function confirmSelection() {
-            let path = [];
+            for (const [key, value] of Object.entries(config.testHierarchy || {})) {
+                const item = document.createElement('div');
+                const color = value.color || 'gray';
+                item.className = `level-item color-${color}`;
+                item.dataset.levelKey = key;
+                item.textContent = value.displayName || key;
+                item.onclick = (event) => selectLevel1(key, event);
+                level1Content.appendChild(item);
+            }
+        }
+
+        function selectLevel1(level1Key, event) {
+            selectedLevel1 = level1Key;
+            selectedLevel2 = null;
+            selectedLevel3 = null;
+            selectedLevel4 = null;
+
+            document.querySelectorAll('#level1Content .level-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('selected');
+            }
+
+            loadLevel2(level1Key);
+            document.getElementById('level3Content').innerHTML = '';
+            document.getElementById('level4Content').innerHTML = '';
+        }
+
+        // ===== Level 2 函数 =====
+        function loadLevel2(level1Key) {
+            const level2Content = document.getElementById('level2Content');
+            level2Content.innerHTML = '';
+
+            const level1Data = config.testHierarchy[level1Key];
+            if (!level1Data || !level1Data.level2 || Object.keys(level1Data.level2).length === 0) {
+                level2Content.innerHTML = '<div style="padding: 10px; color: #999;">No available items</div>';
+                return;
+            }
+
+            for (const [key, value] of Object.entries(level1Data.level2)) {
+                const item = document.createElement('div');
+                const color = value.color || 'gray';
+                item.className = `level-item color-${color}`;
+                item.dataset.levelKey = key;
+                item.dataset.levelValue = key;
+                item.textContent = value.displayName || key;
+                item.onclick = (event) => selectLevel2(level1Key, key, event);
+                level2Content.appendChild(item);
+            }
+        }
+
+        function selectLevel2(level1Key, level2Key, event) {
+            selectedLevel1 = level1Key;
+            selectedLevel2 = level2Key;
+            selectedLevel3 = null;
+            selectedLevel4 = null;
+
+            document.querySelectorAll('#level2Content .level-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('selected');
+            }
+
+            loadLevel3(level1Key, level2Key);
+            document.getElementById('level4Content').innerHTML = '';
+        }
+
+        // ===== Level 3 函数 =====
+        function loadLevel3(level1Key, level2Key) {
+            const level3Content = document.getElementById('level3Content');
+            level3Content.innerHTML = '';
+
+            const level2Data = config.testHierarchy[level1Key]?.level2?.[level2Key];
+            if (!level2Data || !level2Data.level3) {
+                level3Content.innerHTML = '<div style="padding: 10px; color: #999;">No available items</div>';
+                return;
+            }
+
+            const level3Data = level2Data.level3;
+
+            if (Array.isArray(level3Data)) {
+                level3Data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'level-item color-green';
+                    div.dataset.levelKey = item;
+                    div.dataset.levelValue = item;
+                    div.textContent = item;
+                    div.onclick = (event) => selectLevel3(level1Key, level2Key, item, event);
+                    level3Content.appendChild(div);
+                });
+                return;
+            }
+
+            if (typeof level3Data === 'object') {
+                for (const [key, value] of Object.entries(level3Data)) {
+                    const item = document.createElement('div');
+                    const color = value.color || 'gray';
+                    item.className = `level-item color-${color}`;
+                    item.dataset.levelKey = key;
+                    item.dataset.levelValue = key;
+                    item.textContent = value.displayName || key;
+                    item.onclick = (event) => selectLevel3(level1Key, level2Key, key, event);
+                    level3Content.appendChild(item);
+                }
+            }
+        }
+
+        function selectLevel3(level1Key, level2Key, level3Key, event) {
+            selectedLevel1 = level1Key;
+            selectedLevel2 = level2Key;
+            selectedLevel3 = level3Key;
+            selectedLevel4 = null;
+
+            document.querySelectorAll('#level3Content .level-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('selected');
+            }
+
+            loadLevel4(level1Key, level2Key, level3Key);
+        }
+
+        // ===== Level 4 函数 =====
+        function loadLevel4(level1Key, level2Key, level3Key) {
+            const level4Content = document.getElementById('level4Content');
+            level4Content.innerHTML = '';
+
+            const level3Data = config.testHierarchy[level1Key]?.level2?.[level2Key]?.level3;
+            if (Array.isArray(level3Data)) {
+                console.log('No Level 4 for array-based Level 3');
+                return;
+            }
+
+            const level3Item = level3Data?.[level3Key];
+            if (!level3Item || !level3Item.level4 || !Array.isArray(level3Item.level4)) {
+                level4Content.innerHTML = '<div style="padding: 10px; color: #999;">No available items</div>';
+                return;
+            }
+
+            level3Item.level4.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'level-item color-green';
+                div.dataset.levelKey = item;
+                div.dataset.levelValue = item;
+                div.textContent = item;
+                div.onclick = (event) => selectLevel4(level1Key, level2Key, level3Key, item, event);
+                level4Content.appendChild(div);
+            });
+        }
+
+        function selectLevel4(level1Key, level2Key, level3Key, level4Key, event) {
+            selectedLevel1 = level1Key;
+            selectedLevel2 = level2Key;
+            selectedLevel3 = level3Key;
+            selectedLevel4 = level4Key;
+
+            document.querySelectorAll('#level4Content .level-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('selected');
+            }
+
+            const path = [];
             if (selectedLevel1 && config.testHierarchy[selectedLevel1]) path.push(config.testHierarchy[selectedLevel1].displayName);
             if (selectedLevel2) path.push(selectedLevel2);
             if (selectedLevel3) path.push(selectedLevel3);
             if (selectedLevel4) path.push(selectedLevel4);
-            if (path.length === 0) {
-                showNotification('❌ Pls select test item！', 'error');
+
+            const selectedInfo = document.getElementById('selectedInfo');
+            if (selectedInfo) {
+                selectedInfo.style.display = 'block';
+                selectedInfo.innerHTML = '<strong>Selected：</strong>' + path.join(' → ');
+            }
+
+            updateFormFields();
+            showNotification('✅ Test item confirmed！');
+        }
+
+        function confirmSelection() {
+            if (!selectedLevel1 || !selectedLevel2) {
+                showNotification('❌ Please select a valid test level first!', 'error');
                 return;
             }
+
+            const path = [];
+            if (selectedLevel1 && config.testHierarchy[selectedLevel1]) path.push(config.testHierarchy[selectedLevel1].displayName);
+            if (selectedLevel2) path.push(selectedLevel2);
+            if (selectedLevel3) path.push(selectedLevel3);
+            if (selectedLevel4) path.push(selectedLevel4);
+
+            if (path.length === 0) {
+                showNotification('❌ Please select test item！', 'error');
+                return;
+            }
+
             const selectedInfo = document.getElementById('selectedInfo');
-            selectedInfo.style.display = 'block';
-            selectedInfo.innerHTML = '<strong>Selected：</strong>' + path.join(' → ');
+            if (selectedInfo) {
+                selectedInfo.style.display = 'block';
+                selectedInfo.innerHTML = '<strong>Selected：</strong>' + path.join(' → ');
+            }
+
             updateFormFields();
             showNotification('✅ Test item confirmed！');
         }
@@ -2764,360 +2782,440 @@
 	        ws['!rows'][i] = { hpt: 20 };  // 设置行高为 20
 	    }
 	}
-	/**
-	 * 初始化列配置（导入后需要手动设置）
-	 */
-	function initializeColumnConfiguration(level1, level2, level3) {
-	    console.log('🔧 初始化列配置...', {level1, level2, level3});
-	    
-	    if (!level1 || !level2) {
-	        console.warn('⚠️ 缺少必要的测试项信息');
-	        return;
-	    }
-	    
-	    const columnMapping = config.level2ColumnMapping?.[level1]?.[level2];
-	    if (!columnMapping) {
-	        console.warn('⚠️ 找不到列映射配置');
-	        return;
-	    }
-	    
-	    // ========== 初始化 General 列配置 ==========
-	    if (columnMapping.general && columnMapping.general.length > 0) {
-	        const generalConfig = config.parameterConfig[level1]?.general;
-	        if (generalConfig) {
-	            let generalColumns = [];
-	            columnMapping.general.forEach(group => {
-	                if (generalConfig[group]) {
-	                    generalColumns = generalColumns.concat(generalConfig[group]);
-	                }
-	            });
-	            window.currentGeneralColumns = generalColumns;
-	            console.log('  ✅ General 列配置:', generalColumns.length, '列');
-	        }
-	    }
-	    
-	    // ========== 初始化 Limit 列配置 ==========
-	    if (level1 === 'Transient_Coupled_Immunity') {
-	        // CTI 特殊处理
-	        let waveformColumns = null;
-	        
-	        if (Array.isArray(columnMapping.limit)) {
-	            waveformColumns = columnMapping.limit;
-	        } else if (level3 && columnMapping.limit[level3]) {
-	            waveformColumns = columnMapping.limit[level3];
-	        }
-	        
-	        if (waveformColumns && waveformColumns.length > 0) {
-	            window.currentLimitColumns = waveformColumns;
-	            console.log('  ✅ CTI Limit 列配置:', waveformColumns.length, '列');
-	        }
-	    } else {
-	        // 普通测试项
-	        if (columnMapping.limit && columnMapping.limit.length > 0) {
-	            const limitConfig = config.parameterConfig[level1]?.limit;
-	            if (limitConfig) {
-	                let limitColumns = [];
-	                columnMapping.limit.forEach(group => {
-	                    if (limitConfig[group]) {
-	                        limitColumns = limitColumns.concat(limitConfig[group]);
-	                    }
-	                });
-	                window.currentLimitColumns = limitColumns;
-	                console.log('  ✅ Limit 列配置:', limitColumns.length, '列');
-	            }
-	        }
-	    }
-	}
-        function importFromExcel(event) {
-	    const file = event.target.files[0];
-	    if (!file) return;
-	    
-	    const reader = new FileReader();
-	    reader.onload = function(e) {
-	        try {
-	            const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-	            
-	            // ========== 1. 检查必要的工作表 ==========
-	            if (!workbook.SheetNames.includes('General Information')) {
-	                showNotification('❌ Excel文件缺少 General Information 工作表', 'error');
-	                return;
-	            }
-	            
-	            const generalSheet = workbook.Sheets['General Information'];
-	            const generalData = XLSX.utils.sheet_to_json(generalSheet, { header: 1 });
-	            
-	            // ========== 2. 解析测试项选择 ==========
-	            let level1Value = null, level2Value = null, level3Value = null, level4Value = null;
-	            
-	            generalData.forEach(row => {
-	                const key = row[0];
-	                const value = row[1];
-	                
-	                // 提取测试项
-	                if (key === '1st Level' && value) {
-	                    for (const [k, v] of Object.entries(config.testHierarchy)) {
-	                        if (v.displayName === value) {
-	                            level1Value = k;
-	                            break;
-	                        }
-	                    }
-	                }
-	                if (key === '2nd Level' && value) level2Value = value;
-	                if (key === '3rd Level' && value) level3Value = value;
-	                if (key === '4th Level' && value) level4Value = value;
-	                
-	                // 填充表单字段
-	                const fieldMapping = {
-	                    'Customer': 'customer',
-	                    'Specification': 'specification',
-	                    'Specification_Version': 'specification_version',
-	                    'Specification_Date': 'specification_date',
-	                    'Specification_ID': 'specification_id',
-	                    'Comment': 'comment',
-	                    'Temperature and Humidity': 'temperature',
-	                    'Measurement_Setup': 'measurement_setup',
-	                    'Table setup': 'table_setup',
-	                    'Scan_Method': 'scan_method',
-	                    'Ambient_Noise_Margin': 'ambient_noise_margin',
-	                    'Harness_Length': 'harness_length',
-	                    'ECU_Power_Voltage': 'power_voltage',
-	                    'Special_Mode': 'special_mode',
-					    'Limit_Level': 'limit_level',
-						'Product_Category': 'product_cat',
-	                    'AB_ECU_Applicable': 'ab_ecu_applicable',
-						'Comment_General_Information':'general_comment'
-	                };
-	                
-	                if (fieldMapping[key]) {
-	                    const element = document.getElementById(fieldMapping[key]);
-	                    if (element && value !== undefined && value !== null) {
-	                        element.value = value;
-	                    }
-	                }
-	            });
-	            
-	            console.log('📋 解析的测试项:', {level1Value, level2Value, level3Value, level4Value});
-	            
-	            // ========== 3. 读取参数数据 ==========
-	            parameterData = {
-	                general: [],
-	                limit: []
-	            };
-	            
-	            // 读取 SettingPar（通用参数）
-	            if (workbook.SheetNames.includes('SettingPar')) {
-	                const settingSheet = workbook.Sheets['SettingPar'];
-	                const settingRows = XLSX.utils.sheet_to_json(settingSheet);
-	                
-	                if (settingRows.length > 0 && level1Value && level2Value) {
-	                    const columnMapping = config.level2ColumnMapping?.[level1Value]?.[level2Value];
-	                    if (columnMapping && columnMapping.general) {
-	                        const generalConfig = config.parameterConfig[level1Value]?.general;
-	                        if (generalConfig) {
-	                            let allColumns = [];
-	                            columnMapping.general.forEach(group => {
-	                                if (generalConfig[group]) {
-	                                    allColumns = allColumns.concat(generalConfig[group]);
-	                                }
-	                            });
-	                            
-	                            const labelToKey = {};
-	                            allColumns.forEach(col => {
-	                                labelToKey[col.label] = col.key;
-	                            });
-	                            
-	                            settingRows.forEach(row => {
-	                                const newRow = {};
-	                                for (const [label, value] of Object.entries(row)) {
-	                                    const key = labelToKey[label] || label;
-	                                    newRow[key] = value;
-	                                }
-	                                parameterData.general.push(newRow);
-	                            });
-	                            
-	                            console.log(`✅ 读取 ${parameterData.general.length} 行 General 参数`);
-	                        }
-	                    }
-	                }
-	            }
-	            
-	            // 读取 LimitLevel（限制参数）
-	            if (workbook.SheetNames.includes('LimitLevel')) {
-	                const limitSheet = workbook.Sheets['LimitLevel'];
-	                const limitRows = XLSX.utils.sheet_to_json(limitSheet);
-	                
-	                if (limitRows.length > 0 && level1Value && level2Value) {
-	                    if (level1Value === 'Transient_Coupled_Immunity') {
-	                        // CTI 特殊处理
-	                        const columnMapping = config.level2ColumnMapping?.[level1Value]?.[level2Value];
-	                        let waveformColumns = null;
-	                        
-	                        if (columnMapping && columnMapping.limit) {
-	                            if (Array.isArray(columnMapping.limit)) {
-	                                waveformColumns = columnMapping.limit;
-	                            } else if (level3Value && columnMapping.limit[level3Value]) {
-	                                waveformColumns = columnMapping.limit[level3Value];
-	                            }
-	                        }
-	                        
-	                        if (waveformColumns) {
-	                            const labelToKey = {};
-	                            waveformColumns.forEach(col => {
-	                                labelToKey[col.label] = col.key;
-	                            });
-	                            
-	                            limitRows.forEach(row => {
-	                                const newRow = {};
-	                                for (const [label, value] of Object.entries(row)) {
-	                                    const key = labelToKey[label] || label;
-	                                    newRow[key] = value;
-	                                }
-	                                parameterData.limit.push(newRow);
-	                            });
-	                            
-	                            console.log(`✅ 读取 ${parameterData.limit.length} 行 CTI Limit 参数`);
-	                        }
-	                    } else {
-	                        // 其他测试项
-	                        const columnMapping = config.level2ColumnMapping?.[level1Value]?.[level2Value];
-	                        if (columnMapping && columnMapping.limit) {
-	                            const limitConfig = config.parameterConfig[level1Value]?.limit;
-	                            if (limitConfig) {
-	                                let allColumns = [];
-	                                columnMapping.limit.forEach(group => {
-	                                    if (limitConfig[group]) {
-	                                        allColumns = allColumns.concat(limitConfig[group]);
-	                                    }
-	                                });
-	                                
-	                                const labelToKey = {};
-	                                allColumns.forEach(col => {
-	                                    labelToKey[col.label] = col.key;
-	                                });
-	                                
-	                                limitRows.forEach(row => {
-	                                    const newRow = {};
-	                                    for (const [label, value] of Object.entries(row)) {
-	                                        const key = labelToKey[label] || label;
-	                                        newRow[key] = value;
-	                                    }
-	                                    parameterData.limit.push(newRow);
-	                                });
-	                                
-	                                console.log(`✅ 读取 ${parameterData.limit.length} 行 Limit 参数`);
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	            
-	            // ========== 4. 验证必要数据 ==========
-	            if (!level1Value) {
-	                showNotification('⚠️ 未找到有效的测试项信息', 'error');
-	                return;
-	            }
-	            
-	            // ========== 5. 恢复测试项选择状态 ==========
-	            selectedLevel1 = level1Value;
-	            const level1Items = document.querySelectorAll('#level1Content .level-item');
-	            level1Items.forEach(item => {
-	                const itemKey = Object.keys(config.testHierarchy).find(k => 
-	                    config.testHierarchy[k].displayName === item.textContent
-	                );
-	                if (itemKey === level1Value) {
-	                    item.classList.add('selected');
-	                }
-	            });
-	            loadLevel2(level1Value);
-	            
-	            // ✅ 延迟等待 DOM 更新
-	            setTimeout(() => {
-	                if (level2Value) {
-	                    selectedLevel2 = level2Value;
-	                    const level2Items = document.querySelectorAll('#level2Content .level-item');
-	                    level2Items.forEach(item => {
-	                        if (item.textContent === level2Value) {
-	                            item.classList.add('selected');
-	                        }
-	                    });
-	                    loadLevel3(selectedLevel1, level2Value);
-	                }
-	                
-	                setTimeout(() => {
-	                    if (level3Value) {
-	                        selectedLevel3 = level3Value;
-	                        const level3Items = document.querySelectorAll('#level3Content .level-item');
-	                        level3Items.forEach(item => {
-	                            if (item.textContent === level3Value) {
-	                                item.classList.add('selected');
-	                            }
-	                        });
-	                        loadLevel4(selectedLevel1, selectedLevel2, level3Value);
-	                    }
-	                    
-	                    setTimeout(() => {
-	                        if (level4Value) {
-	                            selectedLevel4 = level4Value;
-	                            const level4Items = document.querySelectorAll('#level4Content .level-item');
-	                            level4Items.forEach(item => {
-	                                if (item.textContent === level4Value) {
-	                                    item.classList.add('selected');
-	                                }
-	                            });
-	                        }
-	                        
-	                        // ✅ 显示选择信息
-	                        const selectedInfo = document.getElementById('selectedInfo');
-	                        let path = [];
-	                        if (selectedLevel1) path.push(config.testHierarchy[selectedLevel1].displayName);
-	                        if (selectedLevel2) path.push(selectedLevel2);
-	                        if (selectedLevel3) path.push(selectedLevel3);
-	                        if (selectedLevel4) path.push(selectedLevel4);
-	                        
-	                        if (path.length > 0) {
-	                            selectedInfo.style.display = 'block';
-	                            selectedInfo.innerHTML = '<strong>已选择：</strong>' + path.join(' → ');
-	                        }
-	                        
-	                        // ✅ 更新表单字段显示
-	                        updateFormFields();
-	                        
-	                        // ========== 🔥 初始化列配置 ==========
-	                        initializeColumnConfiguration(level1Value, level2Value, level3Value);
-	                        
-	                        // ✅ 更新参数汇总显示
-	                        document.getElementById('cit_setting').value = generateParameterSummary();
-	                        
-	                        // ========== 🔥🔥 关键：自动打开参数面板 ==========
-	                        setTimeout(() => {
-	                            showParameterPanel();
-	                            console.log('✅ 参数面板已自动打开');
-	                        }, 200);
-	                        
-	                        console.log('✅ 导入完成 - 测试项:', {level1Value, level2Value, level3Value, level4Value});
-	                        console.log('✅ 导入的参数:', JSON.parse(JSON.stringify(parameterData)));
-	                        console.log('✅ 列配置已初始化:', {
-	                            generalColumns: window.currentGeneralColumns?.length || 0,
-	                            limitColumns: window.currentLimitColumns?.length || 0
-	                        });
-	                        
-	                        showNotification('✅ Excel 数据导入成功！参数面板已自动打开');
-	                        
-	                    }, 100);
-	                }, 100);
-	            }, 100);
-	            
-	        } catch (error) {
-	            console.error('❌ 导入错误:', error);
-	            showNotification('❌ 导入失败: ' + error.message, 'error');
-	        }
-	    };
-	    
-	    reader.readAsArrayBuffer(file);
-	    event.target.value = '';
-	}
+	function normalizeImportedLabel(value) {
+    return String(value || '')
+        .trim()
+        .replace(/[()]/g, '')
+        .replace(/[\s_\-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .toLowerCase();
+}
 
-        function generateGeneralTable(generalConfig, columnGroups) {
+function buildColumnKeyMap(columns) {
+    const map = {};
+    (columns || []).forEach(col => {
+        if (!col || !col.key || !col.label) return;
+        const label = String(col.label).trim();
+        const variants = new Set([
+            label,
+            label.toLowerCase(),
+            label.replace(/[\s_\-]+/g, ' '),
+            label.replace(/[\s-]+/g, ''),
+            label.replace(/\s+/g, ''),
+            normalizeImportedLabel(label),
+            normalizeImportedLabel(label).replace(/\s+/g, '')
+        ]);
+        variants.forEach(value => {
+            if (value) map[value] = col.key;
+        });
+    });
+    return map;
+}
+
+function normalizeImportedHeader(value) {
+    return normalizeImportedLabel(value);
+}
+
+function stripHierarchyPrefix(value) {
+    const candidate = String(value || '').trim();
+    if (!candidate) return candidate;
+    return candidate.replace(/^EMC_[A-Z0-9]+_/i, '').replace(/^EMC_[A-Z0-9]+\s+/i, '');
+}
+
+function resolveColumnMappingKey(level1Key, level2Key, level3Key) {
+    const mapping = config?.level2ColumnMapping?.[level1Key];
+    if (!mapping) return null;
+
+    if (level2Key && mapping[level2Key]) return level2Key;
+
+    const normalLevel2 = stripHierarchyPrefix(level2Key || '');
+    const normalLevel3 = stripHierarchyPrefix(level3Key || '');
+
+    for (const [mappedKey] of Object.entries(mapping)) {
+        const mappedNormalized = stripHierarchyPrefix(mappedKey);
+        if (mappedNormalized && normalLevel2 && mappedNormalized === normalLevel2) return mappedKey;
+        if (mappedNormalized && normalLevel3 && mappedNormalized === normalLevel3) return mappedKey;
+        if (normalizeImportedLabel(mappedKey) === normalizeImportedLabel(level2Key || '')) return mappedKey;
+        if (normalizeImportedLabel(mappedKey) === normalizeImportedLabel(level3Key || '')) return mappedKey;
+    }
+
+    return null;
+}
+
+function resolveLevel1FromDisplay(value) {
+    const candidate = String(value || '').trim();
+    if (!candidate) return null;
+    const normalizedCandidate = normalizeImportedLabel(candidate);
+    if (config?.testHierarchy?.[candidate]) return candidate;
+    for (const [key, metadata] of Object.entries(config?.testHierarchy || {})) {
+        if (normalizeImportedLabel(metadata.displayName || '') === normalizedCandidate) return key;
+    }
+    return null;
+}
+
+function resolveHierarchyValue(level1Key, value, kind) {
+    const candidate = String(value || '').trim();
+    if (!candidate || !config?.testHierarchy?.[level1Key]) return null;
+    const normalizedCandidate = normalizeImportedLabel(candidate);
+
+    if (config.testHierarchy[level1Key]?.level2?.[candidate]) return candidate;
+
+    if (kind === 'level2') {
+        for (const [key, metadata] of Object.entries(config.testHierarchy[level1Key].level2 || {})) {
+            if (normalizeImportedLabel(metadata.displayName || '') === normalizedCandidate) return key;
+            if (normalizeImportedLabel(key) === normalizedCandidate) return key;
+        }
+    }
+
+    if (kind === 'level3') {
+        const level2Entries = config.testHierarchy[level1Key].level2 || {};
+        for (const [level2Key, level2Meta] of Object.entries(level2Entries)) {
+            const level3List = level2Meta?.level3;
+            if (Array.isArray(level3List)) {
+                for (const item of level3List) {
+                    if (normalizeImportedLabel(item) === normalizedCandidate) return item;
+                }
+            }
+            if (level3List && typeof level3List === 'object') {
+                if (level3List[candidate]) return candidate;
+                if (normalizeImportedLabel(level3List[candidate]?.displayName || '') === normalizedCandidate) return candidate;
+                for (const [level3Key, level3Meta] of Object.entries(level3List)) {
+                    if (normalizeImportedLabel(level3Meta?.displayName || '') === normalizedCandidate) return level3Key;
+                    if (normalizeImportedLabel(level3Key) === normalizedCandidate) return level3Key;
+                }
+            }
+        }
+    }
+
+    if (kind === 'level4') {
+        const level2Entries = config.testHierarchy[level1Key].level2 || {};
+        for (const level2Meta of Object.values(level2Entries)) {
+            const level3List = level2Meta?.level3;
+            if (!level3List || typeof level3List !== 'object') continue;
+            for (const [level3Key, level3Meta] of Object.entries(level3List)) {
+                const level4List = level3Meta?.level4 || [];
+                for (const level4Item of level4List) {
+                    if (normalizeImportedLabel(level4Item) === normalizedCandidate) return level4Item;
+                    if (normalizeImportedLabel(level3Key) === normalizedCandidate) return level3Key;
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+function normalizeImportedRows(rows, columns) {
+    const lookup = buildColumnKeyMap(columns || []);
+    return (rows || []).map(row => {
+        const normalized = {};
+        Object.entries(row || {}).forEach(([rawLabel, rawValue]) => {
+            const label = String(rawLabel || '').trim();
+            const variations = [
+                label,
+                label.toLowerCase(),
+                label.replace(/[\s_\-]+/g, ' '),
+                label.replace(/[\s-]+/g, ''),
+                normalizeImportedHeader(label),
+                normalizeImportedHeader(label).replace(/\s+/g, '')
+            ];
+            let resolvedKey = label;
+            for (const candidate of variations) {
+                if (lookup[candidate]) {
+                    resolvedKey = lookup[candidate];
+                    break;
+                }
+            }
+            normalized[resolvedKey] = rawValue;
+        });
+        return normalized;
+    });
+}
+
+function validateImportedHierarchy(level1Key, level2Key, level3Key, level4Key) {
+    if (!level1Key || !config?.testHierarchy?.[level1Key]) return false;
+    const level2Node = config.testHierarchy[level1Key]?.level2?.[level2Key];
+    if (!level2Node) return false;
+
+    if (level3Key) {
+        const level3Data = level2Node.level3;
+        const isValid = Array.isArray(level3Data)
+            ? level3Data.includes(level3Key)
+            : !!level3Data?.[level3Key];
+        if (!isValid) return false;
+    }
+
+    if (level4Key) {
+        const level3Data = level2Node.level3;
+        const currentLevel3 = Array.isArray(level3Data) ? null : level3Data?.[level3Key];
+        const level4List = currentLevel3?.level4 || [];
+        if (!level4List.includes(level4Key)) return false;
+    }
+
+    return true;
+}
+
+function restoreImportedSelection(level1Key, level2Key, level3Key, level4Key) {
+    if (!validateImportedHierarchy(level1Key, level2Key, level3Key, level4Key)) {
+        showNotification('❌ Imported test level is invalid for the current config.', 'error');
+        return false;
+    }
+
+    selectedLevel1 = level1Key;
+    selectedLevel2 = level2Key;
+    selectedLevel3 = level3Key || null;
+    selectedLevel4 = level4Key || null;
+
+    document.querySelectorAll('.level-item').forEach(item => item.classList.remove('selected'));
+    document.querySelectorAll('#level1Content .level-item').forEach(item => {
+        item.classList.toggle('selected', item.dataset.levelKey === selectedLevel1);
+    });
+
+    loadLevel2(level1Key);
+    setTimeout(() => {
+        document.querySelectorAll('#level2Content .level-item').forEach(item => {
+            item.classList.toggle('selected', item.dataset.levelKey === selectedLevel2);
+        });
+        loadLevel3(selectedLevel1, selectedLevel2);
+    }, 30);
+
+    setTimeout(() => {
+        if (selectedLevel3) {
+            document.querySelectorAll('#level3Content .level-item').forEach(item => {
+                const itemKey = item.dataset.levelKey || item.dataset.levelValue;
+                item.classList.toggle('selected', itemKey === selectedLevel3);
+            });
+            loadLevel4(selectedLevel1, selectedLevel2, selectedLevel3);
+        }
+    }, 90);
+
+    setTimeout(() => {
+        if (selectedLevel4) {
+            document.querySelectorAll('#level4Content .level-item').forEach(item => {
+                const itemKey = item.dataset.levelKey || item.dataset.levelValue;
+                item.classList.toggle('selected', itemKey === selectedLevel4);
+            });
+        }
+
+        const selectedInfo = document.getElementById('selectedInfo');
+        if (selectedInfo) {
+            const path = [];
+            if (selectedLevel1 && config.testHierarchy[selectedLevel1]) path.push(config.testHierarchy[selectedLevel1].displayName);
+            if (selectedLevel2) path.push(selectedLevel2);
+            if (selectedLevel3) path.push(selectedLevel3);
+            if (selectedLevel4) path.push(selectedLevel4);
+            selectedInfo.style.display = path.length > 0 ? 'block' : 'none';
+            selectedInfo.innerHTML = path.length > 0 ? '<strong>已选择：</strong>' + path.join(' → ') : '';
+        }
+    }, 150);
+
+    return true;
+}
+
+function initializeColumnConfiguration(level1, level2, level3) {
+    if (!level1 || !level2) {
+        console.warn('⚠️ 缺少必要的测试项信息');
+        return;
+    }
+
+    const columnMapping = config.level2ColumnMapping?.[level1]?.[level2];
+    if (!columnMapping) {
+        console.warn('⚠️ 找不到列映射配置');
+        return;
+    }
+
+    if (columnMapping.general && columnMapping.general.length > 0) {
+        const generalConfig = config.parameterConfig?.[level1]?.general;
+        if (generalConfig) {
+            let generalColumns = [];
+            columnMapping.general.forEach(group => {
+                if (generalConfig[group]) {
+                    generalColumns = generalColumns.concat(generalConfig[group]);
+                }
+            });
+            window.currentGeneralColumns = generalColumns;
+        }
+    }
+
+    if (level1 === 'Transient_Coupled_Immunity') {
+        let waveformColumns = null;
+        if (Array.isArray(columnMapping.limit)) {
+            waveformColumns = columnMapping.limit;
+        } else if (level3 && columnMapping.limit?.[level3]) {
+            waveformColumns = columnMapping.limit[level3];
+        }
+        if (waveformColumns && waveformColumns.length > 0) {
+            window.currentLimitColumns = waveformColumns;
+        }
+    } else if (columnMapping.limit && columnMapping.limit.length > 0) {
+        const limitConfig = config.parameterConfig?.[level1]?.limit;
+        if (limitConfig) {
+            let limitColumns = [];
+            columnMapping.limit.forEach(group => {
+                if (limitConfig[group]) {
+                    limitColumns = limitColumns.concat(limitConfig[group]);
+                }
+            });
+            window.currentLimitColumns = limitColumns;
+        }
+    }
+}
+
+function buildImportedColumnsForSelection(level1Key, level2Key, level3Key, targetType) {
+    const resolvedLevel2Key = resolveColumnMappingKey(level1Key, level2Key, level3Key);
+    const mapping = resolvedLevel2Key ? config?.level2ColumnMapping?.[level1Key]?.[resolvedLevel2Key] : null;
+    if (!mapping) return [];
+
+    const configGroup = config?.parameterConfig?.[level1Key]?.[targetType];
+    if (!configGroup) return [];
+
+    if (targetType === 'limit' && configGroup.groupTemplate) {
+        return Array.isArray(mapping.limit)
+            ? mapping.limit
+            : (level3Key && mapping.limit?.[level3Key]) || [];
+    }
+
+    if (targetType === 'general' && Array.isArray(mapping.general)) {
+        let columns = [];
+        mapping.general.forEach(groupKey => {
+            if (Array.isArray(configGroup[groupKey])) {
+                columns = columns.concat(configGroup[groupKey]);
+            }
+        });
+        return columns;
+    }
+
+    if (targetType === 'limit' && Array.isArray(mapping.limit)) {
+        let columns = [];
+        mapping.limit.forEach(groupKey => {
+            if (Array.isArray(configGroup[groupKey])) {
+                columns = columns.concat(configGroup[groupKey]);
+            }
+        });
+        return columns;
+    }
+
+    return [];
+}
+
+function mapImportedRowsToConfig(rows, level1Key, level2Key, level3Key, targetType) {
+    const columns = buildImportedColumnsForSelection(level1Key, level2Key, level3Key, targetType);
+    if (!columns.length) return [];
+
+    const normalizedRows = normalizeImportedRows(rows || [], columns);
+    return normalizedRows.filter(row => Object.keys(row).length > 0 && Object.values(row).some(value => value !== null && value !== undefined && String(value).trim() !== ''));
+}
+
+function importFromExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+            if (!workbook.SheetNames.includes('General Information')) {
+                showNotification('❌ Excel文件缺少 General Information 工作表', 'error');
+                return;
+            }
+
+            const generalSheet = workbook.Sheets['General Information'];
+            const generalData = XLSX.utils.sheet_to_json(generalSheet, { header: 1 });
+
+            let level1Value = null;
+            let level2Value = null;
+            let level3Value = null;
+            let level4Value = null;
+
+            const fieldMapping = {
+                'Customer': 'customer',
+                'Specification': 'specification',
+                'Specification_Version': 'specification_version',
+                'Specification_Date': 'specification_date',
+                'Specification_ID': 'specification_id',
+                'Customer_Specification_ID': 'specification_id',
+                'Comment': 'comment',
+                'Temperature and Humidity': 'temperature',
+                'Measurement_Setup': 'measurement_setup',
+                'Table setup': 'table_setup',
+                'Scan_Method': 'scan_method',
+                'Ambient_Noise_Margin': 'ambient_noise_margin',
+                'Harness_Length': 'harness_length',
+                'ECU_Power_Voltage': 'power_voltage',
+                'Special_Mode': 'special_mode',
+                'Limit_Level': 'limit_level',
+                'Product_Category': 'product_cat',
+                'AB_ECU_Applicable': 'ab_ecu_applicable',
+                'Comment_General_Information': 'general_comment'
+            };
+
+            generalData.forEach(row => {
+                if (!Array.isArray(row)) return;
+                const label = row[0];
+                const value = row[1];
+
+                if (label === '1st Level' && value) {
+                    level1Value = resolveLevel1FromDisplay(value);
+                }
+                if (label === '2nd Level' && value) {
+                    level2Value = resolveHierarchyValue(level1Value, value, 'level2');
+                }
+                if (label === '3rd Level' && value) {
+                    level3Value = resolveHierarchyValue(level1Value, value, 'level3');
+                }
+                if (label === '4th Level' && value) {
+                    level4Value = resolveHierarchyValue(level1Value, value, 'level4');
+                }
+
+                if (fieldMapping[label]) {
+                    const element = document.getElementById(fieldMapping[label]);
+                    if (element && value !== undefined && value !== null) {
+                        element.value = value;
+                    }
+                }
+            });
+
+            if (!level1Value || !level2Value) {
+                showNotification('⚠️ 未找到有效的测试项信息', 'error');
+                return;
+            }
+
+            if (!validateImportedHierarchy(level1Value, level2Value, level3Value, level4Value)) {
+                showNotification('❌ Imported test level is invalid for the current config.', 'error');
+                return;
+            }
+
+            parameterData = { general: [], limit: [] };
+
+            if (workbook.SheetNames.includes('SettingPar')) {
+                const settingRows = XLSX.utils.sheet_to_json(workbook.Sheets['SettingPar']);
+                parameterData.general = mapImportedRowsToConfig(settingRows, level1Value, level2Value, level3Value, 'general');
+            }
+
+            if (workbook.SheetNames.includes('LimitLevel')) {
+                const limitRows = XLSX.utils.sheet_to_json(workbook.Sheets['LimitLevel']);
+                parameterData.limit = mapImportedRowsToConfig(limitRows, level1Value, level2Value, level3Value, 'limit');
+            }
+
+            const restored = restoreImportedSelection(level1Value, level2Value, level3Value, level4Value);
+            if (!restored) return;
+
+            updateFormFields();
+            initializeColumnConfiguration(level1Value, level2Value, level3Value);
+            document.getElementById('cit_setting').value = generateParameterSummary();
+            showParameterPanel();
+            showNotification('✅ Excel 数据导入成功！参数面板已自动打开');
+        } catch (error) {
+            console.error('❌ 导入错误:', error);
+            showNotification('❌ 导入失败: ' + error.message, 'error');
+        }
+    };
+
+    reader.readAsArrayBuffer(file);
+    event.target.value = '';
+}
+
+function generateGeneralTable(generalConfig, columnGroups) {
             const table = document.getElementById('generalTable');
             const thead = table.querySelector('thead');
             const tbody = document.getElementById('generalTableBody');
