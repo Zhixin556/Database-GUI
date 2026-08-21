@@ -1359,58 +1359,6 @@
           "base"
         ]
       },
-      "EMC_02_CE_CP_SL": {
-        "general": [
-          "base",
-          "ce_cp",
-          "ce_shared"
-        ],
-        "limit": [
-          "base"
-        ]
-      },
-      "EMC_02_CE_CP_CE440": {
-        "general": [
-          "base",
-          "ce_cp",
-          "ce_shared",
-          "ce_lisn"
-        ],
-        "limit": [
-          "base"
-        ]
-      },
-      "EMC_02_CE_CP_CE430_FMC": {
-        "general": [
-          "base",
-          "ce_cp",
-          "ce_shared",
-          "re_sl"
-        ],
-        "limit": [
-          "base"
-        ]
-      },
-      "EMC_02_CE_CP_CE1": {
-        "general": [
-          "ce_cp",
-          "ce_shared",
-          "re_sl"
-        ],
-        "limit": [
-          "base"
-        ]
-      },
-      "EMC_02_CE_CP_CMFE-I": {
-        "general": [
-          "ce_cp",
-          "ce_shared",
-          "re_sl"
-        ],
-        "limit": [
-          "base"
-        ]
-      },
       "EMC_03_RE_ALSE": {
         "general": [
           "base",
@@ -1452,37 +1400,10 @@
           "base"
         ]
       },
-      "EMC_07_RE_MAG_60-cm loop": {
+      "EMC_07_RE_MAG": {
         "general": [
           "base",
           "re_mag1",
-          "re_mag2"
-        ],
-        "limit": [
-          "base"
-        ]
-      },
-      "EMC_07_RE_MAG_40-mm loop": {
-        "general": [
-          "base",
-          "re_mag2"
-        ],
-        "limit": [
-          "base"
-        ]
-      },
-      "EMC_07_RE_MAG_12-cm loop": {
-        "general": [
-          "base",
-          "re_mag2"
-        ],
-        "limit": [
-          "base"
-        ]
-      },
-      "EMC_07_RE_MAG_6-cm loop": {
-        "general": [
-          "base",
           "re_mag2"
         ],
         "limit": [
@@ -1575,7 +1496,7 @@
       }
     },
     "Transient_Coupled_Immunity": {
-      "CTI_TSUP": {
+      "EMC_40_CTI_TSUP": {
         "general": [],
         "limit": {
           "Pulse_1_12V": [
@@ -1979,7 +1900,7 @@
           ]
         }
       },
-      "CTI_CI220": {
+      "EMC_41_CTI_CI220": {
         "general": [],
         "limit": [
           {
@@ -2006,7 +1927,7 @@
   },
   "waveformParameterMapping": {
     "Transient_Coupled_Immunity": {
-      "CTI_TSUP": {
+      "EMC_40_CTI_TSUP": {
         "Pulse_1_12V": {
           "image": "images/waveforms/pulse_1.png"
         },
