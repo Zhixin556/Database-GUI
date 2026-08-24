@@ -206,15 +206,15 @@
     },
     "Transient_Coupled_Immunity": {
       "displayName": "Transient coupled immunity tests",
-      "color": "gray",
+      "color": "green",
       "level2": {
         "EMC_40_CTI_TSUP": {
           "displayName": "EMC_40_CTI_TSUP",
-          "color": "gray",
+          "color": "green",
           "level3": {
             "CTI_TSUP": {
               "displayName": "CTI_TSUP",
-              "color": "gray",
+              "color": "green",
               "level4": [
                 "CTI_TSUP_Pulse_1_12V",
                 "CTI_TSUP_Pulse_1_16V",
@@ -1928,21 +1928,128 @@
   "waveformParameterMapping": {
     "Transient_Coupled_Immunity": {
       "EMC_40_CTI_TSUP": {
-        "Pulse_1_12V": {
-          "image": "images/waveforms/pulse_1.png"
+        "CTI_TSUP_Pulse_1_12V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_1_12V.jpg",
+          "parameterKey": "Pulse_1_12V"
         },
-        "Pulse_2a_12V": {
-          "image": "images/waveforms/pulse_2a.png"
+        "CTI_TSUP_Pulse_1_16V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_1_16V.jpg",
+          "parameterKey": "Pulse_1_12V"
         },
-        "Pulse_2b_12V": {
-          "image": "images/waveforms/pulse_2b.png"
+        "CTI_TSUP_Pulse_1_24V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_1_24V.jpg",
+          "parameterKey": "Pulse_1_12V"
         },
-        "Pulse_3a_12V": {
-          "image": "images/waveforms/pulse_3a.png"
+        "CTI_TSUP_Pulse_1_48V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_1_48V.jpg",
+          "parameterKey": "Pulse_1_12V"
         },
-        "Pulse_3b_12V": {
-          "image": "images/waveforms/pulse_3b.png"
-        }
+        "CTI_TSUP_Pulse_1_12V_Truck": {
+          "parameterKey": "Pulse_1_12V"
+        },
+        "CTI_TSUP_Pulse_1_24V_Truck": {
+          "parameterKey": "Pulse_1_12V"
+        },
+        "CTI_TSUP_Pulse_1_bis_12V_Ni": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_1_bis_12V_Ni.jpg",
+          "parameterKey": "Pulse_1_12V"
+        },
+        "CTI_TSUP_Pulse_1b_12V_MB_TSL": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_1b_12V_MB_TSL.jpg",
+          "parameterKey": "Pulse_1b_12V"
+        },
+        "CTI_TSUP_Pulse_1b_16V_MB_TSL": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_1b_16V_MB_TSL.jpg",
+          "parameterKey": "Pulse_1b_12V"
+        },
+        "CTI_TSUP_Pulse_1b_24V_MB_TSL": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_1b_24V_MB_TSL.jpg",
+          "parameterKey": "Pulse_1b_12V"
+        },
+        "CTI_TSUP_Pulse_1b_48V_MB_TSL": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_1b_48V_MB_TSL.jpg",
+          "parameterKey": "Pulse_1b_12V"
+        },
+        "CTI_TSUP_Pulse_2a_12V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_2a_12V.jpg"
+        },
+        "CTI_TSUP_Pulse_2a_16V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_2a_16V.jpg"
+        },
+        "CTI_TSUP_Pulse_2a_24V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_2a_24V.jpg"
+        },
+        "CTI_TSUP_Pulse_2a_48V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_2a_48V.jpg"
+        },
+        "CTI_TSUP_Pulse_2b_12V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_2b_12V.jpg",
+          "parameterKey": "Pulse_2b_12V"
+        },
+        "CTI_TSUP_Pulse_2b_16V": {
+          "parameterKey": "Pulse_2b_12V"
+        },
+        "CTI_TSUP_Pulse_2b_24V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_2b_24V.jpg",
+          "parameterKey": "Pulse_2b_12V"
+        },
+        "CTI_TSUP_Pulse_2b_48V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_2b_48V.jpg",
+          "parameterKey": "Pulse_2b_12V"
+        },
+        "CTI_TSUP_Pulse_2c_IGN_VLV": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_2c_12V_IGN_VLV.jpg"
+        },
+        "CTI_TSUP_Pulse_3a_12V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_3a_12V.jpg",
+          "parameterKey": "Pulse_3a_12V"
+        },
+        "CTI_TSUP_Pulse_3a_16V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_3a_16V.jpg",
+          "parameterKey": "Pulse_3a_12V"
+        },
+        "CTI_TSUP_Pulse_3a_24V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_3a_24V.jpg",
+          "parameterKey": "Pulse_3a_12V"
+        },
+        "CTI_TSUP_Pulse_3a_48V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_3a_48V.jpg",
+          "parameterKey": "Pulse_3a_12V"
+        },
+        "CTI_TSUP_Pulse_3a_12V_Ni": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_3a_12V_Ni.jpg",
+          "parameterKey": "Pulse_3a_12V"
+        },
+        "CTI_TSUP_Pulse_3b_12V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_3b_12V.jpg"
+        },
+        "CTI_TSUP_Pulse_3b_16V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_3b_16V.jpg"
+        },
+        "CTI_TSUP_Pulse_3b_24V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_3b_24V.jpg"
+        },
+        "CTI_TSUP_Pulse_3b_48V": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_3b_48V.jpg"
+        },
+        "CTI_TSUP_Pulse_3b_12V_Ni": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_3b_12V_Ni.jpg"
+        },
+        "CTI_TSUP_Pulse_6_12V_VW": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_6_12V_VW.jpg"
+        },
+        "CTI_TSUP_Pulse_6_24V_VW": {
+          "image": "images/waveforms/CTI_TSUP_Pulse_6_24V_VW.jpg"
+        },
+        "CTI_TSUP_Pulse_6_48V_VW": {},
+        "CTI_TSUP_Pulse_7_12V_GM": {},
+        "CTI_TSUP_Negative_surge_test_spark_surge_square_TMC": {
+          "image": "images/waveforms/CTI_TSUP_Negative_surge_test_spark_surge_square_TMC.jpg"
+        },
+        "CTI_TSUP_Negative_surge_test_spark_surge_burst_TMC": {
+          "image": "images/waveforms/CTI_TSUP_Negative_surge_test_spark_surge_burst_TMC.jpg"
+        },
+        "CTI_TSUP_Horn_operation_HON": {}
       }
     }
   },

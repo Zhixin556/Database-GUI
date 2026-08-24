@@ -382,13 +382,25 @@
 		}
 	    
 		/* ========== æ³¢å½¢å‚è€ƒå›¾åŒº ========== */
+		.waveform-layout {
+			display: flex;
+			width: 100%;
+			min-height: 540px;
+			background: #fff;
+			border: 1px solid #e5e7eb;
+			border-radius: 12px;
+			overflow: hidden;
+		}
+
 		.waveform-image-section { 
-			width: 420px; 
+			flex: 0 1 480px;
+			min-width: 360px;
+			max-width: 44%;
 			background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
 			border-right: 3px solid #dee2e6; 
 			display: flex; 
 			flex-direction: column; 
-			padding: 25px; 
+			padding: 16px; 
 			overflow-y: auto; 
 		}
 
@@ -412,8 +424,8 @@
 			background: white; 
 			border: 3px dashed #dee2e6; 
 			border-radius: 8px; 
-			padding: 25px; 
-			min-height: 350px;
+			padding: 16px; 
+			min-height: 420px;
 			box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
 		}
 
@@ -429,9 +441,29 @@
 		.waveform-placeholder svg { width: 90px; height: 90px; margin-bottom: 12px; opacity: 0.3; }
 		.parameters-section { 
 			flex: 1; 
-			padding: 25px; 
+			min-width: 0;
+			padding: 16px; 
 			overflow-y: auto;
 			background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+		}
+
+		@media (max-width: 960px) {
+			.waveform-layout {
+				flex-direction: column;
+			}
+
+			.waveform-image-section {
+				flex: none;
+				width: auto;
+				min-width: 0;
+				max-width: none;
+				border-right: 0;
+				border-bottom: 3px solid #dee2e6;
+			}
+
+			.waveform-image-container {
+				min-height: 360px;
+			}
 		}
 
 		.parameters-section::-webkit-scrollbar,
@@ -469,6 +501,82 @@
 		.param-input[required] { 
 			border: 2px solid #FF9800 !important;
 			background: #FFF9C4 !important;
+		}
+
+		.cti-limit-table {
+			table-layout: auto;
+			border-collapse: collapse;
+			width: auto;
+			min-width: 420px !important;
+			max-width: 100%;
+			background: white;
+			border: 1px solid #666;
+		}
+
+		.cti-limit-table thead th {
+			background: #9FA8DA;
+			color: black;
+			font-weight: 700;
+			border: 1px solid #666;
+			padding: 5px 3px;
+			text-align: center;
+			font-size: 10px;
+			vertical-align: middle;
+		}
+
+		.cti-limit-table .cti-group-header {
+			background: #87C5A5 !important;
+			color: #103224;
+			font-size: 10px;
+		}
+
+		.cti-limit-table .cti-level-header {
+			background: #7CB6E8 !important;
+			color: #123b5c;
+			font-size: 9px;
+		}
+
+		.cti-limit-table .cti-parameter-label {
+			background: #9FA8DA !important;
+			color: black;
+			min-width: 140px;
+			text-align: left;
+			padding-left: 8px;
+		}
+
+		.cti-limit-table tbody td {
+			padding: 3px 4px;
+			border: 1px solid #666;
+			background: white;
+			vertical-align: middle;
+		}
+
+		.cti-limit-table .cti-parameter-cell {
+			background: #dfeaf7;
+			font-weight: 600;
+			color: #1f2937;
+			font-size: 10px;
+			text-align: left;
+			min-width: 140px;
+		}
+
+		.cti-limit-table .cti-value-cell {
+			min-width: 90px;
+		}
+
+		.cti-limit-table .param-input {
+			width: 100%;
+			padding: 3px 4px;
+			font-size: 9px;
+			border: 1px solid #aeb8c9;
+			border-radius: 2px;
+			box-sizing: border-box;
+			background: white;
+		}
+		.cti-limit-table .param-input:focus {
+			outline: none;
+			border-color: #2196F3;
+			background: #E3F2FD;
 		}
 
 		/* ========== Loading Overlay ========== */
@@ -810,48 +918,85 @@
 		
 		/* Group æ ‡é¢˜æ ·å¼ */
 		.group-header {
-		    background: linear-gradient(135deg, #dfeafc 0%, #9bb7dc 100%) !important;
-		    color: #1e3050 !important;
+		    color: #172033 !important;
 		    font-weight: bold;
 		    font-size: 13px;
-		    border-left: 3px solid #6d8ec3 !important;
+		    border-left-width: 5px !important;
 		    padding: 15px 10px !important;
 		}
+
+		.group-header-group1 { background: #8eb6e8 !important; border-left-color: #245a9a !important; }
+		.group-header-group2 { background: #83c9ad !important; border-left-color: #237658 !important; }
+		.group-header-group3 { background: #e8bd79 !important; border-left-color: #9a5b18 !important; }
+		.group-header-group4 { background: #d5a3c9 !important; border-left-color: #874b78 !important; }
+		.group-header-group5 { background: #b5ad91 !important; border-left-color: #6d6240 !important; }
 		
 		/* Level æ ‡é¢˜æ ·å¼ - æ›´æŸ”å’Œçš„ä¼ä¸šé…è‰² */
 		.level-header-group1 {
-		    background: linear-gradient(135deg, #edf4ff 0%, #b9cceb 100%) !important;
+		    background-color: #dbe9fa !important;
 		    color: #1e3050 !important;
 		    font-size: 11px;
 		    font-weight: 600;
 		}
 		
 		.level-header-group2 {
-		    background: linear-gradient(135deg, #eef6f8 0%, #bfd6e6 100%) !important;
+		    background-color: #d9f0e7 !important;
 		    color: #1e3050 !important;
 		    font-size: 11px;
 		    font-weight: 600;
 		}
 		
 		.level-header-group3 {
-		    background: linear-gradient(135deg, #eefaf3 0%, #c7e4d0 100%) !important;
+		    background-color: #f8e8ca !important;
 		    color: #1e3050 !important;
 		    font-size: 11px;
 		    font-weight: 600;
 		}
 		
 		.level-header-group4 {
-		    background: linear-gradient(135deg, #fff8e6 0%, #ead7a8 100%) !important;
+		    background-color: #f1deec !important;
 		    color: #1e3050 !important;
 		    font-size: 11px;
 		    font-weight: 600;
 		}
 		
 		.level-header-group5 {
-		    background: linear-gradient(135deg, #f3edf9 0%, #d9c4ea 100%) !important;
+		    background-color: #e8e4d8 !important;
 		    color: #1e3050 !important;
 		    font-size: 11px;
 		    font-weight: 600;
+		}
+
+		[class*="level-header-group"].level-start {
+		    border-left-width: 4px !important;
+		    border-left-color: rgba(23, 32, 51, 0.65) !important;
+		}
+
+		[class*="level-header-group"].level-index-2 {
+		    background-image: repeating-linear-gradient(135deg, transparent 0 8px, rgba(255,255,255,0.42) 8px 16px) !important;
+		}
+
+		[class*="level-header-group"].level-index-3 {
+		    background-image: repeating-linear-gradient(45deg, transparent 0 7px, rgba(44,62,80,0.09) 7px 9px) !important;
+		}
+
+		[class*="level-header-group"].level-index-4 {
+		    background-image: linear-gradient(rgba(255,255,255,0.48), rgba(255,255,255,0.48)) !important;
+		}
+
+		[class*="level-header-group"].level-index-5 {
+		    background-image: repeating-linear-gradient(90deg, transparent 0 10px, rgba(44,62,80,0.11) 10px 12px) !important;
+		}
+
+		.param-table td.group-cell-1 { background-color: #f2f7fd; }
+		.param-table td.group-cell-2 { background-color: #f0faf6; }
+		.param-table td.group-cell-3 { background-color: #fff9ed; }
+		.param-table td.group-cell-4 { background-color: #fcf5fa; }
+		.param-table td.group-cell-5 { background-color: #f7f5ef; }
+
+		.param-table td.group-start,
+		.param-table td.level-start {
+		    border-left: 4px solid rgba(23, 32, 51, 0.55) !important;
 		}
 		
 		/* æ™®é€šåˆ—æ ·å¼ */
@@ -1461,16 +1606,28 @@
                     <div class="panel-box">
                         <div class="section-header">Limit Level</div>
                         <div id="limitContainer">
-                            <div class="param-section-title" id="limitSectionTitle">Limit Settings</div>
-                            <div class="param-table-wrapper" id="limitTableWrapper">
-                                <table class="param-table" id="limitTable">
-                                    <thead></thead>
-                                    <tbody id="limitTableBody"></tbody>
-                                </table>
-                                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                    <button class="btn" onclick="addLimitRow()">+ Add Rows</button>
-                                    <button class="btn btn-export" onclick="addGroupColumn()" id="addGroupBtn" style="display: none;">+ Add Group (Max 5)</button>
-                                    <button class="btn btn-export" onclick="addLevelColumn()" id="addLevelBtn" style="display: none;">+ Add Level (Max 5)</button>
+                            <div id="waveformSection" class="waveform-layout" style="display: block;">
+                                <div class="waveform-image-section" id="waveformImageSection" style="display: none;">
+                                    <div id="waveformTitle" class="waveform-title">Waveform Reference</div>
+                                    <div id="waveformImageContainer" class="waveform-image-container"></div>
+                                </div>
+                                <div class="parameters-section">
+                                    <div class="param-section-title" id="limitSectionTitle">Limit Settings</div>
+                                    <div id="waveformParamInfo" class="waveform-param-info" style="display: none; margin-bottom: 12px;">
+                                        <strong>Required Parameters:</strong>
+                                        <div id="requiredParamsList" style="margin-top: 8px;"></div>
+                                    </div>
+                                    <div class="param-table-wrapper" id="limitTableWrapper">
+                                        <table class="param-table" id="limitTable">
+                                            <thead></thead>
+                                            <tbody id="limitTableBody"></tbody>
+                                        </table>
+                                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                            <button class="btn" onclick="addLimitRow()">+ Add Rows</button>
+                                            <button class="btn btn-export" onclick="addGroupColumn()" id="addGroupBtn" style="display: none;">+ Add Group (Max 5)</button>
+                                            <button class="btn btn-export" onclick="addLevelColumn()" id="addLevelBtn" style="display: none;">+ Add Level (Max 5)</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1728,6 +1885,23 @@
             general: [],
             limit: []
         };
+
+		function getCtiWaveformConfig() {
+			if (selectedLevel1 !== 'Transient_Coupled_Immunity' || !selectedLevel4) return null;
+			const waveformMap = config?.waveformParameterMapping?.[selectedLevel1]?.[selectedLevel2] || {};
+			const exactKey = Object.keys(waveformMap).find(key =>
+				normalizeImportedLabel(key) === normalizeImportedLabel(selectedLevel4)
+			);
+			return exactKey ? { key: exactKey, ...waveformMap[exactKey] } : null;
+		}
+
+		function resolveCtiParameterKey() {
+			const waveformConfig = getCtiWaveformConfig();
+			const parameterMap = config?.level2ColumnMapping?.[selectedLevel1]?.[selectedLevel2]?.limit || {};
+			return waveformConfig?.parameterKey && parameterMap[waveformConfig.parameterKey]
+				? waveformConfig.parameterKey
+				: null;
+        }
         
         // --- START OF MODIFIED JAVASCRIPT FUNCTIONS ---
 
@@ -1758,7 +1932,9 @@
 
             if (selectedLevel1 === 'Transient_Coupled_Immunity') {
                 const waveformSection = document.getElementById('waveformSection');
+				const waveformImageSection = document.getElementById('waveformImageSection');
                 if (waveformSection) waveformSection.style.display = 'flex';
+				if (waveformImageSection) waveformImageSection.style.display = 'flex';
                 loadWaveformImage();
 
                 const generalSectionTitle = document.getElementById('generalSectionTitle');
@@ -1769,12 +1945,31 @@
                 const limitSectionTitle = document.getElementById('limitSectionTitle');
                 if (limitSectionTitle) limitSectionTitle.textContent = 'Waveform Parameters';
 
-                const columnMapping = config.level2ColumnMapping?.[selectedLevel1]?.[selectedLevel2]?.limit?.[selectedLevel3];
-                if (!columnMapping || Object.keys(columnMapping).length === 0) {
-                    console.error('❌ Detected an issue with columnMapping:', {
+                const level2LimitMapping = config.level2ColumnMapping?.[selectedLevel1]?.[selectedLevel2]?.limit;
+				const pulseKey = resolveCtiParameterKey();
+                let columnMapping = null;
+
+                if (Array.isArray(level2LimitMapping)) {
+                    columnMapping = level2LimitMapping;
+                } else if (pulseKey && level2LimitMapping?.[pulseKey]) {
+                    columnMapping = level2LimitMapping[pulseKey];
+                } else if (level2LimitMapping && typeof level2LimitMapping === 'object') {
+                    const matchedPulse = Object.keys(level2LimitMapping).find(key => {
+                        const normalizedKey = normalizeImportedLabel(key);
+                        const normalizedPulse = normalizeImportedLabel(pulseKey || '');
+                        return normalizedKey === normalizedPulse || normalizedKey.includes(normalizedPulse) || normalizedPulse.includes(normalizedKey);
+                    });
+                    if (matchedPulse) columnMapping = level2LimitMapping[matchedPulse];
+                }
+
+                if (!columnMapping || (Array.isArray(columnMapping) && columnMapping.length === 0) || (!Array.isArray(columnMapping) && Object.keys(columnMapping || {}).length === 0)) {
+                    console.error('❌ Detected an issue with CTI columnMapping:', {
                         selectedLevel1,
                         selectedLevel2,
                         selectedLevel3,
+                        selectedLevel4,
+                        pulseKey,
+                        level2LimitMapping,
                         columnMapping
                     });
                     showNotification('❌ Waveform parameter config is missing or invalid!', 'error');
@@ -1784,11 +1979,13 @@
                 generateLimitTable(null, columnMapping);
                 loadSavedParameterData();
 
-                const wfCfg = config.waveformParameterMapping?.[selectedLevel1]?.[selectedLevel2]?.[selectedLevel3];
+				const wfCfg = getCtiWaveformConfig();
                 showRequiredParameters(wfCfg?.requiredParams || []);
             } else {
                 const waveformSection = document.getElementById('waveformSection');
-                if (waveformSection) waveformSection.style.display = 'none';
+				const waveformImageSection = document.getElementById('waveformImageSection');
+				if (waveformSection) waveformSection.style.display = 'flex';
+				if (waveformImageSection) waveformImageSection.style.display = 'none';
 
                 const limitSectionTitle = document.getElementById('limitSectionTitle');
                 if (limitSectionTitle) limitSectionTitle.textContent = 'Limit Settings';
@@ -1855,44 +2052,40 @@
             console.log('✅ Parameter panel hidden');
         }
 function loadSavedParameterData() {
-	    console.log('📦 å¼€å§‹åŠ è½½ä¿å­˜çš„å‚æ•°...', JSON.parse(JSON.stringify(parameterData)));
-	    
-	    // ✓ æ£€æŸ¥åˆ—é…ç½®æ˜¯å¦å·²åˆå§‹åŒ–
-	    if (!window.currentGeneralColumns && !window.currentLimitColumns) {
-	        console.warn('⚠️ åˆ—é…ç½®æœªåˆå§‹åŒ–ï¼Œæ— æ³•åŠ è½½å‚æ•°');
-	        showNotification('⚠️ è¯·å…ˆé€‰æ‹©æµ‹è¯•é¡¹å¹¶ç¡®è®¤', 'error');
+	    if (selectedLevel1 === 'Transient_Coupled_Immunity') {
+	        if (Object.keys(groupLevelConfig || {}).length === 0) {
+	            groupLevelConfig = { 1: DEFAULT_LEVEL_COUNT };
+	        }
 	        return;
 	    }
-	    
-	    // ✓ åŠ è½½ General Parameters
+
+	    console.log('📦 开始加载保存的参数...', JSON.parse(JSON.stringify(parameterData)));
+	    if (!window.currentGeneralColumns && !window.currentLimitColumns) {
+	        console.warn('⚠️ 列配置未初始化，无法加载参数');
+	        showNotification('⚠️ 请先选择测试项并确认', 'error');
+	        return;
+	    }
 	    if (parameterData.general && parameterData.general.length > 0) {
 	        const generalTableBody = document.getElementById('generalTableBody');
 	        if (generalTableBody && window.currentGeneralColumns) {
-	            generalTableBody.innerHTML = ''; // æ¸…ç©ºé»˜è®¤è¡Œ
+	            generalTableBody.innerHTML = '';
 	            parameterData.general.forEach((rowData, index) => {
-	                console.log(`  æ·»åŠ  General è¡Œ ${index + 1}:`, rowData);
+	                console.log(`  添加 General 行 ${index + 1}:`, rowData);
 	                addGeneralRowDynamic(rowData);
 	            });
-	        } else {
-	            console.warn('  ⚠️ General è¡¨æ ¼ä¸å­˜åœ¨æˆ–åˆ—é…ç½®ç¼ºå¤±');
 	        }
 	    }
-	    
-	    // ✓ åŠ è½½ Limit Parameters
 	    if (parameterData.limit && parameterData.limit.length > 0) {
 	        const limitTableBody = document.getElementById('limitTableBody');
 	        if (limitTableBody && window.currentLimitColumns) {
-	            limitTableBody.innerHTML = ''; // æ¸…ç©ºé»˜è®¤è¡Œ
+	            limitTableBody.innerHTML = '';
 	            parameterData.limit.forEach((rowData, index) => {
-	                console.log(`  æ·»åŠ  Limit Row ${index + 1}:`, rowData);
+	                console.log(`  添加 Limit Row ${index + 1}:`, rowData);
 	                addLimitRowDynamic(rowData);
 	            });
-	        } else {
-	            console.warn('  ⚠️ Limit è¡¨æ ¼ä¸å­˜åœ¨æˆ–åˆ—é…ç½®ç¼ºå¤±');
 	        }
 	    }
-	    
-	    console.log('✓ å‚æ•°åŠ è½½å®Œæˆ');
+	    console.log('✓ 参数加载完成');
 	}
 
         // MODIFIED: saveParameters now also hides the panel on success
@@ -2140,9 +2333,35 @@ function loadSavedParameterData() {
                 event.currentTarget.classList.add('selected');
             }
 
+            updateWorkspaceNavigationState();
             loadLevel2(level1Key);
             document.getElementById('level3Content').innerHTML = '';
             document.getElementById('level4Content').innerHTML = '';
+        }
+
+        function updateWorkspaceNavigationState() {
+            const setupNav = document.querySelector('.nav-item[data-target="setupPanel"]');
+            const limitNav = document.querySelector('.nav-item[data-target="limitPanel"]');
+            const isCTI = selectedLevel1 === 'Transient_Coupled_Immunity';
+            if (setupNav) {
+                setupNav.style.display = isCTI ? 'none' : 'flex';
+            }
+            if (limitNav) {
+                limitNav.classList.remove('active');
+            }
+            document.querySelectorAll('.workspace-panel').forEach(panel => {
+                if (isCTI) {
+                    if (panel.id === 'generalPanel') {
+                        panel.classList.add('active');
+                    } else {
+                        panel.classList.remove('active');
+                    }
+                } else if (panel.id === 'generalPanel') {
+                    panel.classList.add('active');
+                } else {
+                    panel.classList.remove('active');
+                }
+            });
         }
 
         // ===== Level 2 å‡½æ•° =====
@@ -2321,6 +2540,7 @@ function loadSavedParameterData() {
                 selectedInfo.innerHTML = '<strong>Selected:</strong>' + path.join(' â†’ ');
             }
 
+            updateWorkspaceNavigationState();
             updateFormFields();
             showParameterPanel();
             showNotification('✓ Test item confirmedï¼');
@@ -3475,54 +3695,166 @@ function generateGeneralTable(generalConfig, columnGroups) {
 	    const tbody = document.getElementById('limitTableBody');
 	    thead.innerHTML = '';
 	    tbody.innerHTML = '';
-	
-	    let columns = [];
-	
-	    // ========== CTI æµ‹è¯•:ç›´æŽ¥ä¼ åˆ—å®šä¹‰æ•°ç»„ ==========
-	    if (Array.isArray(columnGroupsOrColumns) &&
-	        columnGroupsOrColumns.length > 0 &&
-	        typeof columnGroupsOrColumns[0] === 'object' &&
-	        columnGroupsOrColumns[0].key) {
-	        columns = columnGroupsOrColumns;
-	        // ✓ CTI æµ‹è¯•:éšè— Group/Level æŒ‰é’®
-	        document.getElementById('addGroupBtn').style.display = 'none';
-	        document.getElementById('addLevelBtn').style.display = 'none';
-	    } 
-	    // ========== Emission/Immunity æµ‹è¯•:åŠ¨æ€ Group + Level ==========
-	    else if (limitConfig && Array.isArray(columnGroupsOrColumns)) {
-	        // 1. å…ˆåŠ è½½ base åˆ—
-	        let baseColumns = [];
-	        columnGroupsOrColumns.forEach(groupKey => {
-	            if (groupKey === 'base' && limitConfig.base) {
-	                baseColumns = limitConfig.base;
+
+	    if (selectedLevel1 === 'Transient_Coupled_Immunity') {
+	        if (Object.keys(groupLevelConfig || {}).length === 0) {
+	            groupLevelConfig = { 1: DEFAULT_LEVEL_COUNT };
+	        }
+
+	        const pulseMap = config.level2ColumnMapping?.[selectedLevel1]?.[selectedLevel2]?.limit || {};
+	        const pulseKey = resolveCtiParameterKey();
+	        const matchedPulse = pulseMap[pulseKey]
+	            ? pulseKey
+	            : Object.keys(pulseMap).find(key => {
+	                const normalizedKey = normalizeImportedLabel(key);
+	                const normalizedPulse = normalizeImportedLabel(pulseKey || '');
+	                return normalizedKey === normalizedPulse || normalizedKey.includes(normalizedPulse) || normalizedPulse.includes(normalizedKey);
+	            });
+	        const activeColumns = matchedPulse ? pulseMap[matchedPulse] : (Array.isArray(columnGroupsOrColumns) ? columnGroupsOrColumns : []);
+
+	        if (!Array.isArray(activeColumns) || activeColumns.length === 0) {
+	            tbody.innerHTML = '<tr><td colspan="100" style="text-align:center;color:#999;">No waveform parameter configuration</td></tr>';
+	            document.getElementById('addGroupBtn').style.display = 'inline-block';
+	            document.getElementById('addLevelBtn').style.display = 'inline-block';
+	            return;
+	        }
+
+	        table.classList.add('cti-limit-table');
+	        window.currentLimitColumns = activeColumns;
+
+	        const groupHeaderRow = document.createElement('tr');
+	        const paramHeaderCell = document.createElement('th');
+	        paramHeaderCell.className = 'cti-parameter-label';
+	        paramHeaderCell.textContent = 'Parameter';
+	        groupHeaderRow.appendChild(paramHeaderCell);
+
+	        Object.entries(groupLevelConfig).forEach(([groupKey, levelCount]) => {
+	            const groupHeaderCell = document.createElement('th');
+	            groupHeaderCell.className = 'cti-group-header';
+	            groupHeaderCell.colSpan = Number(levelCount) || 1;
+	            groupHeaderCell.textContent = 'Group ' + groupKey;
+	            groupHeaderRow.appendChild(groupHeaderCell);
+	        });
+	        thead.appendChild(groupHeaderRow);
+
+	        const levelHeaderRow = document.createElement('tr');
+	        const levelParamCell = document.createElement('th');
+	        levelParamCell.className = 'cti-parameter-label';
+	        levelParamCell.textContent = 'Parameter';
+	        levelHeaderRow.appendChild(levelParamCell);
+
+	        Object.entries(groupLevelConfig).forEach(([groupKey, levelCount]) => {
+	            for (let levelIndex = 1; levelIndex <= (Number(levelCount) || 1); levelIndex++) {
+	                const levelHeaderCell = document.createElement('th');
+	                levelHeaderCell.className = 'cti-level-header';
+	                levelHeaderCell.textContent = 'Level ' + levelIndex;
+	                levelHeaderRow.appendChild(levelHeaderCell);
 	            }
 	        });
-	
+	        thead.appendChild(levelHeaderRow);
+
+	        const savedRows = Array.isArray(parameterData.limit) ? parameterData.limit : [];
+	        activeColumns.forEach((col) => {
+	            const row = document.createElement('tr');
+            row.className = 'cti-parameter-row';
+
+            const paramCell = document.createElement('td');
+            paramCell.className = 'cti-parameter-cell';
+            paramCell.textContent = col.label || col.key;
+            row.appendChild(paramCell);
+
+            Object.entries(groupLevelConfig).forEach(([groupKey, levelCount]) => {
+                const groupIndex = Number(groupKey);
+                for (let levelIndex = 1; levelIndex <= (Number(levelCount) || 1); levelIndex++) {
+                    const cell = document.createElement('td');
+                    cell.className = 'cti-value-cell';
+
+                    const fieldKey = `${col.key}__g${groupIndex}__l${levelIndex}`;
+                    const savedValue = (savedRows.find(rowData => Object.prototype.hasOwnProperty.call(rowData, fieldKey)) || {})[fieldKey] || '';
+
+                    let input;
+                    if (col.type === 'select' && Array.isArray(col.options)) {
+                        input = document.createElement('select');
+                        input.className = 'param-input';
+                        input.setAttribute('data-key', fieldKey);
+                        if (isRequiredParameter(col.key)) input.required = true;
+
+                        const emptyOption = document.createElement('option');
+                        emptyOption.value = '';
+                        emptyOption.textContent = col.placeholder || 'Pls Select';
+                        input.appendChild(emptyOption);
+
+                        col.options.forEach((option) => {
+                            const opt = document.createElement('option');
+                            opt.value = option;
+                            opt.textContent = option;
+                            if (String(savedValue) === String(option)) opt.selected = true;
+                            input.appendChild(opt);
+                        });
+                        input.value = savedValue;
+                    } else {
+                        input = document.createElement('input');
+                        input.type = col.type || 'text';
+                        input.className = 'param-input';
+                        input.setAttribute('data-key', fieldKey);
+                        input.value = savedValue;
+                        input.placeholder = col.placeholder || '';
+                        if (isRequiredParameter(col.key)) input.required = true;
+                    }
+
+                    cell.appendChild(input);
+                    row.appendChild(cell);
+                }
+            });
+
+            tbody.appendChild(row);
+        });
+
+        document.getElementById('addGroupBtn').style.display = Object.keys(groupLevelConfig).length >= MAX_GROUPS ? 'none' : 'inline-block';
+        document.getElementById('addLevelBtn').style.display = Math.max(...Object.values(groupLevelConfig)) >= MAX_LEVELS_PER_GROUP ? 'none' : 'inline-block';
+        return;
+    }
+
+	    let columns = [];
+	    if (columnGroupsOrColumns && typeof columnGroupsOrColumns === 'object' && !Array.isArray(columnGroupsOrColumns)) {
+	        const pulseKey = selectedLevel4 || selectedLevel3 || Object.keys(columnGroupsOrColumns)[0];
+	        const matchedPulse = columnGroupsOrColumns[pulseKey]
+	            ? pulseKey
+	            : Object.keys(columnGroupsOrColumns).find(key =>
+	                normalizeImportedLabel(key) === normalizeImportedLabel(pulseKey || '') ||
+	                normalizeImportedLabel(key).includes(normalizeImportedLabel(pulseKey || ''))
+	            );
+	        const selectedColumns = matchedPulse ? columnGroupsOrColumns[matchedPulse] : null;
+	        if (Array.isArray(selectedColumns) && selectedColumns.length > 0) {
+	            columns = selectedColumns;
+	            document.getElementById('addGroupBtn').style.display = 'none';
+	            document.getElementById('addLevelBtn').style.display = 'none';
+	        }
+	    } else if (Array.isArray(columnGroupsOrColumns) && columnGroupsOrColumns.length > 0 && typeof columnGroupsOrColumns[0] === 'object' && columnGroupsOrColumns[0].key) {
+	        columns = columnGroupsOrColumns;
+	        document.getElementById('addGroupBtn').style.display = 'none';
+	        document.getElementById('addLevelBtn').style.display = 'none';
+	    } else if (limitConfig && Array.isArray(columnGroupsOrColumns)) {
+	        let baseColumns = [];
+	        columnGroupsOrColumns.forEach(groupKey => {
+	            if (groupKey === 'base' && limitConfig.base) baseColumns = limitConfig.base;
+        });
+
 	        if (baseColumns.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="100" style="text-align:center;color:#999;">No parameter configuration</td></tr>';
+	            tbody.innerHTML = '<tr><td colspan="100" style="text-align:center;color:#999;">No parameter configuration</td></tr>';
 	            document.getElementById('addLevelBtn').style.display = 'none';
 	            return;
 	        }
-	
-	        // ✓ æ£€æŸ¥æ˜¯å¦æœ‰ groupTemplateï¼ˆåˆ¤æ–­æ˜¯å¦ä¸º Immunity æµ‹è¯•ï¼‰
-	        const hasGroupTemplate = limitConfig.groupTemplate && 
-	                                  limitConfig.groupTemplate.limitCalculationType &&
-	                                  limitConfig.groupTemplate.levelTemplate;
-	
+
+	        const hasGroupTemplate = limitConfig.groupTemplate && limitConfig.groupTemplate.limitCalculationType && limitConfig.groupTemplate.levelTemplate;
 	        if (hasGroupTemplate) {
-	            // ========== Immunity æµ‹è¯•:æ”¯æŒåŠ¨æ€ Group/Level ==========
-	            
-	            // 2. åˆå§‹åŒ– Group å’Œ Level é…ç½®ï¼ˆé»˜è®¤ 1 ä¸ª Groupï¼Œæ¯ä¸ª Group 2 ä¸ª Levelï¼‰
-	            groupLevelConfig = { 1: DEFAULT_LEVEL_COUNT };
-	            
+	            if (Object.keys(groupLevelConfig || {}).length === 0) {
+	                groupLevelConfig = { 1: DEFAULT_LEVEL_COUNT };
+	            }
 	            const groupTemplate = limitConfig.groupTemplate;
 	            columns = [...baseColumns];
-	            
-	            // 3. ç”Ÿæˆ Group å’Œ Level åˆ—
 	            for (const [groupIndex, levelCount] of Object.entries(groupLevelConfig)) {
 	                const groupNum = parseInt(groupIndex);
-	                
-	                // æ·»åŠ  Limit_CalculationTypeï¼ˆæ¯ä¸ª Group 1 ä¸ªï¼‰
 	                columns.push({
 	                    ...groupTemplate.limitCalculationType,
 	                    key: `${groupTemplate.limitCalculationType.key}_group${groupNum}`,
@@ -3530,8 +3862,6 @@ function generateGeneralTable(generalConfig, columnGroups) {
 	                    groupIndex: groupNum,
 	                    isGroupHeader: true
 	                });
-	                
-	                // æ·»åŠ è¯¥ Group çš„æ‰€æœ‰ Level
 	                for (let levelIdx = 1; levelIdx <= levelCount; levelIdx++) {
 	                    groupTemplate.levelTemplate.forEach(col => {
 	                        columns.push({
@@ -3544,196 +3874,184 @@ function generateGeneralTable(generalConfig, columnGroups) {
 	                    });
 	                }
 	            }
-	
-	            // ✓ Immunity æµ‹è¯•:æ˜¾ç¤º Group/Level æŒ‰é’®
 	            document.getElementById('addGroupBtn').style.display = 'inline-block';
 	            document.getElementById('addLevelBtn').style.display = 'inline-block';
-	            
 	        } else {
-	            // ========== Emission æµ‹è¯•:å›ºå®šåˆ—ç»“æž„ ==========
-	            
-	            // ç›´æŽ¥åŠ è½½æ‰€æœ‰ columnGroups å®šä¹‰çš„åˆ—
 	            columnGroupsOrColumns.forEach(groupKey => {
-	                if (limitConfig[groupKey]) {
-	                    columns = columns.concat(limitConfig[groupKey]);
-	                }
+	                if (limitConfig[groupKey]) columns = columns.concat(limitConfig[groupKey]);
 	            });
-	
-	            // ✓ Emission æµ‹è¯•:éšè— Group/Level æŒ‰é’®
 	            document.getElementById('addGroupBtn').style.display = 'none';
 	            document.getElementById('addLevelBtn').style.display = 'none';
-	        }
+        }
 	    }
-	
+
 	    if (columns.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="100" style="text-align:center;color:#999;">No parameter configuration</td></tr>';
+	        tbody.innerHTML = '<tr><td colspan="100" style="text-align:center;color:#999;">No parameter configuration</td></tr>';
 	        document.getElementById('addLevelBtn').style.display = 'none';
 	        return;
 	    }
-	
-	    // ========== ç”Ÿæˆè¡¨å¤´ ==========
+
 	    const headerRow = document.createElement('tr');
 	    columns.forEach(col => {
 	        const th = document.createElement('th');
-	        
-	        // ✓ Group Headerï¼ˆLimit_CalculationTypeï¼‰- Immunity æµ‹è¯•
 	        if (col.isGroupHeader) {
-	            th.className = 'group-header';
+	            th.className = `group-header group-header-group${col.groupIndex}`;
 	            th.innerHTML = `
 	                <span class="group-badge">Group ${col.groupIndex}</span>
 	                ${col.label}
 	                <button class="btn-remove" onclick="removeGroupColumn(${col.groupIndex})" 
 	                        title="Delete Group ${col.groupIndex}">
-	                    âœ•
+	                    ×
 	                </button>
 	            `;
-	        }
-	        // ✓ Level Headerï¼ˆç¬¬ä¸€ä¸ª Level å­—æ®µï¼‰- Immunity æµ‹è¯•
-	        else if (col.levelIndex && col.key.includes('limitValue')) {
-	            th.className = `level-header-group${col.groupIndex}`;
+	        } else if (col.levelIndex && col.key.includes('limitValue')) {
+	            th.className = `level-header-group${col.groupIndex} level-index-${col.levelIndex} level-start`;
 	            th.innerHTML = `
 	                <span class="level-badge">Level ${col.levelIndex}</span>
 	                ${col.label}
 	                <button class="btn-remove" onclick="removeLevelColumn(${col.groupIndex}, ${col.levelIndex})" 
 	                        title="Delete Level ${col.levelIndex} from all groups">
-	                    âœ•
+	                    ×
 	                </button>
 	            `;
-	        }
-	        // ✓ Level Headerï¼ˆå…¶ä»– Level å­—æ®µï¼‰- Immunity æµ‹è¯•
-	        else if (col.groupIndex) {
-	            th.className = `level-header-group${col.groupIndex}`;
+	        } else if (col.groupIndex) {
+	            th.className = `level-header-group${col.groupIndex} level-index-${col.levelIndex || 0}`;
 	            th.textContent = col.label;
-	        }
-	        // ✓ æ™®é€šåˆ—ï¼ˆEmission æµ‹è¯• + CTI æµ‹è¯• + base åˆ—ï¼‰
-	        else {
+	        } else {
 	            th.className = 'normal-header';
 	            th.textContent = col.label;
 	        }
-	        
 	        th.style.minWidth = '120px';
 	        headerRow.appendChild(th);
 	    });
-	
+
 	    const actionTh = document.createElement('th');
 	    actionTh.textContent = 'Operation';
 	    actionTh.style.minWidth = '100px';
 	    actionTh.className = 'normal-header';
 	    headerRow.appendChild(actionTh);
 	    thead.appendChild(headerRow);
-	
+
 	    window.currentLimitColumns = columns;
 	    addLimitRowDynamic();
 	}
-	/**
-	 * ✓ ä¿®å¤åŽçš„ addGroupColumn å‡½æ•°
-	 * æ–°å¢ž Group æ—¶ï¼Œä½¿ç”¨å½“å‰æ‰€æœ‰ Group çš„æœ€å¤§ Level æ•°é‡
-	 */
+
+	function regenerateTable() {
+	    if (selectedLevel1 !== 'RF_Immunity') return;
+	    parameterData.limit = collectParameterRows('limitTableBody');
+	    showParameterPanel();
+	}
+
 	function addGroupColumn() {
+	    if (selectedLevel1 === 'Transient_Coupled_Immunity') {
+	        const totalGroups = Object.keys(groupLevelConfig || {}).length || 1;
+	        if (totalGroups >= MAX_GROUPS) {
+	            showNotification(`⚠️ Maximum ${MAX_GROUPS} Groups reached.`, 'error');
+	            return;
+	        }
+	        let nextGroupIndex = 1;
+	        while (groupLevelConfig[nextGroupIndex]) nextGroupIndex++;
+	        const currentMaxLevels = Math.max(...Object.values(groupLevelConfig || { 1: DEFAULT_LEVEL_COUNT }));
+	        groupLevelConfig[nextGroupIndex] = currentMaxLevels;
+	        showParameterPanel();
+	        showNotification(`✓ Added Group ${nextGroupIndex} with ${currentMaxLevels} Levels.`);
+	        return;
+	    }
+
 	    const totalGroups = Object.keys(groupLevelConfig).length;
-	
 	    if (totalGroups >= MAX_GROUPS) {
 	        showNotification(`⚠️ Maximum ${MAX_GROUPS} Groups reached.`, 'error');
 	        return;
 	    }
-	
-	    // æ‰¾åˆ°ä¸‹ä¸€ä¸ªå¯ç”¨çš„ Group ç¼–å·
 	    let nextGroupIndex = 1;
-	    while (groupLevelConfig[nextGroupIndex]) {
-	        nextGroupIndex++;
-	    }
-	
-	    // ✓ ä¿®å¤:ä½¿ç”¨å½“å‰æœ€å¤§ Level æ•°é‡ï¼Œè€Œä¸æ˜¯å›ºå®šçš„ DEFAULT_LEVEL_COUNT
+	    while (groupLevelConfig[nextGroupIndex]) nextGroupIndex++;
 	    const currentMaxLevels = Math.max(...Object.values(groupLevelConfig));
 	    groupLevelConfig[nextGroupIndex] = currentMaxLevels;
-	
-	    console.log(`âž• æ·»åŠ  Group ${nextGroupIndex}ï¼Œä½¿ç”¨å½“å‰æœ€å¤§ Level æ•°é‡: ${currentMaxLevels}`, groupLevelConfig);
-	
-	    // é‡æ–°ç”Ÿæˆè¡¨æ ¼
 	    regenerateTable();
-	
 	    showNotification(`✓ Added Group ${nextGroupIndex} with ${currentMaxLevels} Levels.`);
 	}
 	
-	/**
-	 * ✓ ä¿®å¤åŽçš„ addLevelColumn å‡½æ•°
-	 * ä¸ºæ‰€æœ‰çŽ°æœ‰ Group å’Œæœªæ¥æ–°å¢žçš„ Group å¢žåŠ  Level
-	 */
 	function addLevelColumn() {
+	    if (selectedLevel1 === 'Transient_Coupled_Immunity') {
+	        const currentMaxLevels = Math.max(...Object.values(groupLevelConfig || { 1: DEFAULT_LEVEL_COUNT }));
+	        if (currentMaxLevels >= MAX_LEVELS_PER_GROUP) {
+	            showNotification(`⚠️ Maximum ${MAX_LEVELS_PER_GROUP} Levels reached!`, 'error');
+	            return;
+	        }
+	        Object.keys(groupLevelConfig || {}).forEach((groupKey) => {
+	            groupLevelConfig[groupKey] = Number(groupLevelConfig[groupKey]) + 1;
+	        });
+	        showParameterPanel();
+	        showNotification(`✓ Added one more level to each current group.`);
+	        return;
+	    }
+
 	    const maxLevelCount = Math.max(...Object.values(groupLevelConfig));
-	    
 	    if (maxLevelCount >= MAX_LEVELS_PER_GROUP) {
 	        showNotification(`⚠️ Maximum ${MAX_LEVELS_PER_GROUP} Levels reached!`, 'error');
 	        return;
 	    }
-	
-	    // ✓ ä¿®å¤:ä¸ºæ¯ä¸ªçŽ°æœ‰ Group å¢žåŠ ä¸€ä¸ª Level
+
 	    Object.keys(groupLevelConfig).forEach((groupKey) => {
 	        groupLevelConfig[groupKey]++;
 	    });
-	
-	    console.log(`âž• ä¸ºæ‰€æœ‰çŽ°æœ‰ Group æ·»åŠ  Levelï¼Œå½“å‰é…ç½®:`, groupLevelConfig);
-	
-	    // é‡æ–°ç”Ÿæˆè¡¨æ ¼
 	    regenerateTable();
-	
 	    showNotification(`✓ Added Level ${maxLevelCount + 1} to all ${Object.keys(groupLevelConfig).length} groups.`);
 	}
 
 	function removeGroupColumn(groupIndex) {
+	    if (selectedLevel1 === 'Transient_Coupled_Immunity') {
+	        const totalGroups = Object.keys(groupLevelConfig || {}).length;
+	        if (totalGroups <= 1) {
+	            showNotification('⚠️ At least keep 1 Group', 'error');
+	            return;
+	        }
+	        if (!confirm(`⚠️ Delete Group ${groupIndex}?\n\nThis will remove Group ${groupIndex} and all its levels.`)) return;
+	        delete groupLevelConfig[groupIndex];
+	        showParameterPanel();
+	        showNotification(`✓ Deleted Group ${groupIndex}`);
+	        return;
+	    }
+
 	    const totalGroups = Object.keys(groupLevelConfig).length;
-	    
 	    if (totalGroups <= 1) {
 	        showNotification('⚠️ At least keep 1 Group', 'error');
 	        return;
 	    }
-	
-	    if (!confirm(`ðŸ—‘ï¸ Delete Group ${groupIndex}?\n\nThis will remove Group ${groupIndex} and all its levels.`)) {
-	        return;
-	    }
-	
-	    // ç›´æŽ¥åˆ é™¤æŒ‡å®šçš„ Group
+	    if (!confirm(`⚠️ Delete Group ${groupIndex}?\n\nThis will remove Group ${groupIndex} and all its levels.`)) return;
 	    delete groupLevelConfig[groupIndex];
-	
-	    console.log('ðŸ—‘ï¸ åˆ é™¤ Group:', groupIndex, 'å‰©ä½™:', groupLevelConfig);
-	
-	    // é‡æ–°ç”Ÿæˆè¡¨æ ¼
 	    regenerateTable();
-	
 	    showNotification(`✓ Deleted Group ${groupIndex}`);
 	}
 
 	function removeLevelColumn(groupIndex, levelIndex) {
-	    // ✓ æ£€æŸ¥æ‰€æœ‰ Group çš„æœ€å° Level æ•°é‡
+	    if (selectedLevel1 === 'Transient_Coupled_Immunity') {
+	        const minLevelCount = Math.min(...Object.values(groupLevelConfig || { 1: DEFAULT_LEVEL_COUNT }));
+	        if (minLevelCount <= 1) {
+	            showNotification('⚠️ At least keep 1 level in each group', 'error');
+	            return;
+	        }
+	        if (!confirm(`⚠️ Delete Level ${levelIndex} from ALL groups?\n\nThis will remove Level ${levelIndex} from all ${Object.keys(groupLevelConfig).length} group(s).`)) return;
+	        Object.keys(groupLevelConfig).forEach(gIndex => {
+	            if (groupLevelConfig[gIndex] > 0) groupLevelConfig[gIndex]--;
+	        });
+	        showParameterPanel();
+	        showNotification(`✓ Deleted Level ${levelIndex} from all groups`);
+	        return;
+	    }
+
 	    const minLevelCount = Math.min(...Object.values(groupLevelConfig));
-	    
 	    if (minLevelCount <= 1) {
 	        showNotification('⚠️ At least keep 1 level in each group', 'error');
 	        return;
 	    }
-	    
-	    if (!confirm(`ðŸ—‘ï¸ Delete Level ${levelIndex} from ALL groups?\n\nThis will remove Level ${levelIndex} from all ${Object.keys(groupLevelConfig).length} group(s).`)) {
-	        return;
-	    }
-	    
-	    // ✓ ä»Žæ‰€æœ‰ Group ä¸­å‡å°‘ä¸€ä¸ª Level
+	    if (!confirm(`⚠️ Delete Level ${levelIndex} from ALL groups?\n\nThis will remove Level ${levelIndex} from all ${Object.keys(groupLevelConfig).length} group(s).`)) return;
 	    Object.keys(groupLevelConfig).forEach(gIndex => {
-	        if (groupLevelConfig[gIndex] > 0) {
-	            groupLevelConfig[gIndex]--;
-	        }
+	        if (groupLevelConfig[gIndex] > 0) groupLevelConfig[gIndex]--;
 	    });
-	    
-	    console.log('ðŸ—‘ï¸ ä»Žæ‰€æœ‰ Group åˆ é™¤ Level:', levelIndex, 'å‰©ä½™:', groupLevelConfig);
-	    
-	    // é‡æ–°ç”Ÿæˆè¡¨æ ¼
 	    regenerateTable();
-	    
 	    showNotification(`✓ Deleted Level ${levelIndex} from all groups`);
-	}
-	    
-
-
-	function regenerateTable() {
+	    return;
 	    console.log('📦 é‡æ–°ç”Ÿæˆè¡¨æ ¼...', JSON.parse(JSON.stringify(groupLevelConfig)));
 	    
 	    // ========== 1. ä¿å­˜å½“å‰æ•°æ® ==========
@@ -3949,6 +4267,9 @@ function generateGeneralTable(generalConfig, columnGroups) {
 
 			  columns.forEach(col => {
 				const cell = row.insertCell();
+				if (col.groupIndex) cell.classList.add(`group-cell-${col.groupIndex}`);
+				if (col.isGroupHeader) cell.classList.add('group-start');
+				if (col.levelIndex && col.key.includes('limitValue')) cell.classList.add('level-start');
 
 				if (col.type === 'select' && col.options) {
 				  const select = document.createElement('select');
@@ -4205,13 +4526,12 @@ function generateGeneralTable(generalConfig, columnGroups) {
 		function clearParameters() {
 			if (!confirm('Confirm to clear all parameters?')) return;
 			
-			// ✓ Clear global data
 			parameterData.general = [];
 			parameterData.limit = [];
 			
 			if (selectedLevel1 === 'Transient_Coupled_Immunity') {
-				document.getElementById('limitTableBody').innerHTML = '';
-				addLimitRowDynamic();
+				groupLevelConfig = { 1: DEFAULT_LEVEL_COUNT };
+				showParameterPanel();
 			} else {
 				const generalTableBody = document.getElementById('generalTableBody');
 				const limitTableBody = document.getElementById('limitTableBody');
@@ -4226,14 +4546,13 @@ function generateGeneralTable(generalConfig, columnGroups) {
 				}
 			}
 			
-			// ✓ Clear the summary text
 			document.getElementById('cit_setting').value = '';
-			
 			showNotification('✓ Parameters have been cleared');
 		}
 
 		function loadWaveformImage() {
             const waveformSection = document.getElementById('waveformSection');
+			const waveformImageSection = document.getElementById('waveformImageSection');
             const imageContainer = document.getElementById('waveformImageContainer');
             const waveformTitle = document.getElementById('waveformTitle');
             if (selectedLevel1 !== 'Transient_Coupled_Immunity') {
@@ -4241,17 +4560,21 @@ function generateGeneralTable(generalConfig, columnGroups) {
                 return;
             }
             waveformSection.style.display = 'flex';
-            if (!selectedLevel3) {
-                imageContainer.innerHTML = `<div class="waveform-placeholder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16V4H3v12h18m0-14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-7v2h2v2H8v-2h2v-2H3a2 2 0 0 1-2-2V4c0-1.11.89-2 2-2h18M5 6h9v5H5V6m10 0h4v2h-4V6m4 3v5h-4V9h4M5 12h4v2H5v-2m5 0h4v2h-4v-2z"/></svg><p>Please select a waveform (Level 3)</p></div>`;
+			waveformImageSection.style.display = 'flex';
+
+            const waveformConfig = getCtiWaveformConfig();
+			if (!waveformConfig) {
+				waveformTitle.textContent = 'Waveform Reference';
+                imageContainer.innerHTML = `<div class="waveform-placeholder"><p>No exact waveform configuration for ${selectedLevel4 || 'the current selection'}.</p></div>`;
                 return;
             }
-            const waveformConfig = config.waveformParameterMapping?.[selectedLevel1]?.[selectedLevel2]?.[selectedLevel3];
+
             if (waveformConfig && waveformConfig.image) {
-                waveformTitle.innerHTML = `ðŸ“Š Waveform: <span style="color: #2196F3;">${selectedLevel3}</span>`;
-                imageContainer.innerHTML = `<img src="${waveformConfig.image}" alt="${selectedLevel3}" onerror="handleImageError(this)">`;
+				waveformTitle.textContent = `Waveform: ${waveformConfig.key}`;
+				imageContainer.innerHTML = `<img src="${waveformConfig.image}" alt="${waveformConfig.key}" onerror="handleImageError(this)">`;
             } else {
-                waveformTitle.textContent = 'ðŸ“Š Waveform Reference';
-                imageContainer.innerHTML = `<div class="waveform-placeholder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg><p>No waveform image available<br>for ${selectedLevel3}</p></div>`;
+				waveformTitle.textContent = `Waveform: ${waveformConfig.key}`;
+				imageContainer.innerHTML = `<div class="waveform-placeholder"><p>No reference image configured for ${waveformConfig.key}.</p></div>`;
             }
         }
 
@@ -4271,8 +4594,7 @@ function generateGeneralTable(generalConfig, columnGroups) {
 		}
 
 		function isRequiredParameter(paramName) {
-			if (selectedLevel1 !== 'Transient_Coupled_Immunity' || !selectedLevel3) return false;
-			const waveformConfig = config.waveformParameterMapping?.[selectedLevel1]?.[selectedLevel2]?.[selectedLevel3];
+			const waveformConfig = getCtiWaveformConfig();
 			if (!waveformConfig || !waveformConfig.requiredParams) return false;
 			return waveformConfig.requiredParams.includes(paramName);
 		}
@@ -4435,12 +4757,72 @@ function generateGeneralTable(generalConfig, columnGroups) {
 	            }
 	        }
 	
+function collectParameterRows(tableBodyId) {
+			const rows = document.querySelectorAll(`#${tableBodyId} tr`);
+			const collectedRows = [];
+			rows.forEach(row => {
+				const inputs = row.querySelectorAll('input[data-key], select[data-key]');
+				const rowData = {};
+				let hasData = false;
+				inputs.forEach(input => {
+					const key = input.getAttribute('data-key');
+					const value = input.value.trim();
+					rowData[key] = value;
+					if (value) hasData = true;
+				});
+				if (hasData) collectedRows.push(rowData);
+			});
+			return collectedRows;
+		}
+
+function syncActiveParameterPanel() {
+			if (selectedLevel1 === 'Transient_Coupled_Immunity') return;
+			const activePanelId = document.querySelector('.workspace-panel.active')?.id;
+			if (activePanelId === 'limitPanel') {
+				parameterData.limit = collectParameterRows('limitTableBody');
+			} else if (activePanelId === 'setupPanel') {
+				parameterData.general = collectParameterRows('generalTableBody');
+			}
+		}
+
+function syncParameterDraft(event) {
+			if (selectedLevel1 === 'Transient_Coupled_Immunity') return;
+			if (!event.target.matches('input[data-key], select[data-key]')) return;
+			if (event.currentTarget.id === 'limitTableBody') {
+				parameterData.limit = collectParameterRows('limitTableBody');
+			} else if (event.currentTarget.id === 'generalTableBody') {
+				parameterData.general = collectParameterRows('generalTableBody');
+			}
+		}
+
 function activateWorkspacePanel(targetId) {
             if (!targetId) return;
             if (!config) {
                 showNotification('⚠️ Config is still loading. Please wait a moment.', 'error');
                 return;
             }
+
+            if (selectedLevel1 === 'Transient_Coupled_Immunity' && targetId === 'setupPanel') {
+                const limitBtn = document.querySelector('.nav-item[data-target="limitPanel"]');
+                if (limitBtn) {
+                    limitBtn.classList.add('active');
+                    document.querySelectorAll('.nav-item').forEach(item => {
+                        item.classList.toggle('active', item.dataset.target === 'limitPanel');
+                    });
+                    document.querySelectorAll('.workspace-panel').forEach(panel => {
+                        panel.classList.toggle('active', panel.id === 'limitPanel');
+                    });
+                }
+                showNotification('⚠️ This test item only uses Limit Level, no Setup Parameter.', 'error');
+                return;
+            }
+
+			if ((targetId === 'limitPanel' || targetId === 'setupPanel') && (!selectedLevel1 || !selectedLevel2)) {
+				showNotification('⚠️ Please select and confirm a test item first.', 'error');
+				return;
+			}
+
+			syncActiveParameterPanel();
 
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.toggle('active', item.dataset.target === targetId);
@@ -4450,10 +4832,6 @@ function activateWorkspacePanel(targetId) {
             });
 
             if (targetId === 'limitPanel' || targetId === 'setupPanel') {
-                if (!selectedLevel1 || !selectedLevel2) {
-                    showNotification('⚠️ Please select and confirm a test item first.', 'error');
-                    return;
-                }
                 showParameterPanel();
             }
         }
@@ -4472,6 +4850,17 @@ function activateWorkspacePanel(targetId) {
             document.querySelectorAll('.nav-item').forEach(button => {
                 button.addEventListener('click', () => activateWorkspacePanel(button.dataset.target));
             });
+
+			const generalTableBody = document.getElementById('generalTableBody');
+			const limitTableBody = document.getElementById('limitTableBody');
+			if (generalTableBody) {
+				generalTableBody.addEventListener('input', syncParameterDraft);
+				generalTableBody.addEventListener('change', syncParameterDraft);
+			}
+			if (limitTableBody) {
+				limitTableBody.addEventListener('input', syncParameterDraft);
+				limitTableBody.addEventListener('change', syncParameterDraft);
+			}
 	        });
     </script>
 </body>
